@@ -1,0 +1,9 @@
+# Django
+db.sqlite3
+
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
+venv/
