@@ -18,21 +18,26 @@
 
                         <p class="subtitle is-4">
                             {% blocktrans %}
-                                This is the central place for all activities organized by the
-                                <a href="https://www.farafmb.de/" target="_blank">Student Council</a> of the
-                                <a href="https://www.fmb.ovgu.de/" target="_blank">Faculty for Mechanical Engineering</a>
-                                at
+                                This is the central place for all activities with limited access, which are organized by
+                                the <a href="https://www.farafmb.de/" target="_blank">Student Council</a> of the
+                                <a href="https://www.fmb.ovgu.de/" target="_blank">Faculty for Mechanical
+                                    Engineering</a> at
                                 <a href="https://www.ovgu.de/" target="_blank">Otto von Guericke University</a>.
                             {% endblocktrans %}
                         </p>
 
-                        <a class="button is-primary is-medium" href="{% url 'accounts:register' %}">{% trans "Join now" %}</a>
+                        <a class="button is-primary is-medium"
+                           href="{% url 'accounts:register' %}">{% trans "Join now" %}</a>
                     </div>
 
                     <div class="column is-half">
-                        <figure class="image is-4by3">
-                            <img src="{% static 'home/manufacturing.jpg' %}" alt="stock image manufacturing">
-                        </figure>
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-4by3">
+                                    <img src="{% static 'home/manufacturing.jpg' %}" alt="stock image manufacturing">
+                                </figure>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
