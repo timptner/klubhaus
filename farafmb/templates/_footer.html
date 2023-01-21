@@ -4,15 +4,15 @@
         <div class="columns">
             <div class="column">
                 {% blocktrans %}
-                    Made with <3 by Aiven. Using <a href="https://www.djangoproject.com/" target="_blank">Django</a> and
+                    Made with &hearts; by Aiven. Using <a href="https://www.djangoproject.com/" target="_blank">Django</a> and
                     <a href="https://bulma.io/" target="_blank">Bulma</a>.
                 {% endblocktrans %}
             </div>
             <div class="column is-narrow">
                 <p>
-                    <a class="mr-3">{% trans "Impress" %}</a>
+                    <a class="mr-3" href="{% url 'home:site-notice' %}">{% trans "Site notice" %}</a>
                     <a class="mr-3">{% trans "Privacy" %}</a>
-                    &#169; {# 2023 - #}{% now 'Y' %} FaRaFMB
+                    &copy; {# 2023 - #}{% now 'Y' %} FaRaFMB
                 </p>
             </div>
         </div>

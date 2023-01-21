@@ -12,3 +12,12 @@ class LandingPage(TemplateView):
             {'name': "Fendt GmbH", 'image': "home/fendt.jpg", 'url': "https://www.fendt.com/"},
         ]
         return context
+
+
+class SiteNoticePage(TemplateView):
+    template_name = 'home/site_notice.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['board'] = ["Lucas Häußler", "Birte Manik", "Tom Bothe"]
+        return context
