@@ -21,3 +21,7 @@ class SiteNoticePage(TemplateView):
         context = super().get_context_data(**kwargs)
         context['board'] = ["Lucas Häußler", "Birte Manik", "Tom Bothe"]
         return context
+
+
+class PrivacyPolicyPage(TemplateView):
+    template_name = 'home/privacy_policy.html'

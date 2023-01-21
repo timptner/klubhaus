@@ -8,10 +8,11 @@
                     <a href="https://bulma.io/" target="_blank">Bulma</a>.
                 {% endblocktrans %}
             </div>
+
             <div class="column is-narrow">
                 <p>
                     <a class="mr-3" href="{% url 'home:site-notice' %}">{% trans "Site notice" %}</a>
-                    <a class="mr-3">{% trans "Privacy" %}</a>
+                    <a class="mr-3" href="{% url 'home:privacy-policy' %}">{% trans "Privacy policy" %}</a>
                     &copy; {# 2023 - #}{% now 'Y' %} FaRaFMB
                 </p>
             </div>
