@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% load i18n static %}
+
+{% block title %}{% trans "Landing Page" %}{% endblock %}
+
+{% block page %}
+    <section class="hero is-halfheight">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-vcentered">
+                    <div class="column is-half">
+                        <p class="title is-1 pb-6 mb-0">
+                            {% blocktrans %}
+                                Participate in field trips, sign up for tournaments, or register as a mentor
+                            {% endblocktrans %}
+                        </p>
+
+                        <p class="subtitle is-4">
+                            {% blocktrans %}
+                                This is the central place for all activities organized by the
+                                <a href="https://www.farafmb.de" target="_blank">Student Council</a> of the
+                                <a href="https://www.fmb.ovgu.de" target="_blank">Faculty for Mechanical Engineering</a>
+                                at
+                                <a href="https://www.ovgu.de" target="_blank">Otto von Guericke University</a>.
+                            {% endblocktrans %}
+                        </p>
+
+                        <a class="button is-primary is-medium" href="{% url 'accounts:register' %}">{% trans "Join now" %}</a>
+                    </div>
+
+                    <div class="column is-half">
+                        <figure class="image is-4by3">
+                            <img src="{% static 'home/manufacturing.jpg' %}" alt="stock image manufacturing">
+                        </figure>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section has-background-white-ter">
+        <div class="container has-text-centered">
+            <h1 class="title">{% trans "Companies we already visited" %}</h1>
+            <div class="columns is-centered is-multiline">
+                {% for company in companies %}
+                    <div class="column is-one-fifth">
+                        <a href="{{ company.url }}" target="_blank">
+                            <div class="card">
+                                <div class="card-image">
+                                    <figure class="image is-4by3">
+                                        <img src="{% static company.image %}" alt="{{ company.name }}">
+                                    </figure>
+                                </div>
+
+                                <div class="card-header">
+                                    <p class="card-header-title">
+                                        {{ company.name }}
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+{% endblock %}
