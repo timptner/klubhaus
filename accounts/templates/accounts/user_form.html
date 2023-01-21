@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="columns">
+        <div class="column is-narrow mx-auto">
+            <form method="post">
+                {% csrf_token %}
+                {{ form }}
+                <div class="buttons">
+                    <button class="button is-primary" type="submit">Registrieren</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

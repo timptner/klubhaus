@@ -1,3 +1,8 @@
-from django.shortcuts import render
+from django.views.generic import CreateView
 
-# Create your views here.
+from .models import User
+
+
+class RegistrationView(CreateView):
+    model = User
+    fields = ['username', 'email']
