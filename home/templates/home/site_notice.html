@@ -5,104 +5,107 @@
 {% block title %}{% trans "Site notice" %}{% endblock %}
 
 {% block content %}
-    <div class="content">
-        {% blocktrans with board=board|join:',<br>' %}
-            <h1>Site notice</h1>
+    <div class="container is-max-desktop">
+        <div class="content">
+            {% blocktrans with board=board|join:',<br>' %}
+                <h1>Site notice</h1>
 
-            <p>
-            <address>
-                Otto von Guericke University Magdeburg<br>
-                Student Council of the Faculty for Mechanical Engineering<br>
-                Universitätsplatz 2<br>
-                39016 Magdeburg
-            </address>
-            </p>
+                <p>
+                <address>
+                    Otto von Guericke University Magdeburg<br>
+                    Student Council of the Faculty for Mechanical Engineering<br>
+                    Universitätsplatz 2<br>
+                    39016 Magdeburg
+                </address>
+                </p>
 
-            <h3>Represented by</h3>
+                <h3>Represented by</h3>
 
-            <p>{{ board }}</p>
+                <p>{{ board }}</p>
 
-            <h3>Contact</h3>
+                <h3>Contact</h3>
 
-            <p>
-                Telefon: <a href="tel:+493916751299">+49 391 67 51299</a><br>
-                E-Mail: <a href="mailto:farafmb@ovgu.de">farafmb@ovgu.de</a>
-            </p>
+                <p>
+                    Telefon: <a href="tel:+493916751299">+49 391 67 51299</a><br>
+                    E-Mail: <a href="mailto:farafmb@ovgu.de">farafmb@ovgu.de</a>
+                </p>
 
-            <h3>Responsible supervisory authority</h3>
+                <h3>Responsible supervisory authority</h3>
 
-            <p>Otto von Guericke University Magdeburg</p>
+                <p>Otto von Guericke University Magdeburg</p>
 
-            <h3>Disclaimer</h3>
+                <h3>Disclaimer</h3>
 
-            <p>
-                The information contained on this website has been put together with the greatest possible care.
-                Nevertheless, the Student Council of the Faculty for Mechanical Engineering cannot accept any
-                responsibility for the up-to-date'ness, correctness, completeness or quality of the information
-                provided. The Student Council of the Faculty for Mechanical Engineering and/or those persons responsible
-                for the creation of this website cannot accept any liability for any tangible or intangible damage
-                caused by the use or non-use of this information or through the use of erroneous and incomplete
-                information, unless it is as a result of intent or gross negligence. All online content is non-binding
-                and without obligation. The Student Council of the Faculty for Mechanical Engineering reserves the right
-                to alter, supplement, delete, or temporarily or definitively cease to publish parts of its website or
-                the entire online offering without prior notice.
-            </p>
+                <p>
+                    The information contained on this website has been put together with the greatest possible care.
+                    Nevertheless, the Student Council of the Faculty for Mechanical Engineering cannot accept any
+                    responsibility for the up-to-date'ness, correctness, completeness or quality of the information
+                    provided. The Student Council of the Faculty for Mechanical Engineering and/or those persons
+                    responsible for the creation of this website cannot accept any liability for any tangible or
+                    intangible damage caused by the use or non-use of this information or through the use of erroneous
+                    and incomplete information, unless it is as a result of intent or gross negligence. All online
+                    content is non-binding and without obligation. The Student Council of the Faculty for Mechanical
+                    Engineering reserves the right to alter, supplement, delete, or temporarily or definitively cease to
+                    publish parts of its website or the entire online offering without prior notice.
+                </p>
 
-            <h3>Links</h3>
+                <h3>Links</h3>
 
-            <p>
-                Where the Student Council of the Faculty for Mechanical Engineering makes direct or indirect reference
-                to external websites (hyperlinks), it is not responsible for their content. The content of the linked
-                websites does not lie within the area of responsibility of the Student Council of the Faculty for
-                Mechanical Engineering, but is solely that of the respective operators. At the time of linking, no
-                illegal content was apparent on these websites. Should the Student Council of the Faculty for Mechanical
-                Engineering become aware of any illegal content after linking to the sites, it will immediately remove
-                such references to external websites from its information offering. The Student Council of the Faculty
-                for Mechanical Engineering has no influence on the design, content or authorship of linked sites. It
-                distances itself expressly from the content of any linked pages that were changed after the links were
-                published. The aforementioned applies to all links and references placed within the online content of
-                the Student Council of the Faculty for Mechanical Engineering as well as to third-party entries in any
-                visitor books, discussion forums, link directories and mailing lists set up by the respective author,
-                and in the content of all other forms of database to which write access is enabled. For illegal,
-                erroneous or incomplete content and especially for damage arising from the use or non-use of information
-                offered of this kind, only the provider of the site to which a link is posted shall be liable.
-            </p>
+                <p>
+                    Where the Student Council of the Faculty for Mechanical Engineering makes direct or indirect
+                    reference to external websites (hyperlinks), it is not responsible for their content. The content of
+                    the linked websites does not lie within the area of responsibility of the Student Council of the
+                    Faculty for Mechanical Engineering, but is solely that of the respective operators. At the time of
+                    linking, no illegal content was apparent on these websites. Should the Student Council of the
+                    Faculty for Mechanical Engineering become aware of any illegal content after linking to the sites,
+                    it will immediately remove such references to external websites from its information offering. The
+                    Student Council of the Faculty for Mechanical Engineering has no influence on the design, content or
+                    authorship of linked sites. It distances itself expressly from the content of any linked pages that
+                    were changed after the links were published. The aforementioned applies to all links and references
+                    placed within the online content of the Student Council of the Faculty for Mechanical Engineering as
+                    well as to third-party entries in any visitor books, discussion forums, link directories and mailing
+                    lists set up by the respective author, and in the content of all other forms of database to which
+                    write access is enabled. For illegal, erroneous or incomplete content and especially for damage
+                    arising from the use or non-use of information offered of this kind, only the provider of the site
+                    to which a link is posted shall be liable.
+                </p>
 
-            <h3>Copyright and trademark law</h3>
+                <h3>Copyright and trademark law</h3>
 
-            <p>
-                The Student Council of the Faculty for Mechanical Engineering strives to respect the copyright of the
-                images, graphics, sound files, video sequences and text used by it (hereafter referred to as "objects"),
-                to use objects created internally or to make recourse to objects in the public domain. All the logos and
-                trademarks that appear on this website that might be protected by third parties are subject to the
-                provisions of the relevant trademark law as applicable and the rights of ownership of the relevant
-                registered owner. A mere reference to the logos and trademarks does not mean that these are not
-                protected by third party rights. The copyright for objects on this website created by the Student
-                Council of the Faculty for Mechanical Engineering lies solely with the Student Council of the Faculty
-                for Mechanical Engineering. Without the approval of the Student Council of the Faculty for Mechanical
-                Engineering the reproduction or use of such objects in other electronic or printed publications is not
-                permissible.
-            </p>
+                <p>
+                    The Student Council of the Faculty for Mechanical Engineering strives to respect the copyright of
+                    the images, graphics, sound files, video sequences and text used by it (hereafter referred to as
+                    "objects"), to use objects created internally or to make recourse to objects in the public domain.
+                    All the logos and trademarks that appear on this website that might be protected by third parties
+                    are subject to the provisions of the relevant trademark law as applicable and the rights of
+                    ownership of the relevant registered owner. A mere reference to the logos and trademarks does not
+                    mean that these are not protected by third party rights. The copyright for objects on this website
+                    created by the Student Council of the Faculty for Mechanical Engineering lies solely with the
+                    Student Council of the Faculty for Mechanical Engineering. Without the approval of the Student
+                    Council of the Faculty for Mechanical Engineering the reproduction or use of such objects in other
+                    electronic or printed publications is not permissible.
+                </p>
 
 
-            <h3>Data Protection</h3>
+                <h3>Data Protection</h3>
 
-            <p>
-                In accordance with &sect; 13, para 1, line 1 of the German Telemedia Act, the service provider must
-                notify the user in a generally comprehensible form at the start of use of, among other things, the type,
-                scope and purpose of the collection and use of personal data, if no such notification has already taken
-                place. The Student Council of the Faculty for Mechanical Engineering processes data solely according to
-                the relevant provisions of the law protecting the personal data of citizens (DSG-LSA) as applicable. To
-                the extent that within the online content of the Student Council of the Faculty for Mechanical
-                Engineering personal or business data (email addresses, names, addresses) may be entered, the disclosure
-                of this data by the user is expressly on a voluntary basis. The use of all services offered is, where
-                technically possible, also permitted without entering such data / by entering anonymous data or a
-                pseudonym. The use by third parties of the contact details published as part of the site credits, or
-                similar information such as postal addresses, telephone and fax numbers, and email addresses, for the
-                transmission of information that has not expressly been requested is not permitted. We expressly reserve
-                the right to take legal steps against the senders of so-called spam emails in the event of any
-                infringement of this ban.
-            </p>
-        {% endblocktrans %}
+                <p>
+                    In accordance with &sect; 13, para 1, line 1 of the German Telemedia Act, the service provider must
+                    notify the user in a generally comprehensible form at the start of use of, among other things, the
+                    type, scope and purpose of the collection and use of personal data, if no such notification has
+                    already taken place. The Student Council of the Faculty for Mechanical Engineering processes data
+                    solely according to the relevant provisions of the law protecting the personal data of citizens
+                    (DSG-LSA) as applicable. To the extent that within the online content of the Student Council of the
+                    Faculty for Mechanical Engineering personal or business data (email addresses, names, addresses) may
+                    be entered, the disclosure of this data by the user is expressly on a voluntary basis. The use of
+                    all services offered is, where technically possible, also permitted without entering such data / by
+                    entering anonymous data or a pseudonym. The use by third parties of the contact details published as
+                    part of the site credits, or similar information such as postal addresses, telephone and fax
+                    numbers, and email addresses, for the transmission of information that has not expressly been
+                    requested is not permitted. We expressly reserve the right to take legal steps against the senders
+                    of so-called spam emails in the event of any infringement of this ban.
+                </p>
+            {% endblocktrans %}
+        </div>
     </div>
 {% endblock %}
