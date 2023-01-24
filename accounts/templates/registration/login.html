@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Log in" %}{% endblock %}
+
+{% block page %}
+    <section class="section is-large">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-one-third">
+                    <div class="box">
+                        <h3 class="title">{% trans "Log in" %}</h3>
+                        <form method="post">
+                            {% csrf_token %}
+
+                            {{ form }}
+
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    <button class="button is-primary" type="submit">{% trans "Submit" %}</button>
+                                </div>
+                                <div class="control">
+                                    <a class="button is-ghost" href="{% url 'accounts:password_reset' %}">{% trans "Forget password?" %}</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

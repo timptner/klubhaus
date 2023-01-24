@@ -42,7 +42,7 @@
                                 <strong>{% trans "Sign up" %}</strong>
                             </a>
 
-                            <a class="button is-light">{% trans "Log in" %}</a>
+                            <a class="button is-light" href="{% url 'accounts:login' %}">{% trans "Log in" %}</a>
                         </div>
                     </div>
                 {% endif %}
