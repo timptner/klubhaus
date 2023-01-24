@@ -1,15 +1,28 @@
 {% extends 'base.html' %}
 
-{% block content %}
-    <div class="columns">
-        <div class="column is-narrow mx-auto">
-            <form method="post">
-                {% csrf_token %}
-                {{ form }}
-                <div class="buttons">
-                    <button class="button is-primary" type="submit">Registrieren</button>
+{% load i18n %}
+
+{% block title %}{% trans "Registration" %}{% endblock %}
+
+{% block page %}
+    <section class="section is-medium">
+        <div class="columns is-centered">
+            <div class="column is-one-third">
+                <div class="box">
+                    <h3 class="title">{% trans "Registration" %}</h3>
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {{ form }}
+
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button class="button is-primary" type="submit">Registrieren</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
-    </div>
+    </section>
 {% endblock %}
