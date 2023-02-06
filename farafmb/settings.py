@@ -91,6 +91,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 # User accounts
+
 AUTH_USER_MODEL = 'accounts.User'
 
 
