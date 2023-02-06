@@ -21,6 +21,8 @@ INSTALLED_APPS = [
     'accounts',
     'home',
 
+    'anymail',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -132,3 +134,19 @@ MESSAGE_TAGS = {
     message_constants.WARNING: 'is-warning',
     message_constants.ERROR: 'is-danger',
 }
+
+
+# Email
+
+ANYMAIL = {
+    'POSTMARK_SERVER_TOKEN': config('POSTMARK_API_TOKEN'),
+    'SEND_DEFAULTS': {
+        'esp_extra': {'MessageStream': 'farafmb-party'},
+    }
+}
+
+EMAIL_BACKEND = 'anymail.backends.postmark.EmailBackend'
+
+DEFAULT_FROM_EMAIL = '"[Party] Fachschaftsrat Maschinenbau" <party@farafmb.de>'
+
+SERVER_EMAIL = '"[Server] Fachschaftsrat Maschinenbau" <server@farafmb.de>'
