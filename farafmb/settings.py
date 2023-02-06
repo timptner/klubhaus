@@ -1,6 +1,7 @@
 import django
 
 from dj_database_url import parse as db_url
+from django.contrib.messages import constants as message_constants
 # noinspection PyPackageRequirements
 from decouple import config, Csv
 from pathlib import Path
@@ -117,4 +118,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # Forms
+
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
+
+# Messages
+
+MESSAGE_TAGS = {
+    message_constants.DEBUG: '',
+    message_constants.INFO: 'is-info',
+    message_constants.SUCCESS: 'is-success',
+    message_constants.WARNING: 'is-warning',
+    message_constants.ERROR: 'is-danger',
+}
