@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'home',
 
     'anymail',
+    'fontawesomefree',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',
