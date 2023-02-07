@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Users" %}{% endblock %}
+
+{% block content %}
+    <h3 class="title">{% trans "List of users" %}</h3>
+
+    <table class="table is-fullwidth">
+        <thead>
+        <tr>
+            <th>{% trans "Email address" %}</th>
+            <th>{% trans "Full name" %}</th>
+            <th>{% trans "Membership" %}</th>
+            <th>{% trans "Member since" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user in object_list %}
+            <tr>
+                <td><a href="{% url 'accounts:user_detail' user.pk %}">{{ user.email }}</a></td>
+                <td>{{ user.get_full_name }}</td>
+                <td>
+                    <span class="icon">
+                        {% if user.is_active %}
+                            <i class="fa-solid fa-check"></i>
+                        {% else %}
+                            <i class="fa-solid fa-times"></i>
+                        {% endif %}
+                    </span>
+                </td>
+                <td>{{ user.date_joined|timesince }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
