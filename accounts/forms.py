@@ -8,6 +8,7 @@ from django.template import loader
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
+from farafmb.forms import ModelForm
 
 user_fields = list(auth_forms.UserCreationForm.Meta.fields)
 user_fields.remove('username')
@@ -58,6 +59,10 @@ class UserCreateForm(auth_forms.UserCreationForm):
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ''
+
     new_password1 = forms.CharField(
         label=_("New password"),
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
@@ -67,6 +72,10 @@ class PasswordChangeForm(auth_forms.PasswordChangeForm):
 
 
 class SetPasswordForm(auth_forms.SetPasswordForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ''
+
     new_password1 = forms.CharField(
         label=_("New password"),
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
