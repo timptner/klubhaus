@@ -1,6 +1,9 @@
 {% if use_tag %}{% load i18n %}
     <{{ tag }} class="label"{% include 'django/forms/attrs.html' %}>
-        {{ label }}{% if not field.field.required %} ({% trans "Optional" %}){% endif %}
+        {{ label }}
+        {% if not field.field.required and not field.field.widget.input_type == 'checkbox' %}
+            ({% trans "Optional" %})
+        {% endif %}
     </{{ tag }}>
 {% else %}
     {{ label }}
