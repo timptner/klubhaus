@@ -5,6 +5,7 @@ from django.urls import path, include
 app_name = 'accounts'
 
 urlpatterns = [
+    path('', views.UserListView.as_view(), name='users'),
     path('activate/<uidb64>/<token>/', views.ActivationView.as_view(), name='activate'),
     path('login/', views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
