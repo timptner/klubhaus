@@ -16,7 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import FormView, UpdateView, TemplateView, ListView
+from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView
 
 
 class RegistrationView(UserPassesTestMixin, FormView):
@@ -167,6 +167,14 @@ class PasswordResetConfirmView(SuccessMessageMixin, auth_views.PasswordResetConf
 class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = User
     queryset = User.objects.order_by('email')
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+
+class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = User
+    template_name = 'accounts/user_detail.html'
 
     def test_func(self):
         return self.request.user.is_staff

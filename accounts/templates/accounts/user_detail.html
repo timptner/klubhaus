@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "User detail" %}{% endblock %}
+
+{% block content %}
+    <div class="block">
+        <a class="button is-link" href="{% url 'accounts:users' %}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-chevron-left"></i>
+        </span>
+            <span>{% trans "Overview" %}</span>
+        </a>
+    </div>
+
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <div class="box">
+                <div class="is-pulled-right">
+                    {% if object.is_superuser %}<span class="tag is-dark">{% trans "Admin" %}</span>{% endif %}
+
+                    {% if object.is_staff %}<span class="tag is-info">{% trans "Staff" %}</span>{% endif %}
+
+                    {% if object.is_active %}
+                        <span class="tag is-success">{% trans "Active" %}</span>
+                    {% else %}
+                        <span class="tag is-danger">{% trans "Inactive" %}</span>
+                    {% endif %}
+                </div>
+
+                <h3 class="title">{{ object.get_full_name }}</h3>
+                <h5 class="subtitle">
+                    <span class="icon">
+                        <i class="fa-regular fa-calendar-plus"></i>
+                    </span>
+                    <span>{{ object.date_joined }}</span>
+                </h5>
+
+                <div class="block">
+                    <h5 class="title is-5 mb-3">Personal data</h5>
+                    <ul>
+                        <li>
+                            <span class="icon">
+                                <i class="fa-solid fa-envelope"></i>
+                            </span>
+                            <span>{{ object.email }}</span>
+                        </li>
+                        {% if object.phone %}
+                        <li>
+                            <span class="icon">
+                                <i class="fa-solid fa-phone"></i>
+                            </span>
+                            <span>{{ object.phone }}</span>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
