@@ -1,9 +1,8 @@
+from accounts.validators import StudentEmailValidator, PhoneValidator
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from .validators import StudentEmailValidator
 
 
 class UserManager(BaseUserManager):
@@ -30,11 +29,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = None
-
     email_validator = StudentEmailValidator()
+    phone_validator = PhoneValidator()
 
+    username = None
     email = models.EmailField(_('email address'), unique=True, validators=[email_validator])
+    phone = models.CharField(_('mobile number'), max_length=50, validators=[phone_validator], blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

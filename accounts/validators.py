@@ -13,3 +13,13 @@ class StudentEmailValidator(validators.RegexValidator):
         "numbers, and dot characters. The email address must end with '@st.ovgu.de'."
     )
     flags = re.ASCII
+
+
+@deconstructible
+class PhoneValidator(validators.RegexValidator):
+    regex = r'^\+[\d]+$'
+    message = _(
+        "Enter a valid mobile number. This value may contain only numbers. Make "
+        "sure to assign a country code with a plus sign at the beginning."
+    )
+    flags = re.ASCII
