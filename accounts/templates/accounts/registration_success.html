@@ -5,7 +5,7 @@
 {% block title %}{% trans "Registration" %}{% endblock %}
 
 {% block page %}
-    {% trans "New account was created successfully" as header %}
+    {% trans "New account was created" as header %}
     {% blocktrans asvar body trimmed with expiry=link_expired|timeuntil:current_time %}
         A new account for you was created successfully. Right now
         <strong>your account is inactive</strong>. To validate your email address

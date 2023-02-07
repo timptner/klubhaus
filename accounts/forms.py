@@ -1,7 +1,7 @@
 from accounts.models import User
 from django import forms
 from django.contrib.auth import password_validation
-from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
+from django.contrib.auth import forms as auth_forms
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
@@ -9,19 +9,19 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
-user_fields = list(BaseUserCreationForm.Meta.fields)
+user_fields = list(auth_forms.UserCreationForm.Meta.fields)
 user_fields.remove('username')
 
 
-class UserCreateForm(BaseUserCreationForm):
+class UserCreateForm(auth_forms.UserCreationForm):
     password1 = forms.CharField(
         label=_("Password"),
         strip=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
-        help_text='<br/>'.join(password_validation.password_validators_help_texts()),
+        help_text='<br>'.join(password_validation.password_validators_help_texts()),
     )
 
-    class Meta(BaseUserCreationForm.Meta):
+    class Meta(auth_forms.UserCreationForm.Meta):
         model = User
         fields = tuple(user_fields) + ('first_name', 'last_name', 'email')
 
@@ -55,3 +55,21 @@ class UserCreateForm(BaseUserCreationForm):
         self.send_mail(subject, email_template_name, context, None, user.email)
 
         return user
+
+
+class PasswordChangeForm(auth_forms.PasswordChangeForm):
+    new_password1 = forms.CharField(
+        label=_("New password"),
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+        strip=False,
+        help_text='<br>'.join(password_validation.password_validators_help_texts()),
+    )
+
+
+class SetPasswordForm(auth_forms.SetPasswordForm):
+    new_password1 = forms.CharField(
+        label=_("New password"),
+        widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
+        strip=False,
+        help_text='<br>'.join(password_validation.password_validators_help_texts()),
+    )

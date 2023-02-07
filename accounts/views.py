@@ -1,11 +1,12 @@
 from accounts.models import User
-from accounts.forms import UserCreateForm
+from accounts.forms import UserCreateForm, PasswordChangeForm, SetPasswordForm
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -144,3 +145,20 @@ class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class PasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = '.'
+    success_message = _("Your password was updated successfully.")
+
+
+class PasswordResetView(auth_views.PasswordResetView):
+    email_template_name = 'registration/mail/password_reset.html'
+    success_url = reverse_lazy('accounts:password_reset_done')
+
+
+class PasswordResetConfirmView(SuccessMessageMixin, auth_views.PasswordResetConfirmView):
+    form_class = SetPasswordForm
+    success_url = reverse_lazy('accounts:login')
+    success_message = _("Your password was updated successfully.")
