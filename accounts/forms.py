@@ -15,6 +15,14 @@ user_fields.remove('username')
 
 
 class UserCreateForm(auth_forms.UserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ''
+
+        fields = ['first_name', 'last_name']
+        for field in fields:
+            self.fields[field].required = True
+
     password1 = forms.CharField(
         label=_("Password"),
         strip=False,
@@ -56,6 +64,29 @@ class UserCreateForm(auth_forms.UserCreationForm):
         self.send_mail(subject, email_template_name, context, None, user.email)
 
         return user
+
+
+class UserUpdateForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        fields = ['first_name', 'last_name']
+        for field in fields:
+            self.fields[field].required = True
+
+        email_field = self.fields.get('email')
+        email_field.disabled = True
+        email_field.help_text = _("To change your email address please contact support.")
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone']
+
+
+class AuthenticationForm(auth_forms.AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ''
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):

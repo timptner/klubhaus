@@ -1,5 +1,5 @@
 from accounts.models import User
-from accounts.forms import UserCreateForm, PasswordChangeForm, SetPasswordForm
+from accounts.forms import UserCreateForm, UserUpdateForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import views as auth_views
@@ -130,8 +130,7 @@ class ActivationView(TemplateView):
 
 
 class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    model = User
-    fields = ['first_name', 'last_name']
+    form_class = UserUpdateForm
     template_name = 'accounts/user_profile.html'
     success_url = reverse_lazy('accounts:profile')
     success_message = _("Your profile was updated successfully.")
@@ -144,6 +143,10 @@ class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class LoginView(auth_views.LoginView):
+    form_class = AuthenticationForm
 
 
 class PasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
