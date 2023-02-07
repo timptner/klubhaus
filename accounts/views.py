@@ -1,5 +1,6 @@
 from accounts.models import User
-from accounts.forms import UserCreateForm, UserUpdateForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm
+from accounts.forms import (UserCreateForm, UserProfileForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm,
+                            UserUpdateForm)
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import views as auth_views
@@ -8,7 +9,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.http import urlsafe_base64_decode
@@ -128,7 +129,7 @@ class ActivationView(TemplateView):
 
 
 class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = UserUpdateForm
+    form_class = UserProfileForm
     template_name = 'accounts/user_profile.html'
     success_url = reverse_lazy('accounts:profile')
     success_message = _("Your profile was updated successfully.")
@@ -177,4 +178,17 @@ class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     template_name = 'accounts/user_detail.html'
 
     def test_func(self):
-        return self.request.user.is_staff
+        return self.request.user.is_superuser
+
+
+class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    model = User
+    form_class = UserUpdateForm
+    template_name = 'accounts/user_edit_form.html'
+    success_message = _("User was updated successfully.")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_success_url(self):
+        return reverse('accounts:user_detail', kwargs={'pk': self.object.pk})

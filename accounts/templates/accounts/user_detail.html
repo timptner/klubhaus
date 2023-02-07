@@ -5,17 +5,25 @@
 {% block title %}{% trans "User detail" %}{% endblock %}
 
 {% block content %}
-    <div class="block">
-        <a class="button is-link" href="{% url 'accounts:users' %}">
-        <span class="icon is-small">
-            <i class="fa-solid fa-chevron-left"></i>
-        </span>
-            <span>{% trans "Overview" %}</span>
-        </a>
-    </div>
-
     <div class="columns is-centered">
         <div class="column is-half">
+            <div class="block is-flex is-justify-content-space-between">
+                <a class="button is-link" href="{% url 'accounts:users' %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </span>
+
+                    <span>{% trans "Overview" %}</span>
+                </a>
+
+                <a class="button is-warning ml-auto" href="{% url 'accounts:user_edit' object.pk %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-pen"></i>
+                    </span>
+                    <span>{% trans "Edit user" %}</span>
+                </a>
+            </div>
+
             <div class="box">
                 <div class="is-pulled-right">
                     {% if object.is_superuser %}<span class="tag is-dark">{% trans "Admin" %}</span>{% endif %}
@@ -47,12 +55,12 @@
                             <span>{{ object.email }}</span>
                         </li>
                         {% if object.phone %}
-                        <li>
+                            <li>
                             <span class="icon">
                                 <i class="fa-solid fa-phone"></i>
                             </span>
-                            <span>{{ object.phone }}</span>
-                        </li>
+                                <span>{{ object.phone }}</span>
+                            </li>
                         {% endif %}
                     </ul>
                 </div>

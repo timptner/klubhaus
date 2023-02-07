@@ -66,7 +66,7 @@ class UserCreateForm(auth_forms.UserCreationForm):
         return user
 
 
-class UserUpdateForm(ModelForm):
+class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -113,3 +113,14 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
         strip=False,
         help_text='<br>'.join(password_validation.password_validators_help_texts()),
     )
+
+
+class UserUpdateForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in ['first_name', 'last_name']:
+            self.fields[field].required = True
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email', 'phone', 'is_active', 'is_staff', 'is_superuser']

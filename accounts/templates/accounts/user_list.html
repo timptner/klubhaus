@@ -17,20 +17,26 @@
         </tr>
         </thead>
         <tbody>
-        {% for user in object_list %}
+        {% for account in object_list %}
             <tr>
-                <td><a href="{% url 'accounts:user_detail' user.pk %}">{{ user.email }}</a></td>
-                <td>{{ user.get_full_name }}</td>
+                <td>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'accounts:user_detail' account.pk %}">{{ account.email }}</a>
+                    {% else %}
+                        {{ account.email }}
+                    {% endif %}
+                </td>
+                <td>{{ account.get_full_name }}</td>
                 <td>
                     <span class="icon">
-                        {% if user.is_active %}
+                        {% if account.is_active %}
                             <i class="fa-solid fa-check"></i>
                         {% else %}
                             <i class="fa-solid fa-times"></i>
                         {% endif %}
                     </span>
                 </td>
-                <td>{{ user.date_joined|timesince }}</td>
+                <td>{{ account.date_joined|timesince }}</td>
             </tr>
         {% endfor %}
         </tbody>
