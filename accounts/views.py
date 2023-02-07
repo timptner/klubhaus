@@ -54,10 +54,8 @@ class RegistrationSuccessView(UserPassesTestMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        current_time = timezone.now()
         context.update({
-            'current_time': current_time,
-            'link_expired': current_time + timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT),
+            'link_expired': timezone.now() + timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT),
         })
         return context
 
