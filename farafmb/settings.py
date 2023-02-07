@@ -92,7 +92,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# User accounts
+# Authentication
 
 AUTH_USER_MODEL = 'accounts.User'
 
