@@ -6,22 +6,26 @@
 
 {% block content %}
     <div class="columns is-centered">
-    <div class="column is-half">
-        <div class="box">
-            <h3 class="title">{% trans "Edit user" %}</h3>
+        <div class="column is-half">
+            <div class="box">
+                <h3 class="title">{% trans "Edit user" %}</h3>
 
-            <form method="post">
-                {% csrf_token %}
+                <form method="post">
+                    {% csrf_token %}
 
-                {{ form }}
+                    {{ form }}
 
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">{% trans "Update" %}</button>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">{% trans "Update" %}</button>
+                        </div>
+
+                        <div class="control">
+                            <a class="button is-light" href="{% url 'accounts:user_detail' object.pk %}">{% trans "Cancel" %}</a>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
     </div>
 {% endblock %}
