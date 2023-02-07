@@ -1,1 +1,7 @@
-{% if use_tag %}<{{ tag }} class="label"{% include 'django/forms/attrs.html' %}>{{ label }}</{{ tag }}>{% else %}{{ label }}{% endif %}
+{% if use_tag %}{% load i18n %}
+    <{{ tag }} class="label"{% include 'django/forms/attrs.html' %}>
+        {{ label }}{% if not field.field.required %} ({% trans "Optional" %}){% endif %}
+    </{{ tag }}>
+{% else %}
+    {{ label }}
+{% endif %}
