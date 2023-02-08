@@ -34,11 +34,13 @@
                 {% if request.user.is_authenticated %}
                     {% if request.user.is_staff %}
                         <div class="navbar-item has-dropdown is-hoverable">
-                            <a class="navbar-link">
-                                {% trans "Administration" %}
+                            <a class="navbar-link is-arrowless">
+                                <span class="icon">
+                                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                                </span>
                             </a>
 
-                            <div class="navbar-dropdown">
+                            <div class="navbar-dropdown is-right is-boxed">
                                 <a class="navbar-item" href="{% url 'accounts:users' %}">
                                     {% trans "Users" %}
                                 </a>
@@ -51,11 +53,13 @@
                     {% endif %}
 
                     <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link">
-                            {% trans "Account" %}
+                        <a class="navbar-link is-arrowless">
+                            <span class="icon">
+                                <i class="fa-solid fa-user-astronaut"></i>
+                            </span>
                         </a>
 
-                        <div class="navbar-dropdown">
+                        <div class="navbar-dropdown is-right is-boxed">
                             <a class="navbar-item" href="{% url 'accounts:profile' %}">
                                 {% trans "Profile" %}
                             </a>

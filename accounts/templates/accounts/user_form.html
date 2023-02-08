@@ -4,25 +4,34 @@
 
 {% block title %}{% trans "Registration" %}{% endblock %}
 
-{% block page %}
-    <section class="section is-medium">
-        <div class="columns is-centered">
-            <div class="column is-one-third">
-                <div class="box">
-                    <h3 class="title">{% trans "Create account" %}</h3>
-                    <form method="post">
-                        {% csrf_token %}
+{% block content %}
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <h3 class="title">{% trans "Create account" %}</h3>
 
-                        {{ form }}
-
-                        <div class="field is-grouped">
-                            <div class="control">
-                                <button class="button is-primary" type="submit">Registrieren</button>
-                            </div>
-                        </div>
-                    </form>
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>{% trans "Privacy" %}</p>
                 </div>
-            </div>
+                <div class="message-body">
+                    <ul class="bullet-list">
+                        <li>{% trans "We use your full name for identification." %}</li>
+                        <li>{% trans "We use your email address for communication." %}</li>
+                    </ul>
+                </div>
+            </article>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {{ form }}
+
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Registrieren</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </section>
+    </div>
 {% endblock %}
