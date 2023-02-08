@@ -55,8 +55,7 @@
 
             <div class="block">
                 <a class="button{% if is_disabled %} is-light{% else %} is-primary{% endif %} is-fullwidth"
-                   href="{% url 'field_trips:register' object.pk %}"
-                   {% if is_disabled %}disabled{% endif %}>
+                   {% if is_disabled %}disabled{% else %}href="{% url 'field_trips:register' object.pk %}"{% endif %}>
                     {% trans "Register for this field trip" %}
                 </a>
             </div>
