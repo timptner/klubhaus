@@ -95,8 +95,11 @@ def register(request, pk):
     return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
 
 
-class ParticipantListView(ListView):
+class ParticipantListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = Participant
+
+    def test_func(self):
+        return self.request.user.is_staff
 
     def get_queryset(self):
         return Participant.objects.filter(field_trip_id=self.kwargs['pk'])
