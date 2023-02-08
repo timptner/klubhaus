@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -9,6 +10,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from field_trips.models import FieldTrip, Participant
 from field_trips.forms import FieldTripForm
+
+User = get_user_model()
 
 
 class FieldTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
@@ -48,17 +51,46 @@ class FieldTripPublicListView(LoginRequiredMixin, ListView):
 class FieldTripDetailView(LoginRequiredMixin, DetailView):
     model = FieldTrip
 
+    def get_context_data(self, **kwargs):
+        feedback = _validate_participant(self.object, self.request.user)
+        context = super().get_context_data(**kwargs)
+        context.update(**feedback)
+        return context
+
+
+def _validate_participant(field_trip: FieldTrip, user: User) -> dict:
+    is_disabled = False
+    conflicts = []
+
+    if field_trip.is_expired:
+        is_disabled = True
+        conflicts.append(_("This field trip is expired."))
+
+    if user.phone == '':
+        is_disabled = True
+        conflicts.append(_("Your mobile number is missing in your profile."))
+
+    if user.pk in field_trip.participant_set.values_list('user', flat=True):
+        is_disabled = True
+        conflicts.append(_("You are already registered."))
+
+    return {
+        'is_disabled': is_disabled,
+        'conflicts': conflicts,
+    }
+
 
 @login_required
 def register(request, pk):
     field_trip = FieldTrip.objects.get(pk=pk)
 
-    is_registered = Participant.objects.filter(user=request.user, field_trip=field_trip).exists()
-    if not is_registered:
+    feedback = _validate_participant(field_trip, request.user)
+
+    if feedback['is_disabled']:
+        messages.error(request, _("You were not registered for this field trip."))
+    else:
         Participant.objects.create(user=request.user, field_trip=field_trip)
         messages.success(request, _("You were successfully registered for this field trip."))
-    else:
-        messages.error(request, _("You are already registered for this field trip."))
 
     return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
 
@@ -73,3 +105,5 @@ class ParticipantListView(ListView):
         context = super().get_context_data(*args, **kwargs)
         context['field_trip'] = FieldTrip.objects.get(pk=self.kwargs['pk'])
         return context
+
+

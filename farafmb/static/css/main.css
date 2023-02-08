@@ -4,3 +4,8 @@
     width: 300px;
     z-index: 10;
 }
+
+.bullet-list {
+    list-style: disc outside;
+    margin-left: 2em;
+}

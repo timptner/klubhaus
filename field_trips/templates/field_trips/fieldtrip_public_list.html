@@ -8,6 +8,22 @@
     <h3 class="title">{% trans "Field Trips" %}</h3>
 
     <div class="columns is-centered">
+        <div class="column is-two-thirds">
+            {% if user.phone == '' %}
+                <article class="message is-warning">
+                    <div class="message-body">
+                        {% url 'accounts:profile' as profile_link %}
+                        {% blocktrans trimmed %}
+                            If you want to participate on our field trips, please add a mobile number to your
+                            <a href="{{ profile_link }}">profile</a>.
+                        {% endblocktrans %}
+                    </div>
+                </article>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="columns is-centered">
         {% for field_trip in object_list %}
             <div class="column is-one-third">
                 <div class="card">
