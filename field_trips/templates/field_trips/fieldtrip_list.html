@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Field Trips" %}{% endblock %}
+
+{% block content %}
+    <a class="button is-primary is-pulled-right" href="{% url 'field_trips:field_trip_add' %}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-plus"></i>
+        </span>
+        <span>{% trans "Add" %}</span>
+    </a>
+
+    <h3 class="title">{% trans "Field Trips" %}</h3>
+
+    <table class="table is-fullwidth is-hoverable">
+        <thead>
+        <tr>
+            <th>{% trans "Title" %}</th>
+            <th>{% trans "Date" %}</th>
+            <th>{% trans "Enrollment" %}</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for field_trip in object_list %}
+            <tr>
+                <td><a href="{% url 'field_trips:field_trip_detail' field_trip.pk %}">{{ field_trip.title }}</a></td>
+                <td>{{ field_trip.date }}</td>
+                <td>{{ field_trip.progress }} %</td>
+                <td>
+                    <a href="{% url 'field_trips:participants' field_trip.pk %}">
+                        <span class="icon">
+                            <i class="fa-solid fa-users"></i>
+                        </span>
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4" class="has-text-centered">{% trans "No field trips have been created yet" %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

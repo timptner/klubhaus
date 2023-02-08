@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}
+    {% if object %}
+        {% trans "Edit Field Trip" %}
+    {% else %}
+        {% trans "Add Field Trip" %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <h3 class="title">
+                {% if object %}
+                    {% trans "Edit Field Trip" %}
+                {% else %}
+                    {% trans "Add Field Trip" %}
+                {% endif %}
+            </h3>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {{ form }}
+
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">
+                            {% if object %}
+                                {% trans "Update" %}
+                            {% else %}
+                                {% trans "Create" %}
+                            {% endif %}
+                        </button>
+                    </div>
+
+                    {% if object %}
+                        <div class="control">
+                            <a class="button is-light" href="{% url 'field_trips:field_trip_detail' object.pk %}">
+                                {% trans "Cancel" %}
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

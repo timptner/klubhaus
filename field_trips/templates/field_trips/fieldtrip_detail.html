@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% blocktrans with title=object.title %}Field Trip | {{ title }}{% endblocktrans %}{% endblock %}
+
+{% block content %}
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <div class="block is-flex is-justify-content-space-between">
+                <a class="button is-link" href="{% url 'field_trips:field_trips_public' %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </span>
+                    <span>{% trans "Overview" %}</span>
+                </a>
+
+                {% if user.is_staff %}
+                    <a class="button is-info" href="{% url 'field_trips:field_trips' %}">
+                        <span class="icon is-small">
+                            <i class="fa-regular fa-rectangle-list"></i>
+                        </span>
+                        <span>{% trans "List" %}</span>
+                    </a>
+
+                    <a class="button is-warning" href="{% url 'field_trips:field_trip_edit' object.pk %}">
+                        <span class="icon is-small">
+                            <i class="fa-solid fa-pen"></i>
+                        </span>
+                        <span>{% trans "Edit" %}</span>
+                    </a>
+                {% endif %}
+            </div>
+
+            <h3 class="title">{{ object.title }}</h3>
+            <h5 class="subtitle">{{ object.date }}</h5>
+
+            {% if object.is_expired %}
+                <article class="message is-danger">
+                    <div class="message-body">
+                        {% trans "Field trip has already taken place." %}
+                    </div>
+                </article>
+            {% endif %}
+
+            <div class="content">
+                {{ object.desc_html|safe }}
+            </div>
+
+            <h5 class="title is-5">{% trans "Enrollment" %}</h5>
+
+            <div class="columns is-vcentered">
+                <div class="column">
+                    <progress class="progress is-small" value="{{ object.enrollments }}" max="{{ object.seats }}">
+                        {{ object.progress }}
+                    </progress>
+                </div>
+
+                <div class="column is-narrow">
+                    <p>{{ object.enrollments }} / {{ object.seats }}</p>
+                </div>
+            </div>
+
+            <a class="button is-primary is-fullwidth"
+               href="{% url 'field_trips:register' object.pk %}"
+               {% if object.is_expired %}disabled{% endif %}>
+                {% trans "Register for this field trip" %}
+            </a>
+        </div>
+    </div>
+{% endblock %}

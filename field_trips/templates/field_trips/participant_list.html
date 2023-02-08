@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Participants" %} | {{ field_trip }}{% endblock %}
+
+{% block content %}
+    <div class="block">
+        <a class="button is-link" href="{% url 'field_trips:field_trips' %}">
+        <span class="icon is-small">
+            <i class="fa-solid fa-chevron-left"></i>
+        </span>
+            <span>{% trans "Overview" %}</span>
+        </a>
+    </div>
+
+    <h3 class="title">{% trans "Participants" %}</h3>
+
+    <table class="table is-fullwidth is-hoverable">
+        <thead>
+        <tr>
+            <th><span class="icon is-small"><i class="fa-solid fa-trophy"></i></span></th>
+            <th>{% trans "Full name" %}</th>
+            <th>{% trans "Member since" %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for participant in object_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ participant.user.get_full_name }}</td>
+                <td>{{ participant.registered_at|timesince }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="3" class="has-text-centered">No users have been registered yet</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+

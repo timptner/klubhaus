@@ -19,6 +19,7 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1', cast=Csv())
 
 INSTALLED_APPS = [
     'accounts',
+    'field_trips',
     'home',
 
     'anymail',
@@ -95,6 +96,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Authentication
 
 AUTH_USER_MODEL = 'accounts.User'
+
+LOGIN_REDIRECT_URL = 'field_trips:field_trips_public'
 
 
 # Internationalization
