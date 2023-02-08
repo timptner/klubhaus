@@ -3,7 +3,10 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
 from django.shortcuts import redirect
+from django.template import loader
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -90,6 +93,20 @@ def register(request, pk):
         messages.error(request, _("You were not registered for this field trip."))
     else:
         Participant.objects.create(user=request.user, field_trip=field_trip)
+        context = {
+            'name': request.user.get_short_name(),
+            'title': field_trip.title,
+            'date': field_trip.date,
+            'pk': field_trip.pk,
+            'protocol': 'https' if request.is_secure() else 'http',
+            'domain': get_current_site(request).domain,
+        }
+        send_mail(
+            subject=_("Registration confirmation"),
+            message=loader.render_to_string('field_trips/mail/confirm_registration.html', context, request),
+            from_email=None,
+            recipient_list=[request.user.email],
+        )
         messages.success(request, _("You were successfully registered for this field trip."))
 
     return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
