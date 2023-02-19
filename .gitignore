@@ -1,8 +1,8 @@
 # Django
 .env
 db.sqlite3
-media/
-static/
+/media/
+/static/
 
 # PyCharm
 .idea/
