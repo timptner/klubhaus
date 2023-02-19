@@ -32,8 +32,34 @@
                 {% endif %}
             </div>
 
-            <h3 class="title">{{ object.title }}</h3>
-            <h5 class="subtitle">{{ object.date }}</h5>
+            <h3 class="title">
+                <a href="{{ object.website }}" target="_blank">{{ object.title }}</a>
+            </h3>
+
+            <h5 class="subtitle">
+                <span class="icon-text">
+                    <span class="icon">
+                        <i class="fa-solid fa-calendar"></i>
+                    </span>
+                    <span>
+                        {{ object.date }}
+                    </span>
+                    {% if object.location %}
+                        <span class="icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </span>
+                        <span>{{ object.location }}</span>
+                    {% endif %}
+                </span>
+            </h5>
+
+            {% if object.image %}
+                <div class="block">
+                    <figure class="image">
+                        <img src="{{ object.image.url }}">
+                    </figure>
+                </div>
+            {% endif %}
 
             <div class="content">
                 {{ object.desc_html|safe }}

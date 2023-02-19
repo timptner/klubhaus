@@ -8,11 +8,19 @@ from django.utils import timezone
 User = get_user_model()
 
 
-class FieldTrip(models.Model):  # TODO Add image and website link
+def image_path(instance, filename):
+    suffix = filename.split('.')[-1]
+    return f'field_trips/field_trip_{instance.pk}/thumbnail.{suffix}'
+
+
+class FieldTrip(models.Model):
     title = models.CharField(max_length=200)
+    location = models.CharField(max_length=200, blank=True)
     desc = models.TextField(_('description'))
     date = models.DateField(_('date of field trip'))
     seats = models.PositiveSmallIntegerField()
+    image = models.ImageField(upload_to=image_path, blank=True, null=True)
+    website = models.URLField(blank=True)
 
     class Meta:
         ordering = ('-date',)

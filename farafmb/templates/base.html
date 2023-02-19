@@ -32,7 +32,9 @@
 
 {% include '_footer.html' %}
 
-<script src="{% static 'js/close_notification.js' %}"></script>
+{% block scripts %}
+    <script src="{% static 'js/close_notification.js' %}"></script>
+{% endblock %}
 
 </body>
 </html>
