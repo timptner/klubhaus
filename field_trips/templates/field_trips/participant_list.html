@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
+{% load static i18n %}
 
 {% block title %}{% trans "Participants" %} | {{ field_trip }}{% endblock %}
 
@@ -22,6 +22,7 @@
             <th><span class="icon is-small"><i class="fa-solid fa-trophy"></i></span></th>
             <th>{% trans "Full name" %}</th>
             <th>{% trans "Member since" %}</th>
+            <th></th>
         </tr>
         </thead>
         <tbody>
@@ -30,6 +31,13 @@
                 <td>{{ forloop.counter }}</td>
                 <td>{{ participant.user.get_full_name }}</td>
                 <td>{{ participant.registered_at|timesince }}</td>
+                <td>
+                    <a href="{% url 'field_trips:participant_delete' participant.pk %}">
+                        <span class="icon is-small has-text-danger">
+                            <i class="fa-solid fa-skull"></i>
+                        </span>
+                    </a>
+                </td>
             </tr>
         {% empty %}
             <tr>

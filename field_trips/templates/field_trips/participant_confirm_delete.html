@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block content %}
+    <div class="columns is-centered">
+        <div class="column is-half">
+            <h3 class="title">Confirm delete</h3>
+
+            <p class="block">
+                {% blocktrans trimmed with field_trip=object.field_trip.title participant=object.user.get_full_name %}
+                    Please confirm that <strong>{{ participant }}</strong> should be removed from the field trip
+                    <strong>{{ field_trip }}</strong>. The user will receive an email to notify him about his removal.
+                {% endblocktrans %}
+            </p>
+
+            <form method="post">
+                {% csrf_token %}
+
+                {{ form }}
+
+                <div class="field is-grouped">
+                    <div class="control">
+                        <button type="submit" class="button is-danger">{% trans "Delete" %}</button>
+                    </div>
+
+                    <div class="control">
+                        <a href="{% url 'field_trips:participants' object.field_trip.pk %}"
+                           class="button">{% trans "Abort" %}</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

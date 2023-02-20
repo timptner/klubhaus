@@ -10,4 +10,5 @@ urlpatterns = [
     path('<int:pk>/register/', views.register, name='register'),
     path('<int:pk>/participants/', views.ParticipantListView.as_view(), name='participants'),
     path('add/', views.FieldTripCreateView.as_view(), name='field_trip_add'),
+    path('participants/<int:pk>/delete/', views.ParticipantDeleteView.as_view(), name='participant_delete'),
 ]

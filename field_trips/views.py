@@ -4,15 +4,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.shortcuts import redirect
 from django.template import loader
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from field_trips.models import FieldTrip, Participant
 from field_trips.forms import FieldTripForm
+from markdown import markdown
 
 User = get_user_model()
 
@@ -127,3 +128,30 @@ class ParticipantListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
+class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
+    model = Participant
+    success_message = _("Participant was removed successfully.")
+
+    def get_success_url(self):
+        return reverse('field_trips:participants', kwargs={'pk': self.object.field_trip.pk})
+
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def form_valid(self, form):
+        participant = Participant.objects.get(pk=self.kwargs['pk'])
+        context = {
+            'name': participant.user.get_short_name(),
+            'title': participant.field_trip.title,
+        }
+        msg = loader.render_to_string('field_trips/mail/removed.md', context, self.request)
+        email = EmailMultiAlternatives(
+            subject=_("Removed from field trip"),
+            body=msg,
+            from_email=None,
+            to=[participant.user.email],
+            reply_to=['farafmb@ovgu.de'],
+        )
+        email.attach_alternative(markdown(msg), 'text/html')
+        email.send()
+        return super().form_valid(form)
