@@ -70,6 +70,10 @@ def _validate_participant(field_trip: FieldTrip, user: User) -> dict:
         is_disabled = True
         conflicts.append(_("This field trip is expired."))
 
+    if field_trip.participant_set.count() >= field_trip.seats:
+        is_disabled = True
+        conflicts.append(_("For this field trip all seats are taken."))
+
     if user.phone == '':
         is_disabled = True
         conflicts.append(_("Your mobile number is missing in your profile."))
