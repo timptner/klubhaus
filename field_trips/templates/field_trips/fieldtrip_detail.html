@@ -33,7 +33,14 @@
             </div>
 
             <h3 class="title">
-                <a href="{{ object.website }}" target="_blank">{{ object.title }}</a>
+                <a href="{{ object.website }}" target="_blank">
+                    <span class="icon-text">
+                        <span>{{ object.title }}</span>
+                        <span class="icon">
+                            <i class="fa-solid fa-xs fa-external-link"></i>
+                        </span>
+                    </span>
+                </a>
             </h3>
 
             <h5 class="subtitle">
