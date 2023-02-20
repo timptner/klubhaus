@@ -1,6 +1,6 @@
 from accounts.models import User
 from accounts.forms import (UserCreateForm, UserProfileForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm,
-                            UserUpdateForm)
+                            UserUpdateForm, PasswordResetForm)
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import views as auth_views
@@ -21,7 +21,7 @@ from django.views.generic import FormView, UpdateView, TemplateView, ListView, D
 
 
 class RegistrationView(UserPassesTestMixin, FormView):
-    email_template_name = 'accounts/mail/activate_account.html'
+    email_template_name = 'accounts/mail/activate_account.md'
     form_class = UserCreateForm
     success_url = reverse_lazy('accounts:register_success')
     template_name = 'accounts/user_form.html'
@@ -155,7 +155,8 @@ class PasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
 
 
 class PasswordResetView(auth_views.PasswordResetView):
-    email_template_name = 'registration/mail/password_reset.html'
+    form_class = PasswordResetForm
+    email_template_name = 'registration/mail/password_reset.md'
     success_url = reverse_lazy('accounts:password_reset_done')
 
 

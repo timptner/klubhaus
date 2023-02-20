@@ -9,6 +9,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 from farafmb.forms import ModelForm
+from markdown import markdown
 
 user_fields = list(auth_forms.UserCreationForm.Meta.fields)
 user_fields.remove('username')
@@ -38,9 +39,14 @@ class UserCreateForm(auth_forms.UserCreationForm):
     def send_mail(subject, email_template_name, context, from_email, to_email):
         body = loader.render_to_string(email_template_name, context)
 
-        email_message = EmailMultiAlternatives(subject, body, from_email, [to_email])
-        # email_message.attach_alternative(None, 'text/html')
-        email_message.send()
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=body,
+            from_email=from_email,
+            to=[to_email],
+        )
+        email.attach_alternative(markdown(body), 'text/html')
+        email.send()
 
     def save(self, commit=True, token_generator=None, request=None, use_https=False, email_template_name=None):
         user = super().save(commit=False)
@@ -87,6 +93,25 @@ class AuthenticationForm(auth_forms.AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.label_suffix = ''
+
+
+class PasswordResetForm(auth_forms.PasswordResetForm):
+    def send_mail(self, subject_template_name, email_template_name, context,
+                  from_email, to_email, html_email_template_name=None):
+        if html_email_template_name:
+            raise NotImplementedError()
+
+        subject = _("Reset password")
+        body = loader.render_to_string(email_template_name, context)
+
+        email = EmailMultiAlternatives(
+            subject=subject,
+            body=body,
+            from_email=from_email,
+            to=[to_email],
+        )
+        email.attach_alternative(markdown(body), "text/html")
+        email.send()
 
 
 class PasswordChangeForm(auth_forms.PasswordChangeForm):

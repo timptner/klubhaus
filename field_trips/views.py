@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect
 from django.template import loader
 from django.urls import reverse_lazy, reverse
@@ -102,12 +102,15 @@ def register(request, pk):
             'protocol': 'https' if request.is_secure() else 'http',
             'domain': get_current_site(request).domain,
         }
-        send_mail(
+        msg = loader.render_to_string('field_trips/mail/confirm_registration.md', context, request)
+        email = EmailMultiAlternatives(
             subject=_("Registration confirmation"),
-            message=loader.render_to_string('field_trips/mail/confirm_registration.html', context, request),
+            body=msg,
             from_email=None,
-            recipient_list=[request.user.email],
+            to=[request.user.email],
         )
+        email.attach_alternative(markdown(msg), 'text/html')
+        email.send()
         messages.success(request, _("You were successfully registered for this field trip."))
 
     return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
