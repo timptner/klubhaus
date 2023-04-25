@@ -1,9 +1,9 @@
-# FaRaFMB Party
+# Klubhaus
 
-> FaRaFMB Party is a platform for all students at the Faculty for Mechanical Engineering at the Otto von Guericke 
-University Magdeburg to participate on events organized by the student council.
+> Klubhaus is a platform for all students at the Faculty for Mechanical Engineering at the Otto von Guericke 
+University Magdeburg to participate on a variety of offers organized by the student council.
 
-This repository contains the source code for [https://party.farafmb.de](party.farafmb.de).
+This repository contains the source code for [https://klubhaus.farafmb.de](klubhaus.farafmb.de).
 
 # Development
 
