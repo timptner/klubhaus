@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from farafmb.forms import ModelForm
+from klubhaus.forms import ModelForm
 from field_trips.models import FieldTrip
 
 

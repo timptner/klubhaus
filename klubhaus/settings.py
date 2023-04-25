@@ -42,13 +42,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'farafmb.urls'
+ROOT_URLCONF = 'klubhaus.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            'farafmb/templates',
+            'klubhaus/templates',
             django.__path__[0] + '/forms/templates',
         ],
         'APP_DIRS': True,
@@ -63,7 +63,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'farafmb.wsgi.application'
+WSGI_APPLICATION = 'klubhaus.wsgi.application'
 
 
 # Database
@@ -117,7 +117,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR / 'farafmb' / 'static',
+    BASE_DIR / 'klubhaus' / 'static',
 ]
 
 STATIC_ROOT = BASE_DIR / 'static'
