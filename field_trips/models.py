@@ -1,11 +1,9 @@
 import markdown
 
-from django.contrib.auth import get_user_model
+from accounts.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
-
-User = get_user_model()
 
 
 def image_path(instance, filename):
@@ -58,3 +56,6 @@ class Participant(models.Model):
             models.UniqueConstraint('user', 'field_trip', name='unique_participant'),
         ]
         ordering = ('registered_at',)
+
+    def __str__(self):
+        return self.user.get_full_name()
