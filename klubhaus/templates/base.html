@@ -1,19 +1,22 @@
-{% load i18n static %}
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html>{% load i18n static %}{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>{% block title %}FaRaFMB{% endblock %}</title>
+    <title>{% block title %}Klubhaus{% endblock %}</title>
 
+    <!-- Bulma -->
     <link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet" type="text/css">
 
+    <!-- FontAwesome -->
     <link href="{% static 'fontawesomefree/css/fontawesome.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/brands.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/solid.css' %}" rel="stylesheet" type="text/css">
     <link href="{% static 'fontawesomefree/css/regular.css' %}" rel="stylesheet" type="text/css">
 
+    <!-- Custom -->
     <link href="{% static 'css/main.css' %}" rel="stylesheet" type="text/css">
 
     <!-- Favicon -->
@@ -22,25 +25,50 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon/favicon-16x16.png' %}">
     <link rel="manifest" href="{% static 'favicon/site.webmanifest' %}">
 </head>
+
 <body>
+{% include 'navigation.html' %}
 
-{% include '_navbar.html' %}
-
-{% include '_messages.html' %}
-
-{% block page %}
+{% if messages %}
     <section class="section">
-        <div class="container">
-            {% block content %}{% endblock %}
+        <div class="container is-max-desktop">
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="notification{% if message.tags %} {{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </section>
-{% endblock %}
+{% endif %}
 
-{% include '_footer.html' %}
+{% block content %}{% endblock %}
 
-{% block scripts %}
-    <script src="{% static 'js/close_notification.js' %}"></script>
-{% endblock %}
+<footer class="footer">
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                {% blocktrans %}
+                    Made with &hearts; by Aiven. Using
+                    <a href="https://www.djangoproject.com/" target="_blank">Django</a> and
+                    <a href="https://bulma.io/" target="_blank">Bulma</a>.
+                {% endblocktrans %}
+            </div>
 
+            <div class="column is-narrow">
+                <p>
+                    <a class="mr-3" href="{% url 'home:site_notice' %}">{% trans "Site notice" %}</a>
+                    <a class="mr-3" href="{% url 'home:privacy_policy' %}">{% trans "Privacy policy" %}</a>
+                    &copy; {# 2023 - #}{% now 'Y' %} FaRaFMB
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+{% block scripts %}{% endblock %}
 </body>
+
 </html>

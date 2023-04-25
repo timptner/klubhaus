@@ -1,9 +1,8 @@
-{% load i18n %}
-<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
+<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">{% load i18n %}
     <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item" href="/">
-                <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+            <a class="navbar-item" href="{% url 'home:landing_page' %}">
+                <strong>Klubhaus</strong>
             </a>
 
             <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
@@ -20,7 +19,7 @@
                         {% trans "Field trips" %}
                     </a>
 
-                    <a class="navbar-item" href="{% url 'merchandise:product_list' %}">
+                    <a class="navbar-item" href="#">
                         {% translate "Merchandise" %}
                     </a>
 
