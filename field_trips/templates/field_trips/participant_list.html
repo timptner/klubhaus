@@ -2,49 +2,67 @@
 
 {% load static i18n %}
 
-{% block title %}{% trans "Participants" %} | {{ field_trip }}{% endblock %}
+{% block title %}
+    {{ block.super }} | {% trans "Field Trips" %} | {{ field_trip.title }} | {% trans "Participants" %}
+{% endblock %}
 
 {% block content %}
-    <div class="block">
-        <a class="button is-link" href="{% url 'field_trips:field_trips' %}">
-        <span class="icon is-small">
-            <i class="fa-solid fa-chevron-left"></i>
-        </span>
-            <span>{% trans "Overview" %}</span>
-        </a>
-    </div>
+    <section class="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a href="{% url 'field_trips:field_trip_list' %}">{% trans "Field Trips" %}</a></li>
 
-    <h3 class="title">{% trans "Participants" %}</h3>
+                        <li>
+                            <a href="{% url 'field_trips:field_trip_detail' field_trip.pk %}">
+                                {{ field_trip.title }}
+                            </a>
+                        </li>
 
-    <table class="table is-fullwidth is-hoverable">
-        <thead>
-        <tr>
-            <th><span class="icon is-small"><i class="fa-solid fa-trophy"></i></span></th>
-            <th>{% trans "Full name" %}</th>
-            <th>{% trans "Member since" %}</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for participant in object_list %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ participant.user.get_full_name }}</td>
-                <td>{{ participant.registered_at|timesince }}</td>
-                <td>
-                    <a href="{% url 'field_trips:participant_delete' participant.pk %}">
-                        <span class="icon is-small has-text-danger">
-                            <i class="fa-solid fa-skull"></i>
-                        </span>
-                    </a>
-                </td>
-            </tr>
-        {% empty %}
-            <tr>
-                <td colspan="3" class="has-text-centered">No users have been registered yet</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+                        <li class="is-active">
+                            <a href="{% url 'field_trips:field_trip_participants' field_trip.pk %}" aria-current="page">
+                                {% trans "Participants" %}
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">{% trans "Participants" %}</h3>
+
+            <div class="table-container">
+                <table class="table is-fullwidth is-hoverable">
+                    <thead>
+
+                    <tr>
+                        <th>{% trans "Full name" %}</th>
+                        <th>{% trans "Enrolled since" %}</th>
+                    </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                    {% for participant in object_list %}
+                        <tr>
+                            <td>{{ participant.user.get_full_name }}</td>
+                            <td>{{ participant.registered_at|timesince }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2" class="has-text-centered">No users have been registered yet</td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
 {% endblock %}
 

@@ -15,7 +15,7 @@
         <div id="navbarMain" class="navbar-menu">
             {% if request.user.is_authenticated %}
                 <div class="navbar-start">
-                    <a class="navbar-item" href="{% url 'field_trips:field_trips_public' %}">
+                    <a class="navbar-item" href="{% url 'field_trips:field_trip_list' %}">
                         {% trans "Field trips" %}
                     </a>
 
@@ -56,10 +56,6 @@
                             <div class="navbar-dropdown is-right is-boxed">
                                 <a class="navbar-item" href="{% url 'accounts:users' %}">
                                     {% trans "Users" %}
-                                </a>
-
-                                <a class="navbar-item" href="{% url 'field_trips:field_trips' %}">
-                                    {% trans "Field Trips" %}
                                 </a>
                             </div>
                         </div>

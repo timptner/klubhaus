@@ -1,11 +1,11 @@
+from accounts.models import User
 from django.contrib import messages
-from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.template import loader
 from django.urls import reverse_lazy, reverse
 from django.utils import timezone
@@ -15,90 +15,59 @@ from field_trips.models import FieldTrip, Participant
 from field_trips.forms import FieldTripForm
 from markdown import markdown
 
-User = get_user_model()
 
-
-class FieldTripListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class FieldTripListView(LoginRequiredMixin, ListView):
     model = FieldTrip
 
-    def test_func(self):
-        return self.request.user.is_staff
 
-
-class FieldTripCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class FieldTripCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     model = FieldTrip
     form_class = FieldTripForm
-    success_url = reverse_lazy('field_trips:field_trips')
-
-    def test_func(self):
-        return self.request.user.is_staff
-
-
-class FieldTripUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
-    model = FieldTrip
-    form_class = FieldTripForm
-    success_message = _("Field Trip was updated successfully.")
-
-    def test_func(self):
-        return self.request.user.is_staff
-
-    def get_success_url(self):
-        return reverse('field_trips:field_trip_detail', kwargs={'pk': self.object.pk})
-
-
-class FieldTripPublicListView(LoginRequiredMixin, ListView):
-    template_name = 'field_trips/fieldtrip_public_list.html'
-    model = FieldTrip
-    queryset = FieldTrip.objects.filter(date__gt=timezone.now())
+    success_url = reverse_lazy('field_trips:field_trip_list')
+    success_message = _("%(title)s was created successfully")
+    permission_required = 'field_trips.add_field_trip'
 
 
 class FieldTripDetailView(LoginRequiredMixin, DetailView):
     model = FieldTrip
 
-    def get_context_data(self, **kwargs):
-        feedback = _validate_participant(self.object, self.request.user)
-        context = super().get_context_data(**kwargs)
-        context.update(**feedback)
-        return context
 
+class FieldTripUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = FieldTrip
+    form_class = FieldTripForm
+    success_message = _("%(title)s was updated successfully")
+    permission_required = 'field_trips.change_field_trip'
 
-def _validate_participant(field_trip: FieldTrip, user: User) -> dict:
-    is_disabled = False
-    conflicts = []
-
-    if field_trip.is_expired:
-        is_disabled = True
-        conflicts.append(_("This field trip is expired."))
-
-    if field_trip.participant_set.count() >= field_trip.seats:
-        is_disabled = True
-        conflicts.append(_("For this field trip all seats are taken."))
-
-    if user.phone == '':
-        is_disabled = True
-        conflicts.append(_("Your mobile number is missing in your profile."))
-
-    if user.pk in field_trip.participant_set.values_list('user', flat=True):
-        is_disabled = True
-        conflicts.append(_("You are already registered."))
-
-    return {
-        'is_disabled': is_disabled,
-        'conflicts': conflicts,
-    }
+    def get_success_url(self):
+        return reverse('field_trips:field_trip_detail', kwargs={'pk': self.object.pk})
 
 
 @login_required
 def register(request, pk):
     field_trip = FieldTrip.objects.get(pk=pk)
 
-    feedback = _validate_participant(field_trip, request.user)
+    conflicts = []
 
-    if feedback['is_disabled']:
-        messages.error(request, _("You were not registered for this field trip."))
-    else:
+    if field_trip.is_expired:
+        conflicts.append(_("This field trip is expired."))
+
+    if field_trip.participant_set.count() >= field_trip.seats:
+        conflicts.append(_("All seats are taken."))
+
+    if request.user.phone == '':
+        conflicts.append(_("Your mobile number is missing in your profile."))
+
+    if request.user.pk in field_trip.participant_set.values_list('user', flat=True):
+        conflicts.append(_("You are already registered."))
+
+    if request.method == 'POST':
+        if conflicts:
+            messages.error(request, _("You were not registered for this field trip."))
+            return redirect(reverse('field_trips:register', kwargs={'pk': pk}))
+
         Participant.objects.create(user=request.user, field_trip=field_trip)
-        context = {
+
+        mail_context = {
             'name': request.user.get_short_name(),
             'title': field_trip.title,
             'date': field_trip.date,
@@ -106,7 +75,7 @@ def register(request, pk):
             'protocol': 'https' if request.is_secure() else 'http',
             'domain': get_current_site(request).domain,
         }
-        msg = loader.render_to_string('field_trips/mail/confirm_registration.md', context, request)
+        msg = loader.render_to_string('field_trips/mail/confirm_registration.md', mail_context, request)
         email = EmailMultiAlternatives(
             subject=_("Registration confirmation"),
             body=msg,
@@ -115,16 +84,22 @@ def register(request, pk):
         )
         email.attach_alternative(markdown(msg), 'text/html')
         email.send()
+
         messages.success(request, _("You were successfully registered for this field trip."))
 
-    return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
+        return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
+
+    context = {
+        'field_trip': field_trip,
+        'conflicts': conflicts,
+    }
+
+    return render(request, 'field_trips/fieldtrip_register.html', context=context)
 
 
-class ParticipantListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class FieldTripParticipantListView(PermissionRequiredMixin, ListView):
     model = Participant
-
-    def test_func(self):
-        return self.request.user.is_staff
+    permission_required = 'field_trips.view_participant'
 
     def get_queryset(self):
         return Participant.objects.filter(field_trip_id=self.kwargs['pk'])
@@ -135,7 +110,7 @@ class ParticipantListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         return context
 
 
-class ParticipantDeleteView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, DeleteView):
+class ParticipantDeleteView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Participant
     success_message = _("Participant was removed successfully.")
 
