@@ -1,11 +1,5 @@
-from django.forms import ModelForm as BaseModelForm
-from django.forms.widgets import DateInput
+from django.forms.renderers import TemplatesSetting
 
 
-class ModelForm(BaseModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.label_suffix = ''
-        for key, value in self.initial.items():
-            if type(self.fields[key].widget) is DateInput:
-                self.initial[key] = str(value)
+class BulmaFormRenderer(TemplatesSetting):
+    form_template_name = 'bulma/form_layout.html'
