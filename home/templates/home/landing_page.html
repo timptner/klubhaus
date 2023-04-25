@@ -2,9 +2,9 @@
 
 {% load i18n static %}
 
-{% block title %}{% trans "Landing Page" %}{% endblock %}
+{% block title %}{{ block.super }} | {% trans "Landing Page" %}{% endblock %}
 
-{% block page %}
+{% block content %}
     <section class="hero is-halfheight">
         <div class="hero-body">
             <div class="container">
