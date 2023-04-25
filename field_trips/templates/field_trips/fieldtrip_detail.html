@@ -2,9 +2,7 @@
 
 {% load i18n %}
 
-{% block title %}
-    {{ block.super }} | {% trans "Field Trips" %} | {{ object.title }}
-{% endblock %}
+{% block title %}{{ block.super }} | {{ object.title }}{% endblock %}
 
 {% block content %}
     <section class="section">
