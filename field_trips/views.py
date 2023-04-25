@@ -8,7 +8,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.template import loader
 from django.urls import reverse_lazy, reverse
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from field_trips.models import FieldTrip, Participant
@@ -112,13 +111,11 @@ class FieldTripParticipantListView(PermissionRequiredMixin, ListView):
 
 class ParticipantDeleteView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Participant
-    success_message = _("Participant was removed successfully.")
+    permission_required = 'field_trips.delete_participant'
+    success_message = _("%(user)s was removed successfully.")
 
     def get_success_url(self):
-        return reverse('field_trips:participants', kwargs={'pk': self.object.field_trip.pk})
-
-    def test_func(self):
-        return self.request.user.is_staff
+        return reverse('field_trips:field_trip_participants', kwargs={'pk': self.object.field_trip.pk})
 
     def form_valid(self, form):
         participant = Participant.objects.get(pk=self.kwargs['pk'])
