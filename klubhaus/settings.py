@@ -22,7 +22,6 @@ INSTALLED_APPS = [
     'field_trips',
     'home',
 
-    'anymail',
     'fontawesomefree',
 
     'django.contrib.auth',
@@ -154,15 +153,10 @@ MESSAGE_TAGS = {
 
 # Email
 
-ANYMAIL = {
-    'POSTMARK_SERVER_TOKEN': config('POSTMARK_API_TOKEN'),
-    'SEND_DEFAULTS': {
-        'esp_extra': {'MessageStream': 'farafmb-party'},
-    }
-}
+EMAIL_BACKEND = 'klubhaus.mails.EmailBackend'
 
-EMAIL_BACKEND = 'anymail.backends.postmark.EmailBackend'
+DEFAULT_FROM_EMAIL = config('MAIL_SENDER', default='"Klubhaus" <klubhaus@farafmb.de>')
 
-DEFAULT_FROM_EMAIL = '"[Party] Fachschaftsrat Maschinenbau" <party@farafmb.de>'
+SERVER_EMAIL = config('MAIL_ADMIN', default='server@farafmb.de')
 
-SERVER_EMAIL = '"[Server] Fachschaftsrat Maschinenbau" <server@farafmb.de>'
+POSTMARK_API_TOKEN = config('POSTMARK_API_TOKEN', default=None)
