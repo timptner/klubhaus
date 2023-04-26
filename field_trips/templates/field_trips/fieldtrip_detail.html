@@ -2,7 +2,7 @@
 
 {% load i18n %}
 
-{% block title %}{{ block.super }} | {{ object.title }}{% endblock %}
+{% block title %}{{ block.super }} | {{ fieldtrip.title }}{% endblock %}
 
 {% block content %}
     <section class="section">
@@ -13,8 +13,8 @@
                         <li><a href="{% url 'field_trips:field_trip_list' %}">{% trans "Field Trips" %}</a></li>
 
                         <li class="is-active">
-                            <a href="{% url 'field_trips:field_trip_detail' object.pk %}" aria-current="page">
-                                {{ object.title }}
+                            <a href="{% url 'field_trips:field_trip_detail' fieldtrip.pk %}" aria-current="page">
+                                {{ fieldtrip.title }}
                             </a>
                         </li>
                     </ul>
@@ -53,29 +53,31 @@
     <section class="section">
         <div class="container">
             <div class="columns is-vcentered">
-                {% if object.image %}
+                {% if fieldtrip.image %}
                     <div class="column">
                         <div class="block">
                             <figure class="image">
-                                <img src="{{ object.image.url }}" alt="{% trans "Company image" %}">
+                                <img src="{{ fieldtrip.image.url }}" alt="{% trans "Company image" %}">
                             </figure>
                         </div>
                     </div>
                 {% endif %}
 
                 <div class="column">
-                    <h3 class="title">{{ object.title }}</h3>
-                    <h5 class="subtitle">
-                        <a href="{{ object.website }}" target="_blank">
-                            <span class="icon-text">
-                                <span>{% trans "Visit website" %}</span>
+                    <h3 class="title">{{ fieldtrip.title }}</h3>
+                    {% if fieldtrip.website %}
+                        <h5 class="subtitle">
+                            <a href="{{ fieldtrip.website }}" target="_blank">
+                                <span class="icon-text">
+                                    <span>{% trans "Visit website" %}</span>
 
-                                <span class="icon">
-                                    <i class="fa-solid fa-xs fa-external-link"></i>
+                                    <span class="icon">
+                                        <i class="fa-solid fa-xs fa-external-link"></i>
+                                    </span>
                                 </span>
-                            </span>
-                        </a>
-                    </h5>
+                            </a>
+                        </h5>
+                    {% endif %}
 
                     <div class="block">
                         <p>
@@ -84,27 +86,27 @@
                                     <i class="fa-solid fa-calendar"></i>
                                 </span>
 
-                                <span>{{ object.date }}</span>
+                                <span>{{ fieldtrip.date }}</span>
                             </span>
                         </p>
 
-                        {% if object.location %}
+                        {% if fieldtrip.location %}
                             <p>
                                 <span class="icon">
                                     <i class="fa-solid fa-location-dot"></i>
                                 </span>
 
-                                <span>{{ object.location }}</span>
+                                <span>{{ fieldtrip.location }}</span>
                             </p>
                         {% endif %}
                     </div>
 
                     <div class="content">
-                        {{ object.desc_html|safe }}
+                        {{ fieldtrip.desc_html|safe }}
                     </div>
 
                     <a class="button is-primary"
-                       href="{% url 'field_trips:register' object.pk %}">{% trans "Register" %}</a>
+                       href="{% url 'field_trips:register' fieldtrip.pk %}">{% trans "Register" %}</a>
                 </div>
             </div>
         </div>

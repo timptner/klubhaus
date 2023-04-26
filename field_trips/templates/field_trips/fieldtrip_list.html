@@ -45,7 +45,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for field_trip in object_list %}
+                {% for field_trip in fieldtrip_list %}
                     <tr>
                         <td>
                             <a href="{% url 'field_trips:field_trip_detail' field_trip.pk %}">
