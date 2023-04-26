@@ -1,4 +1,3 @@
-from accounts.models import User
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -112,25 +111,39 @@ class FieldTripParticipantListView(PermissionRequiredMixin, ListView):
 class ParticipantDeleteView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Participant
     permission_required = 'field_trips.delete_participant'
-    success_message = _("%(user)s was removed successfully.")
 
     def get_success_url(self):
-        return reverse('field_trips:field_trip_participants', kwargs={'pk': self.object.field_trip.pk})
+        participant: Participant = self.object
+        return reverse('field_trips:field_trip_participants', kwargs={'pk': participant.field_trip.pk})
+
+    def get_success_message(self, cleaned_data):
+        participant: Participant = self.object
+        return _("%(first_name)s was removed successfully") % {'first_name': participant.user.first_name}
 
     def form_valid(self, form):
-        participant = Participant.objects.get(pk=self.kwargs['pk'])
-        context = {
+        response = super().form_valid(form)
+
+        participant: Participant = self.object
+
+        payload = {
             'name': participant.user.get_short_name(),
             'title': participant.field_trip.title,
         }
-        msg = loader.render_to_string('field_trips/mail/removed.md', context, self.request)
-        email = EmailMultiAlternatives(
+
+        text_content = loader.render_to_string(
+            'field_trips/mail/removed.md',
+            context=payload,
+            request=self.request,
+        )
+        html_content = markdown(text_content)
+
+        mail = EmailMultiAlternatives(
             subject=_("Removed from field trip"),
-            body=msg,
-            from_email=None,
+            body=text_content,
             to=[participant.user.email],
             reply_to=['farafmb@ovgu.de'],
         )
-        email.attach_alternative(markdown(msg), 'text/html')
-        email.send()
-        return super().form_valid(form)
+        mail.attach_alternative(html_content, 'text/html')
+        mail.send()
+
+        return response
