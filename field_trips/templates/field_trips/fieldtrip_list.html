@@ -12,19 +12,18 @@
                 <div class="dropdown is-right is-hoverable">
                     <div class="dropdown-trigger">
                         <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                            <span>{% trans "Options" %}</span>
-
                             <span class="icon is-small">
-                                <i class="fas fa-angle-down" aria-hidden="true"></i>
+                                <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
                             </span>
+                            <span>{% trans "Options" %}</span>
                         </button>
                     </div>
 
                     <div class="dropdown-menu" id="dropdown-menu" role="menu">
                         <div class="dropdown-content">
-                            <a href="{% url 'field_trips:field_trip_create' %}" class="dropdown-item">
-                                {% trans "Add new field trip" %}
-                            </a>
+                            {% url 'field_trips:field_trip_create' as add_url %}
+                            {% trans "Add new field trip" as label %}
+                            {% include 'dropdown_snippet.html' with permission=perms.field_trips.add_field_trip url=add_url label=label %}
                         </div>
                     </div>
                 </div>

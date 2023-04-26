@@ -1,0 +1,14 @@
+{% if permission %}
+    <a class="dropdown-item" href="{{ url }}">
+        {{ label }}
+    </a>
+{% else %}
+    <div class="dropdown-item has-text-grey-light">
+        <p class="icon-text">
+            <span class="icon">
+                <i class="fa-solid fa-lock"></i>
+            </span>
+            <span>{{ label }}</span>
+        </p>
+    </div>
+{% endif %}
