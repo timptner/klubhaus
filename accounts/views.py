@@ -1,11 +1,11 @@
 from accounts.models import User
-from accounts.forms import (UserCreateForm, UserProfileForm, AuthenticationForm, PasswordChangeForm, SetPasswordForm,
-                            UserUpdateForm, PasswordResetForm)
+from accounts.forms import (CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm,
+                            CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm)
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.http import HttpResponseRedirect
@@ -22,9 +22,9 @@ from django.views.generic import FormView, UpdateView, TemplateView, ListView, D
 
 class RegistrationView(UserPassesTestMixin, FormView):
     email_template_name = 'accounts/mail/activate_account.md'
-    form_class = UserCreateForm
+    form_class = CustomUserCreateForm
     success_url = reverse_lazy('accounts:register_success')
-    template_name = 'accounts/user_form.html'
+    template_name = 'accounts/registration.html'
     token_generator = default_token_generator
 
     @method_decorator(sensitive_post_parameters())
@@ -128,68 +128,64 @@ class ActivationView(TemplateView):
         return context
 
 
-class ProfileView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    form_class = UserProfileForm
-    template_name = 'accounts/user_profile.html'
-    success_url = reverse_lazy('accounts:profile')
-    success_message = _("Your profile was updated successfully.")
-
-    def get_initial(self):
-        return {
-            'first_name': self.request.user.first_name,
-            'last_name': self.request.user.last_name,
-        }
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-
 class LoginView(auth_views.LoginView):
-    form_class = AuthenticationForm
+    form_class = CustomAuthenticationForm
 
 
 class PasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
-    form_class = PasswordChangeForm
-    success_url = '.'
+    form_class = CustomPasswordChangeForm
+    success_url = reverse_lazy('accounts:profile')
     success_message = _("Your password was updated successfully.")
 
 
 class PasswordResetView(auth_views.PasswordResetView):
-    form_class = PasswordResetForm
+    form_class = CustomPasswordResetForm
     email_template_name = 'registration/mail/password_reset.md'
     success_url = reverse_lazy('accounts:password_reset_done')
 
 
 class PasswordResetConfirmView(SuccessMessageMixin, auth_views.PasswordResetConfirmView):
-    form_class = SetPasswordForm
+    form_class = CustomSetPasswordForm
     success_url = reverse_lazy('accounts:login')
     success_message = _("Your password was updated successfully.")
 
 
-class UserListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class UserListView(PermissionRequiredMixin, ListView):
+    permission_required = 'auth.view_user'
     model = User
-    queryset = User.objects.order_by('email')
-
-    def test_func(self):
-        return self.request.user.is_staff
+    ordering = ['first_name', 'last_name']
+    context_object_name = 'account_list'
 
 
-class UserDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+class UserDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'auth.view_user'
     model = User
-    template_name = 'accounts/user_detail.html'
-
-    def test_func(self):
-        return self.request.user.is_superuser
+    context_object_name = 'account'
 
 
-class UserUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+class UserUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'auth.change_user'
     model = User
-    form_class = UserUpdateForm
-    template_name = 'accounts/user_edit_form.html'
-    success_message = _("User was updated successfully.")
-
-    def test_func(self):
-        return self.request.user.is_superuser
+    form_class = UserForm
+    success_message = _("%(first_name)s was updated successfully.")
+    context_object_name = 'account'
 
     def get_success_url(self):
-        return reverse('accounts:user_detail', kwargs={'pk': self.object.pk})
+        return reverse('accounts:user_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class ProfileView(LoginRequiredMixin, DetailView):
+    template_name = 'accounts/profile.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
+class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    template_name = 'accounts/profile_form.html'
+    form_class = ProfileForm
+    success_url = reverse_lazy('accounts:profile')
+    success_message = _("Your profile was updated successfully.")
+
+    def get_object(self, queryset=None):
+        return self.request.user

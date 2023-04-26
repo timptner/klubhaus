@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{{ block.super }} | {% trans "Registration" %}{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">{% trans "Registration" %}</h3>
+
+            <article class="message is-info">
+                <div class="message-header">
+                    <p>{% trans "Privacy" %}</p>
+                </div>
+
+                <div class="message-body">
+                    <ul class="bullet-list">
+                        <li>{% trans "We use your full name for identification." %}</li>
+                        <li>{% trans "We use your email address for communication." %}</li>
+                    </ul>
+                </div>
+            </article>
+
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form }}
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">{% trans "Register" %}</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

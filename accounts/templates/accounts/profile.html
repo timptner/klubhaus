@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{{ block.super }} | {% trans "Profile" %}{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">{% trans "Personal information" %}</h3>
+
+            <div class="block">
+                <p>
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fa-solid fa-user fa-fw"></i>
+                        </span>
+                        <span>{{ user.get_full_name }}</span>
+                    </span>
+                </p>
+
+                <p>
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fa-solid fa-envelope fa-fw"></i>
+                        </span>
+                        <span>{{ user.email }}</span>
+                    </span>
+                </p>
+
+                <p>
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fa-solid fa-phone fa-fw"></i>
+                        </span>
+                        <span>{{ user.phone }}</span>
+                    </span>
+                </p>
+            </div>
+
+            <div class="buttons">
+                <a class="button is-primary" href="{% url 'accounts:profile_edit' %}">
+                    {% trans "Update information" %}
+                </a>
+
+                <a class="button is-light" href="{% url 'accounts:password_change' %}">
+                    {% trans "Change password" %}
+                </a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

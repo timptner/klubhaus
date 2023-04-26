@@ -2,30 +2,36 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "Log in" %}{% endblock %}
+{% block title %}{{ block.super }} | {% trans "Log in" %}{% endblock %}
 
-{% block page %}
-    <section class="section is-medium">
+{% block content %}
+    <section class="section">
         <div class="container">
             <div class="columns is-centered">
-                <div class="column is-one-third">
+                <div class="column is-half">
                     <h3 class="title">{% trans "Log in" %}</h3>
 
-                    <form method="post">
-                        {% csrf_token %}
+                    <div class="box">
+                        <form method="post">
+                            {% csrf_token %}
 
-                        {{ form }}
+                            {{ form }}
 
-                        <div class="field is-grouped">
-                            <div class="control">
-                                <button class="button is-primary" type="submit">{% trans "Submit" %}</button>
+                            <div class="field is-grouped">
+                                <div class="control">
+                                    <button class="button is-primary" type="submit">
+                                        {% trans "Login" %}
+                                    </button>
+                                </div>
+
+                                <div class="control">
+                                    <a class="button is-ghost" href="{% url 'accounts:password_reset' %}">
+                                        {% trans "Forget password?" %}
+                                    </a>
+                                </div>
                             </div>
-                            <div class="control">
-                                <a class="button is-ghost"
-                                   href="{% url 'accounts:password_reset' %}">{% trans "Forget password?" %}</a>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

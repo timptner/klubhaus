@@ -2,69 +2,96 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "User detail" %}{% endblock %}
+{% block title %}{{ block.super }} | {{ account.get_full_name }}{% endblock %}
 
 {% block content %}
-    <div class="columns is-centered">
-        <div class="column is-half">
-            <div class="block is-flex is-justify-content-space-between">
-                <a class="button is-link" href="{% url 'accounts:users' %}">
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-chevron-left"></i>
-                    </span>
-
-                    <span>{% trans "Overview" %}</span>
-                </a>
-
-                <a class="button is-warning ml-auto" href="{% url 'accounts:user_edit' object.pk %}">
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-pen"></i>
-                    </span>
-                    <span>{% trans "Edit user" %}</span>
-                </a>
-            </div>
-
-            <div class="box">
-                <div class="is-pulled-right">
-                    {% if object.is_superuser %}<span class="tag is-dark">{% trans "Admin" %}</span>{% endif %}
-
-                    {% if object.is_staff %}<span class="tag is-info">{% trans "Staff" %}</span>{% endif %}
-
-                    {% if object.is_active %}
-                        <span class="tag is-success">{% trans "Active" %}</span>
-                    {% else %}
-                        <span class="tag is-danger">{% trans "Inactive" %}</span>
-                    {% endif %}
-                </div>
-
-                <h3 class="title">{{ object.get_full_name }}</h3>
-                <h5 class="subtitle">
-                    <span class="icon">
-                        <i class="fa-regular fa-calendar-plus"></i>
-                    </span>
-                    <span>{{ object.date_joined }}</span>
-                </h5>
-
-                <div class="block">
-                    <h5 class="title is-5 mb-3">Personal data</h5>
+    <section class="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
                     <ul>
-                        <li>
-                            <span class="icon">
-                                <i class="fa-solid fa-envelope"></i>
-                            </span>
-                            <span>{{ object.email }}</span>
+                        <li><a href="{% url 'accounts:user_list' %}">{% trans "Users" %}</a></li>
+
+                        <li class="is-active">
+                            <a href="{% url 'accounts:user_detail' account.pk %}" aria-current="page">
+                                {{ account.get_full_name }}
+                            </a>
                         </li>
-                        {% if object.phone %}
-                            <li>
-                            <span class="icon">
-                                <i class="fa-solid fa-phone"></i>
-                            </span>
-                                <span>{{ object.phone }}</span>
-                            </li>
-                        {% endif %}
                     </ul>
+                </nav>
+
+                <div class="dropdown is-right is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span class="icon is-small">
+                                <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
+                            </span>
+                            <span>{% trans "Options" %}</span>
+                        </button>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            {% url 'accounts:user_edit' account.pk as edit_url %}
+                            {% trans "Edit user" as item_label %}
+                            {% include 'dropdown_snippet.html' with permission=perms.auth.change_user url=edit_url label=item_label %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">{{ account.get_full_name }}</h3>
+
+            <div class="tags">
+                {% if account.is_superuser %}
+                    <span class="tag is-dark">{% trans "Admin" %}</span>
+                {% endif %}
+
+                {% if account.is_staff %}
+                    <span class="tag is-info">{% trans "Staff" %}</span>
+                {% endif %}
+
+                {% if account.is_active %}
+                    <span class="tag is-success">{% trans "Active" %}</span>
+                {% else %}
+                    <span class="tag is-danger">{% trans "Inactive" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="block">
+                <p>
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fa-solid fa-door-open fa-fw"></i>
+                        </span>
+                        <span>{{ account.date_joined }}</span>
+                    </span>
+                </p>
+
+                <p>
+                    <span class="icon-text">
+                        <span class="icon">
+                            <i class="fa-solid fa-envelope fa-fw"></i>
+                        </span>
+                        <span>{{ account.email }}</span>
+                    </span>
+                </p>
+
+                {% if account.phone %}
+                    <p>
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fa-solid fa-phone fa-fw"></i>
+                            </span>
+                            <span>{{ account.phone }}</span>
+                        </span>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </section>
 {% endblock %}

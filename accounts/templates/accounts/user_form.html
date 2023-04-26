@@ -2,36 +2,32 @@
 
 {% load i18n %}
 
-{% block title %}{% trans "Registration" %}{% endblock %}
+{% block title %}{{ block.super }} | {% trans "Edit user" %}{% endblock %}
 
 {% block content %}
-    <div class="columns is-centered">
-        <div class="column is-half">
-            <h3 class="title">{% trans "Create account" %}</h3>
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">{% trans "Edit user" %}</h3>
 
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>{% trans "Privacy" %}</p>
-                </div>
-                <div class="message-body">
-                    <ul class="bullet-list">
-                        <li>{% trans "We use your full name for identification." %}</li>
-                        <li>{% trans "We use your email address for communication." %}</li>
-                    </ul>
-                </div>
-            </article>
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
 
-            <form method="post">
-                {% csrf_token %}
+                    {{ form }}
 
-                {{ form }}
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">{% trans "Update" %}</button>
+                        </div>
 
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">Registrieren</button>
+                        <div class="control">
+                            <a class="button is-light" href="{% url 'accounts:user_detail' account.pk %}">
+                                {% trans "Cancel" %}
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
+    </section>
 {% endblock %}

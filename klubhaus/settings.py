@@ -96,7 +96,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'accounts.User'
 
-LOGIN_REDIRECT_URL = 'field_trips:field_trips_public'
+LOGIN_REDIRECT_URL = 'accounts:profile'
 
 
 # Internationalization
