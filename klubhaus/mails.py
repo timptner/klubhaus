@@ -43,7 +43,7 @@ class EmailBackend(BaseEmailBackend):
             payload['TextBody'] = email_message.body
 
         if email_message.reply_to:
-            payload['ReplyTo'] = email_message.reply_to
+            payload['ReplyTo'] = ','.join(email_message.reply_to)
 
         if email_message.extra_headers:
             payload['Headers'] = email_message.extra_headers
