@@ -1,17 +1,19 @@
 {% load i18n %}
 {% for field in form %}
     <div class="field">
-        <label class="label" for="{{ field.id_for_label }}">
-            <span class="icon-text">
-                <span>{{ field.label }}</span>
+        {% if field.field.widget.input_type != 'checkbox' %}
+            <label class="label" for="{{ field.id_for_label }}">
+                <span class="icon-text">
+                    <span>{{ field.label }}</span>
 
-                {% if field.field.required %}
-                    <span class="icon has-text-grey-light">
-                        <i class="fa-solid fa-circle-exclamation"></i>
-                    </span>
-                {% endif %}
-            </span>
-        </label>
+                    {% if field.field.required %}
+                        <span class="icon has-text-grey-light">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                        </span>
+                    {% endif %}
+                </span>
+            </label>
+        {% endif %}
 
         <div class="control">
             {% if field.field.widget.input_type == 'file' %}
@@ -34,6 +36,11 @@
                         </span>
                     </label>
                 </div>
+            {% elif field.field.widget.input_type == 'checkbox' %}
+                <label class="checkbox">
+                    {{ field }}
+                    {{ field.label }}
+                </label>
             {% else %}
                 {{ field }}
             {% endif %}
