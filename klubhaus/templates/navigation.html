@@ -81,8 +81,11 @@
                 {% if user.is_authenticated %}
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link is-arrowless">
-                            <span class="icon">
-                                <i class="fa-solid fa-user-astronaut"></i>
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-user-astronaut"></i>
+                                </span>
+                                <span class="is-hidden-desktop">{{ user.get_full_name }}</span>
                             </span>
                         </a>
 
