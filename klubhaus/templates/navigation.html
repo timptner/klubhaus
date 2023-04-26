@@ -13,54 +13,61 @@
         </div>
 
         <div id="navbarMain" class="navbar-menu">
-            {% if request.user.is_authenticated %}
+            {% if user.is_authenticated %}
                 <div class="navbar-start">
                     <a class="navbar-item" href="{% url 'field_trips:field_trip_list' %}">
-                        {% trans "Field trips" %}
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fa-solid fa-route"></i>
+                            </span>
+                            <span>{% trans "Field trips" %}</span>
+                        </span>
                     </a>
 
+                    <!--
                     <a class="navbar-item" href="#">
-                        {% translate "Merchandise" %}
-                    </a>
-
-                    <a class="navbar-item">
                         <span class="icon-text">
                             <span class="icon">
-                                <i class="fa-solid fa-person-digging"></i>
+                                <i class="fa-solid fa-shirt"></i>
                             </span>
-                            <span><del>{% trans "Tournaments" %}</del></span>
+                            <span>{% trans "Merchandise" %}</span>
                         </span>
                     </a>
 
                     <a class="navbar-item">
                         <span class="icon-text">
                             <span class="icon">
-                                <i class="fa-solid fa-dumpster-fire"></i>
+                                <i class="fa-solid fa-trophy"></i>
                             </span>
-                            <span><del>{% trans "Mentor" %}</del></span>
+                            <span>{% trans "Tournaments" %}</span>
                         </span>
                     </a>
+
+                    <a class="navbar-item">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fa-solid fa-hand-holding-heart"></i>
+                            </span>
+                            <span>{% trans "Mentoring" %}</span>
+                        </span>
+                    </a>
+                    -->
+
+                    {% if perms.auth.view_user %}
+                        <a class="navbar-item" href="{% url 'accounts:user_list' %}">
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-users"></i>
+                                </span>
+                                <span>{% trans "Users" %}</span>
+                            </span>
+                        </a>
+                    {% endif %}
                 </div>
             {% endif %}
 
             <div class="navbar-end">
-                {% if request.user.is_authenticated %}
-                    {% if request.user.is_staff %}
-                        <div class="navbar-item has-dropdown is-hoverable">
-                            <a class="navbar-link is-arrowless">
-                                <span class="icon">
-                                    <i class="fa-solid fa-screwdriver-wrench"></i>
-                                </span>
-                            </a>
-
-                            <div class="navbar-dropdown is-right is-boxed">
-                                <a class="navbar-item" href="{% url 'accounts:users' %}">
-                                    {% trans "Users" %}
-                                </a>
-                            </div>
-                        </div>
-                    {% endif %}
-
+                {% if user.is_authenticated %}
                     <div class="navbar-item has-dropdown is-hoverable">
                         <a class="navbar-link is-arrowless">
                             <span class="icon">
