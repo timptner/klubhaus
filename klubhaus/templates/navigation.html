@@ -57,9 +57,20 @@
                         <a class="navbar-item" href="{% url 'accounts:user_list' %}">
                             <span class="icon-text">
                                 <span class="icon">
-                                    <i class="fa-solid fa-users"></i>
+                                    <i class="fa-solid fa-user"></i>
                                 </span>
                                 <span>{% trans "Users" %}</span>
+                            </span>
+                        </a>
+                    {% endif %}
+
+                    {% if perms.auth.view_group %}
+                        <a class="navbar-item" href="{% url 'accounts:group_list' %}">
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-user-group"></i>
+                                </span>
+                                <span>{% trans "Groups" %}</span>
                             </span>
                         </a>
                     {% endif %}

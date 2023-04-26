@@ -52,6 +52,10 @@
                     {{ field }}
                     {{ field.label }}
                 </label>
+            {% elif field.field.widget.input_type == 'select' %}
+                <div class="select is-fullwidth is-multiple">
+                    {{ field }}
+                </div>
             {% else %}
                 {{ field }}
             {% endif %}

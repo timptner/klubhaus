@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% load i18n %}
+
+{% block title %}{{ block.super }} | {% trans "Groups" %}{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-end">
+                <div class="dropdown is-right is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                            <span class="icon is-small">
+                                <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
+                            </span>
+                            <span>{% trans "Options" %}</span>
+                        </button>
+                    </div>
+
+                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            {% url 'accounts:group_create' as add_url %}
+                            {% trans "Add new group" as item_label %}
+                            {% include 'dropdown_snippet.html' with permission=perms.auth.add_group url=add_url label=item_label %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h3 class="title">{% trans "Groups" %}</h3>
+
+            <div class="table-container">
+                <table class="table is-fullwidth is-hoverable">
+                    <thead>
+                    <tr>
+                        <th>{% trans "Name" %}</th>
+                        <th>{% trans "Members" %}</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for group in group_list %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'accounts:group_detail' group.pk %}">{{ group.name }}</a>
+                            </td>
+                            <td>{{ group.user_set.count }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="2" class="has-text-centered is-italic">
+                                {% trans "No groups were created yet" %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+{% endblock %}

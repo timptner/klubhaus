@@ -1,15 +1,17 @@
 from accounts.models import User
 from accounts.forms import (CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm,
-                            CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm)
+                            CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm, GroupForm,
+                            MembershipForm)
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import Group
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.http import HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.http import urlsafe_base64_decode
@@ -17,7 +19,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView
+from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView, CreateView
 
 
 class RegistrationView(UserPassesTestMixin, FormView):
@@ -171,7 +173,7 @@ class UserUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     context_object_name = 'account'
 
     def get_success_url(self):
-        return reverse('accounts:user_detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse_lazy('accounts:user_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ProfileView(LoginRequiredMixin, DetailView):
@@ -189,3 +191,74 @@ class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class GroupListView(PermissionRequiredMixin, ListView):
+    permission_required = 'auth.view_group'
+    model = Group
+
+
+class GroupDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'auth.view_group'
+    model = Group
+
+
+class GroupCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'auth.add_group'
+    model = Group
+    form_class = GroupForm
+    success_message = _("%(name)s was created successfully.")
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:group_detail', kwargs={'pk': self.object.pk})
+
+
+class GroupUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'auth.change_group'
+    model = Group
+    form_class = GroupForm
+    success_message = _("%(name)s was updated successfully.")
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:group_detail', kwargs={'pk': self.object.pk})
+
+
+class GroupMembersView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
+    permission_required = ['auth.change_group', 'auth.change_user']
+    template_name = 'auth/group_members.html'
+    form_class = MembershipForm
+    success_message = _("Members were updated successfully.")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        group = Group.objects.get(pk=self.kwargs['pk'])
+        context.update({'group': group})
+
+        return context
+
+    def get_initial(self):
+        initial = super().get_initial()
+
+        group = Group.objects.get(pk=self.kwargs['pk'])
+        initial.update({'users': group.user_set.all()})
+
+        return initial
+
+    def form_valid(self, form):
+        group = Group.objects.get(pk=self.kwargs['pk'])
+        old_users = group.user_set.all()
+        new_users = form.cleaned_data['users']
+
+        users_remove = [user for user in old_users if user not in new_users]
+        for user in users_remove:
+            user.groups.remove(group)
+
+        users_add = [user for user in new_users if user not in old_users]
+        for user in users_add:
+            user.groups.add(group)
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:group_detail', kwargs={'pk': self.kwargs['pk']})

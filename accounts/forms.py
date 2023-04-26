@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, PasswordResetForm,
                                        PasswordChangeForm, SetPasswordForm)
+from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
@@ -151,3 +152,26 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in ['first_name', 'last_name']:
             self.fields[field].required = True
+
+
+class GroupForm(forms.ModelForm):
+    class Meta:
+        model = Group
+        fields = ['name', 'permissions']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({'class': 'input'})
+        self.fields['permissions'].widget.attrs.update({'size': 10})
+        self.fields['permissions'].help_text = _("You can select multiple permissions with <code>SHIFT</code>. To "
+                                                 "select or unselect a single permission use <code>CMD</code> or "
+                                                 "<code>STRG</code>.")
+
+
+class MembershipForm(forms.Form):
+    users = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.SelectMultiple(attrs={'size': 10}),
+        help_text=_("You can select multiple users with <code>SHIFT</code>. To select or unselect a single user use "
+                    "<code>CMD</code> or <code>STRG</code>."),
+    )
