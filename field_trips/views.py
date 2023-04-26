@@ -6,7 +6,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.template import loader
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from field_trips.models import FieldTrip, Participant
@@ -37,7 +37,7 @@ class FieldTripUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateVi
     permission_required = 'field_trips.change_field_trip'
 
     def get_success_url(self):
-        return reverse('field_trips:field_trip_detail', kwargs={'pk': self.object.pk})
+        return reverse_lazy('field_trips:field_trip_detail', kwargs={'pk': self.object.pk})
 
 
 @login_required
@@ -61,7 +61,7 @@ def register(request, pk):
     if request.method == 'POST':
         if conflicts:
             messages.error(request, _("You were not registered for this field trip."))
-            return redirect(reverse('field_trips:register', kwargs={'pk': pk}))
+            return redirect(reverse_lazy('field_trips:register', kwargs={'pk': pk}))
 
         Participant.objects.create(user=request.user, field_trip=field_trip)
 
@@ -85,7 +85,7 @@ def register(request, pk):
 
         messages.success(request, _("You were successfully registered for this field trip."))
 
-        return redirect(reverse('field_trips:field_trip_detail', kwargs={'pk': pk}))
+        return redirect(reverse_lazy('field_trips:field_trip_detail', kwargs={'pk': pk}))
 
     context = {
         'field_trip': field_trip,
@@ -114,7 +114,7 @@ class ParticipantDeleteView(LoginRequiredMixin, PermissionRequiredMixin, Success
 
     def get_success_url(self):
         participant: Participant = self.object
-        return reverse('field_trips:field_trip_participants', kwargs={'pk': participant.field_trip.pk})
+        return reverse_lazy('field_trips:field_trip_participants', kwargs={'pk': participant.field_trip.pk})
 
     def get_success_message(self, cleaned_data):
         participant: Participant = self.object
