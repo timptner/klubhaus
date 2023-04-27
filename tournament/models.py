@@ -53,7 +53,8 @@ class Team(models.Model):
         verbose_name_plural = "Teams"
         ordering = ['name']
         constraints = [
-            models.UniqueConstraint(fields=['tournament', 'name'], name='unique_tournament_team'),
+            models.UniqueConstraint(fields=['tournament', 'captain'], name='unique_tournament_team'),
+            models.UniqueConstraint(fields=['tournament', 'name'], name='unique_tournament_team_name'),
         ]
 
     def __str__(self):
