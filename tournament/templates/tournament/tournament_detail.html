@@ -50,6 +50,13 @@
                 {% include 'tournament/status_snippet.html' with status=tournament.get_status %}
             </div>
 
+            {% if is_registered %}
+                <article class="message is-warning">
+                    <div class="message-body">
+                        Du hast bereits das Team <strong>{{ team.name }}</strong> für dieses Turnier angemeldet.
+                    </div>
+                </article>
+            {% endif %}
 
             <div class="columns">
                 <div class="column">
@@ -73,9 +80,25 @@
                             <td>Ende der Registrierung</td>
                             <td>{{ tournament.registration_end }}</td>
                         </tr>
+                        <tr>
+                            <td>Angemeldete Teams</td>
+                            <td>{{ tournament.team_set.count }}</td>
+                        </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <div class="buttons">
+                {% if tournament.get_status == 'open' and not is_registered %}
+                    <a class="button is-primary" href="{% url 'tournament:registration' tournament.pk %}">
+                        Als Team einschreiben
+                    </a>
+                {% else %}
+                    <button class="button is-static">
+                        Als Team einschreiben
+                    </button>
+                {% endif %}
             </div>
         </div>
     </section>
