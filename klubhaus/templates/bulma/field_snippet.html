@@ -1,6 +1,6 @@
 <div class="field">
     {% if field.field.widget.input_type != 'checkbox' %}
-        {% include 'bulma/label_snippet.html' with field=field %}
+        {% include 'bulma/label_snippet.html' with id=field.id_for_label label=field.label required=field.field.required %}
     {% endif %}
 
     {% include 'bulma/control_snippet.html' with field=field %}
