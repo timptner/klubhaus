@@ -1,0 +1,17 @@
+{% if status == 'planned' %}
+    <span class="tag is-warning">
+        Geplant
+    </span>
+{% elif status == 'open' %}
+    <span class="tag is-success">
+        Offen
+    </span>
+{% elif status == 'closed' %}
+    <span class="tag is-danger">
+        Geschlossen
+    </span>
+{% elif status == 'expired' %}
+    <span class="tag is-light">
+        Abgelaufen
+    </span>
+{% endif %}

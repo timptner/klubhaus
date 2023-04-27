@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'accounts',
     'field_trips',
     'home',
+    'tournament',
 
     'fontawesomefree',
 

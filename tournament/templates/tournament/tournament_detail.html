@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} | {{ tournament.title }}{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a href="{% url 'tournament:tournament_list' %}">Turniere</a></li>
+
+                        <li class="is-active">
+                            <a href="{% url 'tournament:tournament_detail' tournament.pk %}" aria-current="page">
+                                {{ tournament.title }}
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                {% if user.is_staff %}
+                    <div class="dropdown is-right is-hoverable">
+                        <div class="dropdown-trigger">
+                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                                <span class="icon is-small">
+                                    <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
+                                </span>
+                                <span>Optionen</span>
+                            </button>
+                        </div>
+
+                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                            <div class="dropdown-content">
+                                {% url 'tournament:tournament_update' tournament.pk as url %}
+                                {% include 'dropdown_snippet.html' with permission=perms.tournament.change_tournament url=url label="Turnier bearbeiten" %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container is-max-desktop">
+            <div class="is-flex is-align-items-center mb-3">
+                <h3 class="title mb-0 mr-3">
+                    {{ tournament.title }}
+                </h3>
+                {% include 'tournament/status_snippet.html' with status=tournament.get_status %}
+            </div>
+
+
+            <div class="columns">
+                <div class="column">
+                    <div class="content">
+                        {{ tournament.desc|linebreaks }}
+                    </div>
+                </div>
+
+                <div class="column">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td>Datum</td>
+                            <td>{{ tournament.date }}</td>
+                        </tr>
+                        <tr>
+                            <td>Beginn der Registrierung</td>
+                            <td>{{ tournament.registration_start }}</td>
+                        </tr>
+                        <tr>
+                            <td>Ende der Registrierung</td>
+                            <td>{{ tournament.registration_end }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

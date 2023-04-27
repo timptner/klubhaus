@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ block.super }} | Turnier {% if form.initial %}bearbeiten{% else %}hinzufügen{% endif %}
+{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">
+                Turnier {% if form.initial %}bearbeiten{% else %}hinzufügen{% endif %}
+            </h3>
+
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form }}
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">
+                                {% if form.initial %}Ändern{% else %}Erstellen{% endif %}
+                            </button>
+                        </div>
+
+                        <div class="control">
+                            {% if form.initial %}
+                                <a class="button is-light"
+                                   href="{% url 'tournament:tournament_detail' tournament.pk %}">
+                                    Abbrechen
+                                </a>
+                            {% else %}
+                                <a class="button is-light" href="{% url 'tournament:tournament_list' %}">
+                                    Abbrechen
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
