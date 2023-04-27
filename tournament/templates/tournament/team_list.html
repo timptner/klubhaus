@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} | Teams{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <div class="is-flex is-justify-content-space-between is-align-items-center">
+                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
+                    <ul>
+                        <li><a href="{% url 'tournament:tournament_list' %}">Turniere</a></li>
+
+                        <li>
+                            <a href="{% url 'tournament:tournament_detail' tournament.pk %}">
+                                {{ tournament.title }}
+                            </a>
+                        </li>
+
+                        <li class="is-active">
+                            <a href="{% url 'tournament:team_list' tournament.pk %}">
+                                Teams
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h3 class="title">Teams</h3>
+
+            <div class="columns is-multiline">
+                {% for team in team_list %}
+                    <div class="column is-one-quarter">
+                        <div class="card">
+                            <div class="card-content">
+                                <div class="content">
+                                    <h5>{{ team.name }}</h5>
+
+                                    <p>Spieler</p>
+                                    <ul>
+                                        <li>
+                                            <span class="icon-text">
+                                                <span>{{ team.captain.get_full_name }}</span>
+                                                <span class="icon">
+                                                    <i class="fa-solid fa-chess-king"></i>
+                                                </span>
+                                            </span>
+                                        </li>
+
+                                        {% for player in team.player_set.all %}
+                                            <li>{{ player.get_full_name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="column">
+                        <p>Bisher haben sich noch keine Teams angemeldet.</p>
+                    </div>
+                {% endfor %}
+            </div>
+    </section>
+{% endblock %}

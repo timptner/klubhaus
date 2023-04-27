@@ -68,7 +68,7 @@ def registration(request, pk):
                 player.save()
 
             messages.success(request, "Du hast dein Team erfolgreich für das Turnier angemeldet.")
-            return redirect(reverse_lazy('tournament:tournament_detail', kwargs={'pk': tournament.pk}))
+            return redirect(reverse_lazy('tournament:my_team_list'))
     else:
         team_form = TeamForm(tournament=tournament, captain=request.user)
         player_formset = PlayerFormSet()
@@ -80,3 +80,22 @@ def registration(request, pk):
         'is_registered': tournament.team_set.filter(captain=request.user).exists(),
     }
     return render(request, 'tournament/registration.html', context=context)
+
+
+class TeamListView(PermissionRequiredMixin, ListView):
+    permission_required = 'tournament.view_team'
+
+    def get_queryset(self):
+        return Team.objects.filter(tournament=self.kwargs['pk']).all()
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['tournament'] = Tournament.objects.get(pk=self.kwargs['pk'])
+        return context
+
+
+class PersonalTeamListView(LoginRequiredMixin, ListView):
+    template_name = 'tournament/my_team_list.html'
+
+    def get_queryset(self):
+        return Team.objects.filter(captain=self.request.user)

@@ -33,6 +33,11 @@
                             <div class="dropdown-content">
                                 {% url 'tournament:tournament_update' tournament.pk as url %}
                                 {% include 'dropdown_snippet.html' with permission=perms.tournament.change_tournament url=url label="Turnier bearbeiten" %}
+
+                                <hr class="dropdown-divider">
+
+                                {% url 'tournament:team_list' tournament.pk as url %}
+                                {% include 'dropdown_snippet.html' with permission=perms.tournament.view_team url=url label="Teams anzeigen" %}
                             </div>
                         </div>
                     </div>
@@ -53,20 +58,24 @@
             {% if is_registered %}
                 <article class="message is-warning">
                     <div class="message-body">
-                        Du hast bereits das Team <strong>{{ team.name }}</strong> für dieses Turnier angemeldet.
+                        Du hast bereits das Team
+                        <strong><a href="{% url 'tournament:my_team_list' %}">{{ team.name }}</a></strong>
+                        für dieses Turnier angemeldet.
                     </div>
                 </article>
             {% endif %}
 
             <div class="columns">
-                <div class="column">
-                    <div class="content">
-                        {{ tournament.desc|linebreaks }}
+                {% if tournament.desc %}
+                    <div class="column">
+                        <div class="content">
+                            {{ tournament.desc|linebreaks }}
+                        </div>
                     </div>
-                </div>
+                {% endif %}
 
                 <div class="column">
-                    <table class="table">
+                    <table class="table is-fullwidth">
                         <tbody>
                         <tr>
                             <td>Datum</td>

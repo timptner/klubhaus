@@ -7,5 +7,7 @@ urlpatterns = [
     path('add/', views.TournamentCreateView.as_view(), name='tournament_create'),
     path('<int:pk>/', views.TournamentDetailView.as_view(), name='tournament_detail'),
     path('<int:pk>/edit/', views.TournamentUpdateView.as_view(), name='tournament_update'),
+    path('<int:pk>/teams/', views.TeamListView.as_view(), name='team_list'),
     path('<int:pk>/teams/add/', views.registration, name='registration'),
+    path('teams/', views.PersonalTeamListView.as_view(), name='my_team_list'),
 ]
