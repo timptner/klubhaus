@@ -1,0 +1,11 @@
+<label class="label" for="{{ field.id_for_label }}">
+    <span class="icon-text">
+        <span>{{ field.label }}</span>
+
+        {% if field.field.required %}
+            <span class="icon has-text-grey-light">
+                <i class="fa-solid fa-circle-exclamation fa-fw"></i>
+            </span>
+        {% endif %}
+    </span>
+</label>

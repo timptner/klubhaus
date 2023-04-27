@@ -1,0 +1,11 @@
+<div class="control">
+    {% if field.field.widget.input_type == 'file' %}
+        {% include 'bulma/fields/file_snippet.html' with field=field %}
+    {% elif field.field.widget.input_type == 'checkbox' %}
+        {% include 'bulma/fields/checkbox_snippet.html' with field=field %}
+    {% elif field.field.widget.input_type == 'select' %}
+        {% include 'bulma/fields/select_snippet.html' with field=field %}
+    {% else %}
+        {{ field }}
+    {% endif %}
+</div>
