@@ -69,3 +69,41 @@ class PlayerForm(forms.ModelForm):
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
         }
+
+
+class TeamDrawingForm(forms.Form):
+    amount = forms.IntegerField(
+        label="Anzahl",
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'input'}),
+        help_text="Die Anzahl der Teams, welche per Los gezogen werden sollen."
+    )
+    message = forms.CharField(
+        label="Nachricht",
+        widget=forms.Textarea(attrs={'class': 'textarea'}),
+        help_text="Wichtige Informationen, welche die gezogenen Teams per E-Mail erhalten."
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.tournament = kwargs.pop('tournament')
+        super().__init__(*args, **kwargs)
+
+    def clean_amount(self):
+        data = self.cleaned_data['amount']
+        team_count = self.tournament.team_set.count()
+
+        if data > team_count:
+            raise ValidationError(
+                "Es können maximal %(amount)s Teams ausgelost werden, da sich nur "
+                "entsprechend viele Teams angemeldet haben.",
+                params={'amount': team_count},
+                code='number to big',
+            )
+
+        return data
+
+    def clean(self):
+        cleaned_data = super().clean()
+        has_approved_teams = self.tournament.team_set.filter(is_approved=True).exists()
+        if has_approved_teams:
+            raise ValidationError("Es gibt bereits Teams, welche bestätigt sind.", code='has approved teams')

@@ -1,13 +1,16 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
-from django.contrib.auth.views import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms import formset_factory
 from django.core.exceptions import PermissionDenied
+from django.core.mail import mail_admins
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
-from tournament.forms import TournamentForm, TeamForm, PlayerForm
+from klubhaus.mails import PostmarkTemplate
+from pprint import pprint
+from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm
 from tournament.models import Tournament, Team, Player
 
 
@@ -99,3 +102,62 @@ class PersonalTeamListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Team.objects.filter(captain=self.request.user)
+
+
+@permission_required('tournaments.change_team')
+def team_drawing(request, pk):
+    tournament = Tournament.objects.get(pk=pk)
+    if request.method == 'POST':
+        form = TeamDrawingForm(request.POST, tournament=tournament)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            message = form.cleaned_data['message']
+
+            team_list = tournament.team_set.order_by('?').values_list('pk', flat=True)[:amount]
+            updated = Team.objects.filter(pk__in=team_list).update(is_approved=True)
+
+            if updated == 1:
+                msg = f"Es wurde {updated} Team ausgelost."
+            else:
+                msg = f"Es wurden {updated} Teams ausgelost."
+
+            messages.success(request, msg)
+
+            recipients = []
+            for team in Team.objects.filter(pk__in=team_list).all():
+                recipient = (
+                    team.captain.email,
+                    {
+                        'captain_name': team.captain.first_name,
+                        'team_name': team.name,
+                        'tournament_name': tournament.title,
+                        'body': message,
+                    },
+                )
+                recipients.append(recipient)
+
+            template = PostmarkTemplate('team-drawing')
+            count, errors = template.send_messages(recipients)
+
+            if errors:
+                msg = ("Es gab ein Problem beim Versenden von E-Mails an die Teams eines Turniers.\n\n"
+                       f"Turnier: {tournament.title} (ID: {tournament.pk})\n\n"
+                       f"{pprint(errors)}")
+                mail_admins("Fehler beim E-Mail Versand", msg)
+
+                msg = (f"Es gab ein Problem beim Versenden der E-Mails! Es wurden nur {count} Teams benachrichtigt. "
+                       "Die Administratoren wurden bereits per E-Mail informiert.")
+                messages.error(request, msg)
+            else:
+                msg = "Alle gelosten Teams wurden per E-Mail benachrichtigt."
+                messages.success(request, msg)
+
+            return redirect(reverse_lazy('tournament:team_list', kwargs={'pk': tournament.pk}))
+    else:
+        form = TeamDrawingForm(tournament=tournament)
+    context = {
+        'tournament': tournament,
+        'has_approved_teams': tournament.team_set.filter(is_approved=True).exists(),
+        'form': form,
+    }
+    return render(request, 'tournament/team_drawing.html', context=context)

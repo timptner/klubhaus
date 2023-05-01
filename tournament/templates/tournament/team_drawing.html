@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} | Teams auslosen{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">Teams auslosen</h3>
+
+            {% if has_approved_teams %}
+                <article class="message is-danger">
+                    <div class="message-body">
+                        <strong>
+                            Es gibt bereits Teams, welche bestätigt sind. Eine erneute Auslosung ist daher nicht
+                            möglich.
+                        </strong>
+                        <br><br>
+                        Falls eine Auslosung wiederholt werden soll, müssen zuerst alle Teams per E-Mail über die
+                        ungültige Auslosung informiert werden und anschließend alle Teams wieder als nicht bestätigt
+                        markiert werden.
+                    </div>
+                </article>
+            {% endif %}
+
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form }}
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Per Zufall auslosen</button>
+                        </div>
+
+                        <div class="control">
+                            <a class="button is-light" href="{% url 'tournament:team_list' tournament.pk %}">
+                                Abbrechen
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

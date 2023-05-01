@@ -47,6 +47,7 @@ class Team(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField("Name", max_length=250)
+    is_approved = models.BooleanField("Zugelassen", default=False)
 
     class Meta:
         verbose_name = "Team"

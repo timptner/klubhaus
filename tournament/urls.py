@@ -9,5 +9,6 @@ urlpatterns = [
     path('<int:pk>/edit/', views.TournamentUpdateView.as_view(), name='tournament_update'),
     path('<int:pk>/teams/', views.TeamListView.as_view(), name='team_list'),
     path('<int:pk>/teams/add/', views.registration, name='registration'),
+    path('<int:pk>/teams/draw/', views.team_drawing, name='team_drawing'),
     path('teams/', views.PersonalTeamListView.as_view(), name='my_team_list'),
 ]
