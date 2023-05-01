@@ -7,6 +7,16 @@
         <div class="container is-max-desktop">
             <h3 class="title">Teams auslosen</h3>
 
+            {% if tournament.get_status == 'open' %}
+                <article class="message is-warning">
+                    <div class="message-body">
+                        <strong>Die Anmeldung ist noch offen!</strong> Die Auslosung der Teams sollte erst erfolgen,
+                        wenn die Anmeldung geschlossen ist. Die Anmeldefrist endet in
+                        {{ tournament.registration_end|timeuntil }}.
+                    </div>
+                </article>
+            {% endif %}
+
             {% if has_approved_teams %}
                 <article class="message is-danger">
                     <div class="message-body">
