@@ -79,3 +79,68 @@ class EmailBackend(BaseEmailBackend):
         data = response.json()
 
         return len([msg for msg in data if msg['ErrorCode'] == 0])
+
+
+class PostmarkTemplate:
+    """
+    Postmark API for sending emails with templates.
+    """
+
+    endpoint = 'https://api.postmarkapp.com/email/batchWithTemplates'
+
+    def __init__(self, template_alias: str):
+        self.template_alias = template_alias
+
+    def send_messages(self, recipients: list[tuple[str, dict]], sender: str = settings.DEFAULT_FROM_EMAIL):
+        headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'X-Postmark-Server-Token': settings.POSTMARK_API_TOKEN,
+        }
+
+        messages = []
+        for recipient, model in recipients:
+            model.update({
+                'product_url': 'https://klubhaus.farafmb.de',
+                'product_name': 'Klubhaus',
+                'company_name': 'Fachschaftsrat Maschinenbau',
+                'company_address': 'Universitätsplatz 2, 39106 Magdeburg',
+            })
+            message = {
+                'From': sender,
+                'To': recipient,
+                'TemplateAlias': self.template_alias,
+                'TemplateModel': model,
+                'TrackOpens': False,
+                'TrackLinks': 'None',
+                'MessageStream': 'broadcast',
+            }
+            messages.append(message)
+
+        payload = {
+            'Messages': messages,
+        }
+
+        response = requests.post(self.endpoint, headers=headers, json=payload)
+
+        if response.status_code == 422:
+            raise ValueError("Payload contains malformed json or incorrect fields.")
+
+        data = response.json()
+
+        mails_sent = 0
+        errors = []
+        for index, msg in enumerate(data):
+            if msg['ErrorCode'] == 0:
+                mails_sent += 1
+                continue
+
+            recipient = list(zip(*recipients))[0][index]
+            error = {
+                'code': msg['ErrorCode'],
+                'message': msg['Message'],
+                'recipient': recipient,
+            }
+            errors.append(error)
+
+        return mails_sent, errors
