@@ -53,7 +53,7 @@ class Team(models.Model):
     class Meta:
         verbose_name = "Team"
         verbose_name_plural = "Teams"
-        ordering = ['name']
+        ordering = ['created_at']
         constraints = [
             models.UniqueConstraint(fields=['tournament', 'captain'], name='unique_tournament_team'),
             models.UniqueConstraint(fields=['tournament', 'name'], name='unique_tournament_team_name'),
