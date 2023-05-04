@@ -48,6 +48,7 @@ class Team(models.Model):
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField("Name", max_length=250)
     is_approved = models.BooleanField("Zugelassen", default=False)
+    created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 
     class Meta:
         verbose_name = "Team"

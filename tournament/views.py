@@ -101,7 +101,7 @@ class PersonalTeamListView(LoginRequiredMixin, ListView):
     template_name = 'tournament/my_team_list.html'
 
     def get_queryset(self):
-        return Team.objects.filter(captain=self.request.user)
+        return Team.objects.filter(captain=self.request.user).order_by('-tournament__date')
 
 
 @permission_required('tournaments.change_team')

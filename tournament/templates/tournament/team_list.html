@@ -51,51 +51,62 @@
         <div class="container">
             <h3 class="title">Teams</h3>
 
-            <div class="columns is-multiline">
-                {% for team in team_list %}
-                    <div class="column is-one-quarter">
-                        <div class="card">
-                            <div class="card-content">
-                                <div class="content">
-                                    <h5>
+            <div class="table-container">
+                <table class="table is-hoverable is-fullwidth">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Spieler</th>
+                        <th>Erstellt am</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for team in team_list %}
+                        <tr>
+                            <td>{{ team.name }}</td>
+                            <td>
+                                <ul>
+                                    <li>
                                         <span class="icon-text">
-                                            <span>{{ team.name }}</span>
-                                            {% if team.is_approved %}
-                                                <span class="icon has-text-success">
-                                                    <i class="fa-solid fa-circle-check"></i>
-                                                </span>
-                                            {% else %}
-                                                <span class="icon has-text-danger">
-                                                    <i class="fa-solid fa-circle-xmark"></i>
-                                                </span>
-                                            {% endif %}
-                                        </span>
-                                    </h5>
-
-                                    <p>Spieler</p>
-                                    <ul>
-                                        <li>
-                                            <span class="icon-text">
-                                                <span>{{ team.captain.get_full_name }}</span>
-                                                <span class="icon">
-                                                    <i class="fa-solid fa-chess-king"></i>
-                                                </span>
+                                            <span>{{ team.captain.get_full_name }}</span>
+                                            <span class="icon">
+                                                <i class="fa-solid fa-chess-king"></i>
                                             </span>
-                                        </li>
-
-                                        {% for player in team.player_set.all %}
-                                            <li>{{ player.get_full_name }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <div class="column">
-                        <p>Bisher haben sich noch keine Teams angemeldet.</p>
-                    </div>
-                {% endfor %}
+                                        </span>
+                                    </li>
+                                    {% for player in team.player_set.all %}
+                                        <li>{{ player }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                            <td>{{ team.created_at }}</td>
+                            <td>
+                                {% if team.is_approved %}
+                                    <span class="icon-text">
+                                        <span class="icon has-text-success">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        </span>
+                                        <span>Angenommen</span>
+                                    </span>
+                                {% else %}
+                                    <span class="icon-text">
+                                        <span class="icon has-text-danger">
+                                            <i class="fa-solid fa-circle-xmark"></i>
+                                        </span>
+                                        <span>Beworben</span>
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="4" class="has-text-centered is-italic">Noch kein Team angemeldet</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
             </div>
     </section>
 {% endblock %}
