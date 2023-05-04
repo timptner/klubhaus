@@ -34,7 +34,7 @@
                         <div class="dropdown-content">
                             {% url 'accounts:user_edit' account.pk as edit_url %}
                             {% trans "Edit user" as item_label %}
-                            {% include 'dropdown_snippet.html' with permission=perms.auth.change_user url=edit_url label=item_label %}
+                            {% include 'dropdown_snippet.html' with permission=perms.accounts.change_user url=edit_url label=item_label %}
                         </div>
                     </div>
                 </div>

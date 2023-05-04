@@ -153,20 +153,20 @@ class PasswordResetConfirmView(SuccessMessageMixin, auth_views.PasswordResetConf
 
 
 class UserListView(PermissionRequiredMixin, ListView):
-    permission_required = 'auth.view_user'
+    permission_required = 'accounts.view_user'
     model = User
     ordering = ['first_name', 'last_name']
     context_object_name = 'account_list'
 
 
 class UserDetailView(PermissionRequiredMixin, DetailView):
-    permission_required = 'auth.view_user'
+    permission_required = 'accounts.view_user'
     model = User
     context_object_name = 'account'
 
 
 class UserUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
-    permission_required = 'auth.change_user'
+    permission_required = 'accounts.change_user'
     model = User
     form_class = UserForm
     success_message = _("%(first_name)s was updated successfully.")
@@ -224,7 +224,7 @@ class GroupUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
 
 
 class GroupMembersView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
-    permission_required = ['auth.change_group', 'auth.change_user']
+    permission_required = ['auth.change_group', 'accounts.change_user']
     template_name = 'auth/group_members.html'
     form_class = MembershipForm
     success_message = _("Members were updated successfully.")
