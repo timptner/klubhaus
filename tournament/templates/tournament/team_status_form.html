@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} | Status bearbeiten{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container is-max-desktop">
+            <h3 class="title">Status bearbeiten</h3>
+            <h5 class="subtitle">{{ team }}</h5>
+
+            {% if team.state != team.ENROLLED %}
+                <article class="message is-warning">
+                    <div class="message-body">
+                        Das Team besitzt bereits den Status "{{ team.get_state_display }}". Bitte beachte, dass beim
+                        Ändern des Status erneut eine E-Mail an den Team-Kapitän verschickt wird. Dies wird zu
+                        Verwirrungen beim Team führen, ob sie nun beim Turnier dabei sind oder nicht!
+                    </div>
+                </article>
+            {% endif %}
+
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form }}
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Ändern</button>
+                        </div>
+
+                        <div class="control">
+                            <a class="button is-light" href="{% url 'tournament:team_list' team.tournament.pk %}">
+                                Abbrechen
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}

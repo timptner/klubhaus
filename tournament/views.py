@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
-from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm, TeamContactForm
+from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm, TeamContactForm, TeamStatusForm
 from tournament.models import Tournament, Team
 
 
@@ -179,3 +179,20 @@ class TeamContactView(PermissionRequiredMixin, FormView):
             messages.success(self.request, msg)
 
         return super().form_valid(form)
+
+
+class TeamStateChangeView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'tournaments.change_team'
+    model = Team
+    form_class = TeamStatusForm
+    template_name = 'tournament/team_status_form.html'
+    success_message = "Der Status vom Team \"%(name)s\" wurde erfolgreich geändert."
+
+    def get_success_message(self, cleaned_data):
+        return self.success_message % dict(
+            cleaned_data,
+            name=self.object.name,
+        )
+
+    def get_success_url(self):
+        return reverse_lazy('tournament:team_list', kwargs={'pk': self.kwargs['pk']})

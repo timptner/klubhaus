@@ -11,5 +11,6 @@ urlpatterns = [
     path('<int:pk>/teams/add/', views.registration, name='registration'),
     path('<int:pk>/teams/draw/', views.team_drawing, name='team_drawing'),
     path('<int:pk>/teams/contact/', views.TeamContactView.as_view(), name='team_contact'),
+    path('teams/<int:pk>/change_status/', views.TeamStateChangeView.as_view(), name='change_team_status'),
     path('teams/', views.PersonalTeamListView.as_view(), name='my_team_list'),
 ]
