@@ -8,6 +8,12 @@
             <h3 class="title">Status bearbeiten</h3>
             <h5 class="subtitle">{{ team }}</h5>
 
+            <article class="message is-info">
+                <div class="message-body">
+                    Teams erhalten bei Änderung des Status eine Benachrichtigung per E-Mail.
+                </div>
+            </article>
+
             {% if team.state != team.ENROLLED %}
                 <article class="message is-warning">
                     <div class="message-body">

@@ -12,7 +12,15 @@
                     <div class="column is-one-quarter">
                         <div class="card">
                             <header class="card-header">
-                                <p class="card-header-title">{{ team.name }}</p>
+                                <p class="card-header-title">
+                                    {{ team.name }}
+                                </p>
+
+                                <p class="card-header-icon">
+                                    <span class="tag {{ team.get_state_color }}">
+                                        {{ team.get_state_display }}
+                                    </span>
+                                </p>
                             </header>
 
                             <div class="card-content">
