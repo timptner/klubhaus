@@ -33,6 +33,23 @@
         <div class="container">
             <h3 class="title">Veranstaltungen</h3>
 
+            {% if personal_events %}
+                <article class="message is-info">
+                    <div class="message-body">
+                        Veranstaltungen, bei welchen du bereits als freiwilliger Helfer registriert bist zeigen ein
+                        <span class="icon-text">
+                            <span>
+                                Herz-Symbol
+                            </span>
+                            <span class="icon has-text-danger">
+                                <i class="fa-solid fa-heart"></i>
+                            </span>
+                        </span>
+                        hinter dem Titel an.
+                    </div>
+                </article>
+            {% endif %}
+
             <div class="table-container">
                 <table class="table is-hoverable is-fullwidth">
                     <thead>
@@ -47,7 +64,18 @@
                     {% for event in event_list %}
                         <tr>
                             <td>
-                                <a href="{% url 'volunteers:event_detail' event.pk %}">{{ event.title }}</a>
+                                <span class="icon-text">
+                                    <span>
+                                        <a href="{% url 'volunteers:event_detail' event.pk %}">
+                                            {{ event.title }}
+                                        </a>
+                                    </span>
+                                    {% if event.pk in personal_events %}
+                                        <span class="icon has-text-danger">
+                                            <i class="fa-solid fa-heart"></i>
+                                        </span>
+                                    {% endif %}
+                                </span>
                             </td>
                             <td>{{ event.date }}</td>
                             <td>
