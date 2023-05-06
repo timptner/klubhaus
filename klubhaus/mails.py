@@ -165,7 +165,7 @@ class PostmarkTemplate:
         if len(recipients) != len(template_models):
             raise ValueError("lists of recipients and payloads must be the same length")
 
-        endpoint_url = self.endpoint_url + '/email/batchWithTemplate/'
+        endpoint_url = self.endpoint_url + '/email/batchWithTemplates/'
 
         headers = self._headers
         headers['Content-Type'] = 'application/json'
