@@ -1,8 +1,12 @@
+import logging
 import requests
 
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.base import BaseEmailBackend
 from django.conf import settings
+from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 
 class EmailBackend(BaseEmailBackend):
@@ -81,66 +85,111 @@ class EmailBackend(BaseEmailBackend):
         return len([msg for msg in data if msg['ErrorCode'] == 0])
 
 
+PostmarkError = tuple[int, str]
+
+
 class PostmarkTemplate:
     """
     Postmark API for sending emails with templates.
     """
 
-    endpoint = 'https://api.postmarkapp.com/email/batchWithTemplates'
+    endpoint_url = 'https://api.postmarkapp.com'
 
-    def __init__(self, template_alias: str):
-        self.template_alias = template_alias
+    _headers = {
+        'Accept': 'application/json',
+        'X-Postmark-Server-Token': settings.POSTMARK_API_TOKEN,
+    }
 
-    def send_messages(self, recipients: list[tuple[str, dict]], sender: str = settings.DEFAULT_FROM_EMAIL):
-        headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'X-Postmark-Server-Token': settings.POSTMARK_API_TOKEN,
+    @staticmethod
+    def _prepare_message(sender: str, recipient: str, template_alias: str, template_model: dict,
+                         message_stream: str) -> dict:
+
+        template_model.update({
+            'product_url': 'https://klubhaus.farafmb.de',
+            'product_name': 'Klubhaus',
+            'company_name': 'Fachschaftsrat Maschinenbau',
+            'company_address': 'Universitätsplatz 2, 39106 Magdeburg',
+        })
+
+        message = {
+            'From': sender,
+            'To': recipient,
+            'TemplateAlias': template_alias,
+            'TemplateModel': template_model,
+            'TrackOpens': False,
+            'TrackLinks': 'None',
+            'MessageStream': message_stream,
         }
 
+        return message
+
+    @staticmethod
+    def _validate_response(response: requests.Response) -> None:
+        if response.status_code == 422:
+            data = response.json()
+            code = data['ErrorCode']
+            msg = data['Message']
+            logger.error(f"Postmark API responded with an error: [{code}] {msg}")
+            raise ValueError("Payload contains malformed json or incorrect fields.")
+
+    @staticmethod
+    def _validate_payload(data: dict) -> Optional[tuple]:
+        if data['Message'] == 'OK':
+            return
+
+        error = data['ErrorCode'], data['Message']
+
+        logger.warning("Received Postmark API error: %i, %s", error)
+
+        return error
+
+    def send_message(self, recipient: str, template_alias: str, template_model: dict,
+                     sender: str = settings.DEFAULT_FROM_EMAIL) -> Optional[PostmarkError]:
+
+        endpoint_url = self.endpoint_url + '/email/withTemplate/'
+
+        payload = self._prepare_message(sender, recipient, template_alias, template_model, 'outbound')
+
+        response = requests.post(endpoint_url, headers=self._headers, json=payload)
+        self._validate_response(response)
+
+        data = response.json()
+
+        error = self._validate_payload(data)
+
+        return error if error else None
+
+    def send_message_batch(self, recipients: list[str], template_models: list[dict], template_alias: str,
+                           sender: str = settings.DEFAULT_FROM_EMAIL) -> dict[str, PostmarkError]:
+
+        if len(recipients) != len(template_models):
+            raise ValueError("lists of recipients and payloads must be the same length")
+
+        endpoint_url = self.endpoint_url + '/email/batchWithTemplate/'
+
+        headers = self._headers
+        headers['Content-Type'] = 'application/json'
+
         messages = []
-        for recipient, model in recipients:
-            model.update({
-                'product_url': 'https://klubhaus.farafmb.de',
-                'product_name': 'Klubhaus',
-                'company_name': 'Fachschaftsrat Maschinenbau',
-                'company_address': 'Universitätsplatz 2, 39106 Magdeburg',
-            })
-            message = {
-                'From': sender,
-                'To': recipient,
-                'TemplateAlias': self.template_alias,
-                'TemplateModel': model,
-                'TrackOpens': False,
-                'TrackLinks': 'None',
-                'MessageStream': 'broadcast',
-            }
+        for recipient, template_model in zip(recipients, template_models):
+            message = self._prepare_message(sender, recipient, template_alias, template_model, 'broadcast')
             messages.append(message)
 
         payload = {
             'Messages': messages,
         }
 
-        response = requests.post(self.endpoint, headers=headers, json=payload)
+        response = requests.post(endpoint, headers=headers, json=payload)
+        self._validate_response(response)
 
-        if response.status_code == 422:
-            raise ValueError("Payload contains malformed json or incorrect fields.")
+        data: list[dict] = response.json()
 
-        data = response.json()
-
-        mails_sent = 0
-        errors = []
+        errors = {}
         for index, msg in enumerate(data):
-            if msg['ErrorCode'] == 0:
-                mails_sent += 1
-                continue
+            error = self._validate_payload(msg)
 
-            recipient = list(zip(*recipients))[0][index]
-            error = {
-                'code': msg['ErrorCode'],
-                'message': msg['Message'],
-                'recipient': recipient,
-            }
-            errors.append(error)
+            if error:
+                recipient = recipients[index]
+                errors[recipient] = error
 
-        return mails_sent, errors
+        return errors
