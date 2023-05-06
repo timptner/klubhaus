@@ -1,0 +1,8 @@
+{% for radio in field %}
+    <div>
+        <label class="radio" for="{{ radio.id_for_label }}">
+            {{ radio.tag }}
+            {{ radio.choice_label }}
+        </label>
+    </div>
+{% endfor %}

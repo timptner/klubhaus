@@ -5,6 +5,8 @@
         {% include 'bulma/fields/checkbox_snippet.html' with field=field %}
     {% elif field.field.widget.input_type == 'select' %}
         {% include 'bulma/fields/select_snippet.html' with field=field %}
+    {% elif field.field.widget.input_type == 'radio' %}
+        {% include 'bulma/fields/radio_snippet.html' with field=field %}
     {% else %}
         {{ field }}
     {% endif %}

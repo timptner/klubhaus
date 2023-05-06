@@ -72,6 +72,9 @@ class PlayerForm(forms.ModelForm):
         }
 
 
+ENROLLED_DISPLAY = state = dict(Team.STATE_CHOICES).get(Team.ENROLLED)
+
+
 class TeamDrawingForm(forms.Form):
     amount = forms.IntegerField(
         label="Anzahl",
@@ -94,7 +97,7 @@ class TeamDrawingForm(forms.Form):
                 "entsprechend viele Teams den Status \"%(state)s\" besitzen.",
                 params={
                     'amount': team_count,
-                    'state': dict(Team.STATE_CHOICES).get(Team.ENROLLED),
+                    'state': ENROLLED_DISPLAY,
                 },
                 code='maximum integer exceeded',
             )
@@ -126,3 +129,31 @@ class TeamContactForm(forms.Form):
         template = PostmarkTemplate()
         errors = template.send_message_batch(recipients, payloads, 'tournament-info')
         return errors
+
+
+class TeamStatusForm(forms.ModelForm):
+    class Meta:
+        model = Team
+        fields = ['state']
+        widgets = {
+            'state': forms.RadioSelect,
+        }
+
+    def clean_state(self):
+        data = self.cleaned_data['state']
+        if data == Team.ENROLLED:
+            raise ValidationError(
+                "Der Status \"%(state)s\" kann nur durch einen Administrator gesetzt werden.",
+                params={'state': ENROLLED_DISPLAY},
+                code='forbidden state',
+            )
+        return data
+
+    def save(self, commit=True):
+        if commit is False:
+            raise NotImplementedError("A changed team status will be committed immediately")
+
+        state = self.cleaned_data['state']
+        self.instance.set_state(state)
+
+        return self.instance
