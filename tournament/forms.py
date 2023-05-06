@@ -76,12 +76,7 @@ class TeamDrawingForm(forms.Form):
         label="Anzahl",
         min_value=1,
         widget=forms.NumberInput(attrs={'class': 'input'}),
-        help_text="Die Anzahl der Teams, welche per Los gezogen werden sollen."
-    )
-    message = forms.CharField(
-        label="Nachricht",
-        widget=forms.Textarea(attrs={'class': 'textarea'}),
-        help_text="Wichtige Informationen, welche die gezogenen Teams per E-Mail erhalten."
+        help_text="Die Anzahl der Teams, welche per Los zugelassen werden sollen."
     )
 
     def __init__(self, *args, **kwargs):
@@ -90,20 +85,17 @@ class TeamDrawingForm(forms.Form):
 
     def clean_amount(self):
         data = self.cleaned_data['amount']
-        team_count = self.tournament.team_set.count()
+        team_count = self.tournament.team_set.filter(state=Team.ENROLLED).count()
 
         if data > team_count:
             raise ValidationError(
-                "Es können maximal %(amount)s Teams ausgelost werden, da sich nur "
-                "entsprechend viele Teams angemeldet haben.",
-                params={'amount': team_count},
-                code='number to big',
+                "Es können maximal %(amount)s Teams ausgelost werden, da nur "
+                "entsprechend viele Teams den Status \"%(state)s\" besitzen.",
+                params={
+                    'amount': team_count,
+                    'state': dict(Team.STATE_CHOICES).get(Team.ENROLLED),
+                },
+                code='maximum integer exceeded',
             )
 
         return data
-
-    def clean(self):
-        cleaned_data = super().clean()
-        has_approved_teams = self.tournament.team_set.filter(is_approved=True).exists()
-        if has_approved_teams:
-            raise ValidationError("Es gibt bereits Teams, welche bestätigt sind.", code='has approved teams')

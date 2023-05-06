@@ -83,21 +83,7 @@
                             </td>
                             <td>{{ team.created_at }}</td>
                             <td>
-                                {% if team.is_approved %}
-                                    <span class="icon-text">
-                                        <span class="icon has-text-success">
-                                            <i class="fa-solid fa-circle-check"></i>
-                                        </span>
-                                        <span>Angenommen</span>
-                                    </span>
-                                {% else %}
-                                    <span class="icon-text">
-                                        <span class="icon has-text-danger">
-                                            <i class="fa-solid fa-circle-xmark"></i>
-                                        </span>
-                                        <span>Beworben</span>
-                                    </span>
-                                {% endif %}
+                                <span class="tag {{ team.get_state_color }}">{{ team.get_state_display }}</span>
                             </td>
                         </tr>
                     {% empty %}

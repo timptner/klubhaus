@@ -7,27 +7,19 @@
         <div class="container is-max-desktop">
             <h3 class="title">Teams auslosen</h3>
 
+            <article class="message is-info">
+                <div class="message-body">
+                    Es werden alle Teams über ihre Zulassung oder Ablehnung per E-Mail benachrichtigt. Teams, welche
+                    bereits vor der Losung als zugelassen oder abgelehnt markiert wurden erhalten keine E-Mail.
+                </div>
+            </article>
+
             {% if tournament.get_status == 'open' %}
                 <article class="message is-warning">
                     <div class="message-body">
                         <strong>Die Anmeldung ist noch offen!</strong> Die Auslosung der Teams sollte erst erfolgen,
                         wenn die Anmeldung geschlossen ist. Die Anmeldefrist endet in
                         {{ tournament.registration_end|timeuntil }}.
-                    </div>
-                </article>
-            {% endif %}
-
-            {% if has_approved_teams %}
-                <article class="message is-danger">
-                    <div class="message-body">
-                        <strong>
-                            Es gibt bereits Teams, welche bestätigt sind. Eine erneute Auslosung ist daher nicht
-                            möglich.
-                        </strong>
-                        <br><br>
-                        Falls eine Auslosung wiederholt werden soll, müssen zuerst alle Teams per E-Mail über die
-                        ungültige Auslosung informiert werden und anschließend alle Teams wieder als nicht bestätigt
-                        markiert werden.
                     </div>
                 </article>
             {% endif %}

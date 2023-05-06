@@ -4,14 +4,11 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms import formset_factory
 from django.core.exceptions import PermissionDenied
-from django.core.mail import mail_admins
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
-from klubhaus.mails import PostmarkTemplate
-from pprint import pprint
 from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm
-from tournament.models import Tournament, Team, Player
+from tournament.models import Tournament, Team
 
 
 class TournamentListView(LoginRequiredMixin, ListView):
@@ -111,53 +108,36 @@ def team_drawing(request, pk):
         form = TeamDrawingForm(request.POST, tournament=tournament)
         if form.is_valid():
             amount = form.cleaned_data['amount']
-            message = form.cleaned_data['message']
 
-            team_list = tournament.team_set.order_by('?').values_list('pk', flat=True)[:amount]
-            updated = Team.objects.filter(pk__in=team_list).update(is_approved=True)
+            approved = 0
+            rejected = 0
+            for index, team in enumerate(tournament.team_set.filter(state=Team.ENROLLED).order_by('?')):
+                if index < amount:
+                    is_updated = team.set_state(Team.APPROVED)
+                    if is_updated:
+                        approved += 1
+                else:
+                    is_updated = team.set_state(Team.REJECTED)
+                    if is_updated:
+                        rejected += 1
 
-            if updated == 1:
-                msg = f"Es wurde {updated} Team ausgelost."
-            else:
-                msg = f"Es wurden {updated} Teams ausgelost."
+            if amount == approved:
+                total = approved + rejected
+                if total == 1:
+                    msg = f"Es wurde {total} Team per Los entschieden. ({approved} Zugelassen, {rejected} Abgelehnt)"
+                else:
+                    msg = f"Es wurden {total} Teams per Los entschieden. ({approved} Zugelassen, {rejected} Abgelehnt)"
 
-            messages.success(request, msg)
-
-            recipients = []
-            for team in Team.objects.filter(pk__in=team_list).all():
-                recipient = (
-                    team.captain.email,
-                    {
-                        'captain_name': team.captain.first_name,
-                        'team_name': team.name,
-                        'tournament_name': tournament.title,
-                        'body': message,
-                    },
-                )
-                recipients.append(recipient)
-
-            template = PostmarkTemplate('team-drawing')
-            count, errors = template.send_messages(recipients)
-
-            if errors:
-                msg = ("Es gab ein Problem beim Versenden von E-Mails an die Teams eines Turniers.\n\n"
-                       f"Turnier: {tournament.title} (ID: {tournament.pk})\n\n"
-                       f"{pprint(errors)}")
-                mail_admins("Fehler beim E-Mail Versand", msg)
-
-                msg = (f"Es gab ein Problem beim Versenden der E-Mails! Es wurden nur {count} Teams benachrichtigt. "
-                       "Die Administratoren wurden bereits per E-Mail informiert.")
-                messages.error(request, msg)
-            else:
-                msg = "Alle gelosten Teams wurden per E-Mail benachrichtigt."
                 messages.success(request, msg)
+            else:
+                msg = f"Es gab ein Problem beim Losen der Teams. Bitte einen Administrator kontaktieren."
+                messages.error(request, msg)
 
             return redirect(reverse_lazy('tournament:team_list', kwargs={'pk': tournament.pk}))
     else:
         form = TeamDrawingForm(tournament=tournament)
     context = {
         'tournament': tournament,
-        'has_approved_teams': tournament.team_set.filter(is_approved=True).exists(),
         'form': form,
     }
     return render(request, 'tournament/team_drawing.html', context=context)
