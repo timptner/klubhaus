@@ -1,6 +1,11 @@
+import logging
+
 from accounts.models import User
 from django.db import models
 from django.utils import timezone
+from klubhaus.mails import PostmarkTemplate
+
+logger = logging.getLogger(__name__)
 
 
 class Tournament(models.Model):
@@ -44,10 +49,18 @@ class Tournament(models.Model):
 
 
 class Team(models.Model):
+    ENROLLED = 'E'
+    APPROVED = 'A'
+    REJECTED = 'R'
+    STATE_CHOICES = [
+        (ENROLLED, "Eingeschrieben"),
+        (APPROVED, "Zugelassen"),
+        (REJECTED, "Abgelehnt"),
+    ]
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     captain = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField("Name", max_length=250)
-    is_approved = models.BooleanField("Zugelassen", default=False)
+    state = models.CharField("Status", max_length=1, choices=STATE_CHOICES, default=ENROLLED)
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 
     class Meta:
@@ -61,6 +74,49 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_state_color(self) -> str:
+        colors = {
+            self.ENROLLED: 'is-info',
+            self.APPROVED: 'is-success',
+            self.REJECTED: 'is-danger',
+        }
+        try:
+            color = colors[self.state]
+        except KeyError:
+            color = ''
+        return color
+
+    def set_state(self, state) -> bool:
+        states = [choice for choice, label in self.STATE_CHOICES]
+        if state not in states:
+            choices = ', '.join(states)
+            raise ValueError(f"You can only set a state to one of the available choices. ({choices})")
+
+        self.state = state
+        self.save()
+
+        template = PostmarkTemplate()
+        payload = {
+            'captain_name': self.captain.first_name,
+            'team_name': self.name,
+            'tournament_name': self.tournament.title,
+        }
+        if state == self.APPROVED:
+            error = template.send_message(self.captain.email, 'team-approved', payload)
+        elif state == self.REJECTED:
+            error = template.send_message(self.captain.email, 'team-rejected', payload)
+        elif state == self.ENROLLED:
+            raise NotImplementedError(f"Can not reset state to '{self.ENROLLED}'. Please request an administrator to "
+                                      "use the available django-admin command.")
+        else:
+            error = None
+
+        if error:
+            logger.error("Failed to send email about changed state for team '%s'", self.name)
+            return False
+
+        return True
 
 
 class Player(models.Model):
