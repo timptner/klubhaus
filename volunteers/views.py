@@ -64,3 +64,16 @@ class VolunteerCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy('volunteers:event_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class VolunteerListView(PermissionRequiredMixin, ListView):
+    permission_required = 'volunteers.view_volunteer'
+    model = Volunteer
+
+    def get_queryset(self):
+        return Volunteer.objects.filter(event__pk=self.kwargs['pk'])
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['event'] = Event.objects.get(pk=self.kwargs['pk'])
+        return context

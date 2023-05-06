@@ -33,6 +33,11 @@
                             <div class="dropdown-content">
                                 {% url 'volunteers:event_update' event.pk as url %}
                                 {% include 'dropdown_snippet.html' with permission=perms.volunteers.change_event url=url label="Veranstaltung bearbeiten" %}
+
+                                <hr class="dropdown-divider">
+
+                                {% url 'volunteers:volunteer_list' event.pk as url %}
+                                {% include 'dropdown_snippet.html' with permission=perms.volunteers.view_volunteer url=url label="Freiwillige Helfer anzeigen" %}
                             </div>
                         </div>
                     </div>
