@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'field_trips',
     'home',
     'tournament',
+    'volunteers',
 
     'fontawesomefree',
 
