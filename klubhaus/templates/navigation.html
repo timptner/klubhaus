@@ -33,25 +33,14 @@
                         </span>
                     </a>
 
-                    <!--
-                    <a class="navbar-item" href="#">
-                        <span class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-shirt"></i>
-                            </span>
-                            <span>{% trans "Merchandise" %}</span>
-                        </span>
-                    </a>
-
-                    <a class="navbar-item">
+                    <a class="navbar-item" href="{% url 'volunteers:event_list' %}">
                         <span class="icon-text">
                             <span class="icon">
                                 <i class="fa-solid fa-hand-holding-heart"></i>
                             </span>
-                            <span>{% trans "Mentoring" %}</span>
+                            <span>Helfende Hände</span>
                         </span>
                     </a>
-                    -->
 
                     {% if perms.accounts.view_user %}
                         <a class="navbar-item" href="{% url 'accounts:user_list' %}">
