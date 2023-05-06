@@ -71,6 +71,9 @@ class Team(models.Model):
             models.UniqueConstraint(fields=['tournament', 'captain'], name='unique_tournament_team'),
             models.UniqueConstraint(fields=['tournament', 'name'], name='unique_tournament_team_name'),
         ]
+        permissions = [
+            ('contact_team', "Can contact team captain"),
+        ]
 
     def __str__(self):
         return self.name

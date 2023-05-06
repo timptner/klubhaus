@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from klubhaus.mails import PostmarkTemplate
 from tournament.models import Tournament, Team, Player
 
 
@@ -99,3 +100,29 @@ class TeamDrawingForm(forms.Form):
             )
 
         return data
+
+
+class TeamContactForm(forms.Form):
+    message = forms.CharField(
+        label="Nachricht",
+        widget=forms.Textarea(attrs={'class': 'textarea'}),
+    )
+
+    def send_email(self, tournament: Tournament) -> dict:
+        message = self.cleaned_data['message']
+
+        recipients = []
+        payloads = []
+        for team in tournament.team_set.filter(state=Team.APPROVED):
+            recipients.append(team.captain.email)
+            payload = {
+                'tournament_name': tournament.title,
+                'team_name': team.name,
+                'captain_name': team.captain.first_name,
+                'body': message,
+            }
+            payloads.append(payload)
+
+        template = PostmarkTemplate()
+        errors = template.send_message_batch(recipients, payloads, 'tournament-info')
+        return errors

@@ -6,8 +6,8 @@ from django.forms import formset_factory
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
-from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
+from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm, TeamContactForm
 from tournament.models import Tournament, Team
 
 
@@ -141,3 +141,41 @@ def team_drawing(request, pk):
         'form': form,
     }
     return render(request, 'tournament/team_drawing.html', context=context)
+
+
+class TeamContactView(PermissionRequiredMixin, FormView):
+    permission_required = 'tournaments.contact_team'
+    form_class = TeamContactForm
+    template_name = 'tournament/team_contact.html'
+
+    def get_success_url(self):
+        return reverse_lazy('tournament:team_list', kwargs={'pk': self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tournament'] = Tournament.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        tournament = Tournament.objects.get(pk=self.kwargs['pk'])
+
+        errors = form.send_email(tournament)
+
+        if errors:
+            email_list = ', '.join(errors.keys())
+
+            msg = ("Es gab ein Problem beim Sender einiger E-Mails. Die folgenden Benutzer haben aufgrund eines "
+                   f"Problems keine E-Mail erhalten: {email_list}.")
+
+            messages.error(self.request, msg)
+        else:
+            total = tournament.team_set.filter(state=Team.APPROVED).count()
+
+            if total == 1:
+                msg = f"Es wurde {total} Team erfolgreich per E-Mail kontaktiert."
+            else:
+                msg = f"Es wurden {total} Teams erfolgreich per E-Mail kontaktiert."
+
+            messages.success(self.request, msg)
+
+        return super().form_valid(form)

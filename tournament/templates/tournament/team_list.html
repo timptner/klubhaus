@@ -39,6 +39,9 @@
                             <div class="dropdown-content">
                                 {% url 'tournament:team_drawing' tournament.pk as url %}
                                 {% include 'dropdown_snippet.html' with permission=perms.tournament.change_team url=url label="Teams auslosen" %}
+
+                                {% url 'tournament:team_contact' tournament.pk as url %}
+                                {% include 'dropdown_snippet.html' with permission=perms.tournament.contact_team url=url label="Teams kontaktieren" %}
                             </div>
                         </div>
                     </div>
