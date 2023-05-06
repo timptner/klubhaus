@@ -179,7 +179,7 @@ class PostmarkTemplate:
             'Messages': messages,
         }
 
-        response = requests.post(endpoint, headers=headers, json=payload)
+        response = requests.post(endpoint_url, headers=headers, json=payload)
         self._validate_response(response)
 
         data: list[dict] = response.json()
