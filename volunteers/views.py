@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView
@@ -46,10 +46,17 @@ class EventUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
         return reverse_lazy('volunteers:event_detail', kwargs={'pk': self.kwargs['pk']})
 
 
-class VolunteerCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class VolunteerCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Volunteer
     form_class = VolunteerForm
     success_message = "Du hast dich erfolgreich als freiwilliger Helfer angemeldet"
+
+    def test_func(self):
+        event = Event.objects.get(pk=self.kwargs['pk'])
+        if event.state == Event.OPENED:
+            return True
+
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
