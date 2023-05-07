@@ -62,7 +62,15 @@
                     <tbody>
                     {% for volunteer in volunteer_list %}
                         <tr>
-                            <td>{{ volunteer.user.get_full_name }}</td>
+                            <td>
+                                {% if perms.accounts.view_user %}
+                                    <a href="{% url 'accounts:user_detail' volunteer.user.pk %}">
+                                        {{ volunteer.user.get_full_name }}
+                                    </a>
+                                {% else %}
+                                    {{ volunteer.user.get_full_name }}
+                                {% endif %}
+                            </td>
                             <td>{{ volunteer.comment }}</td>
                             <td>{{ volunteer.created_at }}</td>
                         </tr>
