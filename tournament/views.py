@@ -195,4 +195,4 @@ class TeamStateChangeView(PermissionRequiredMixin, SuccessMessageMixin, UpdateVi
         )
 
     def get_success_url(self):
-        return reverse_lazy('tournament:team_list', kwargs={'pk': self.kwargs['pk']})
+        return reverse_lazy('tournament:team_list', kwargs={'pk': self.object.tournament.pk})
