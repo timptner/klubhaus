@@ -27,49 +27,51 @@
 </head>
 
 <body>
-{% include 'navigation.html' %}
+{% block page %}
+    {% include 'navigation.html' %}
 
-{% if messages %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="notification{% if message.tags %} {{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+    {% if messages %}
+        <section class="section">
+            <div class="container is-max-desktop">
+                <div class="messages">
+                    {% for message in messages %}
+                        <div class="notification{% if message.tags %} {{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    <footer class="footer">
+        <div class="container">
+            <div class="columns">
+                <div class="column">
+                    {% blocktrans %}
+                        Made with &hearts; by Aiven. Using
+                        <a href="https://www.djangoproject.com/" target="_blank">Django</a> and
+                        <a href="https://bulma.io/" target="_blank">Bulma</a>.
+                    {% endblocktrans %}
+                </div>
+
+                <div class="column is-narrow">
+                    <p>
+                        <a class="mr-3" href="{% url 'home:site_notice' %}">{% trans "Site notice" %}</a>
+                        <a class="mr-3" href="{% url 'home:privacy_policy' %}">{% trans "Privacy policy" %}</a>
+                        &copy; {# 2023 - #}{% now 'Y' %} FaRaFMB
+                    </p>
+                </div>
             </div>
         </div>
-    </section>
-{% endif %}
+    </footer>
 
-{% block content %}{% endblock %}
-
-<footer class="footer">
-    <div class="container">
-        <div class="columns">
-            <div class="column">
-                {% blocktrans %}
-                    Made with &hearts; by Aiven. Using
-                    <a href="https://www.djangoproject.com/" target="_blank">Django</a> and
-                    <a href="https://bulma.io/" target="_blank">Bulma</a>.
-                {% endblocktrans %}
-            </div>
-
-            <div class="column is-narrow">
-                <p>
-                    <a class="mr-3" href="{% url 'home:site_notice' %}">{% trans "Site notice" %}</a>
-                    <a class="mr-3" href="{% url 'home:privacy_policy' %}">{% trans "Privacy policy" %}</a>
-                    &copy; {# 2023 - #}{% now 'Y' %} FaRaFMB
-                </p>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- Scripts -->
-{% block scripts %}
-    <script src="{% static 'js/navigation.js' %}"></script>
+    <!-- Scripts -->
+    {% block scripts %}
+        <script src="{% static 'js/navigation.js' %}"></script>
+    {% endblock %}
 {% endblock %}
 </body>
 

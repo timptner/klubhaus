@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block page %}
+    <section class="section">
+        <div class="container is-max-desktop">
+            {% block page-title %}
+                <h2 class="title is-2 has-text-centered">Klubhaus</h2>
+            {% endblock %}
+
+            {% block form-content %}
+                <div class="box">
+                    {% block content %}{% endblock %}
+                </div>
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}
