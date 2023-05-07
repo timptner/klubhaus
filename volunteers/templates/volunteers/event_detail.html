@@ -1,102 +1,64 @@
-{% extends 'base.html' %}
+{% extends 'volunteers/base.html' %}
 
-{% block title %}{{ block.super }} | {{ event.title }}{% endblock %}
+{% block title %}
+    {{ block.super }} | {{ event.title }}
+{% endblock %}
 
-{% block content %}
-    <section class="section">
-        <div class="container">
-            <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
-                    <ul>
-                        <li><a href="{% url 'volunteers:event_list' %}">Veranstaltungen</a></li>
-
-                        <li class="is-active">
-                            <a href="{% url 'volunteers:event_detail' event.pk %}" aria-current="page">
-                                {{ event.title }}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                {% if user.is_staff %}
-                    <div class="dropdown is-right is-hoverable">
-                        <div class="dropdown-trigger">
-                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                            <span class="icon is-small">
-                                <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
-                            </span>
-                                <span>Optionen</span>
-                            </button>
-                        </div>
-
-                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                            <div class="dropdown-content">
-                                {% url 'volunteers:event_update' event.pk as url %}
-                                {% include 'dropdown_snippet.html' with permission=perms.volunteers.change_event url=url label="Veranstaltung bearbeiten" %}
-
-                                <hr class="dropdown-divider">
-
-                                {% url 'volunteers:volunteer_list' event.pk as url %}
-                                {% include 'dropdown_snippet.html' with permission=perms.volunteers.view_volunteer url=url label="Freiwillige Helfer anzeigen" %}
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
+{% block subcontent %}
+    {% if user.is_staff %}
+        <div class="buttons is-justify-content-flex-end">
+            {% url 'volunteers:event_update' event.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.volunteers.change_event url=url label="Veranstaltung bearbeiten" %}
         </div>
-    </section>
+    {% endif %}
 
-    <section class="section">
-        <div class="container is-max-desktop">
-            <div class="is-flex is-align-items-center">
-                <h3 class="title mb-0 mr-3">
-                    {{ event.title }}
-                </h3>
+    <div class="is-flex is-align-items-center">
+        <h3 class="title mb-0 mr-3">
+            {{ event.title }}
+        </h3>
 
-                <span class="tag {{ event.get_state_color }}">
-                    {{ event.get_state_display }}
-                </span>
+        <span class="tag {{ event.get_state_color }}">
+            {{ event.get_state_display }}
+        </span>
+    </div>
+
+    <h5 class="subtitle">{{ event.date }}</h5>
+
+    {% if event.state == event.PREPARED %}
+        <article class="message is-info">
+            <div class="message-body">
+                Die Registrierung ist im Moment noch geschlossen. Schaue in ein paar Tagen noch einmal vorbei.
             </div>
-
-            <h5 class="subtitle">{{ event.date }}</h5>
-
-            {% if event.state == event.PREPARED %}
-                <article class="message is-info">
-                    <div class="message-body">
-                        Die Registrierung ist im Moment noch geschlossen. Schaue in ein paar Tagen noch einmal vorbei.
-                    </div>
-                </article>
-            {% elif event.state == event.CLOSED %}
-                <article class="message is-danger">
-                    <div class="message-body">
-                        Die Registrierung ist beendet und wird nicht wieder geöffnet.
-                    </div>
-                </article>
-            {% endif %}
-
-            {% if is_registered and not is_disabled %}
-                <article class="message is-warning">
-                    <div class="message-body">
-                        Du bist für diese Veranstaltung bereits als Helfer registriert.
-                    </div>
-                </article>
-            {% endif %}
-
-            <div class="content">
-                {{ event.desc|linebreaks }}
+        </article>
+    {% elif event.state == event.CLOSED %}
+        <article class="message is-danger">
+            <div class="message-body">
+                Die Registrierung ist beendet und wird nicht wieder geöffnet.
             </div>
+        </article>
+    {% endif %}
 
-            <div class="buttons">
-                {% if is_disabled or is_registered %}
-                    <button class="button is-static">
-                        Als Helfer registrieren
-                    </button>
-                {% else %}
-                    <a class="button is-primary" href="{% url 'volunteers:volunteer_create' event.pk %}">
-                        Als Helfer registrieren
-                    </a>
-                {% endif %}
+    {% if is_registered and not is_disabled %}
+        <article class="message is-warning">
+            <div class="message-body">
+                Du bist für diese Veranstaltung bereits als Helfer registriert.
             </div>
-        </div>
-    </section>
+        </article>
+    {% endif %}
+
+    <div class="content">
+        {{ event.desc|linebreaks }}
+    </div>
+
+    <div class="buttons">
+        {% if is_disabled or is_registered %}
+            <button class="button is-static">
+                Als Helfer registrieren
+            </button>
+        {% else %}
+            <a class="button is-primary" href="{% url 'volunteers:volunteer_create' event.pk %}">
+                Als Helfer registrieren
+            </a>
+        {% endif %}
+    </div>
 {% endblock %}

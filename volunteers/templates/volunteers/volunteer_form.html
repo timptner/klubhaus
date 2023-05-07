@@ -1,42 +1,38 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% block title %}{{ block.super }} | Als Helfer registrieren{% endblock %}
+{% block title %}
+    {{ block.super }} | Als Helfer registrieren
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-    <div class="container is-max-desktop">
-        <h3 class="title">Als Helfer registrieren</h3>
-        <h5 class="subtitle">{{ event.title }}</h5>
+    <h3 class="title">Als Helfer registrieren</h3>
+    <h5 class="subtitle">{{ event.title }}</h5>
 
-        <div class="box">
-            <form method="post">
-                {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                <div class="field">
-                    {% include 'bulma/label_snippet.html' with label="Name" required=True %}
+        <div class="field">
+            {% include 'bulma/label_snippet.html' with label="Name" required=True %}
 
-                    <div class="control">
-                        <input class="input" type="text" value="{{ user.get_full_name }}" disabled>
-                    </div>
-                </div>
-
-                {{ form }}
-
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">
-                            Anmelden
-                        </button>
-                    </div>
-
-                    <div class="control">
-                        <a class="button is-light" href="{% url 'volunteers:event_detail' event.pk %}">
-                            Abbrechen
-                        </a>
-                    </div>
-                </div>
-            </form>
+            <div class="control">
+                <input class="input" type="text" value="{{ user.get_full_name }}" disabled>
+            </div>
         </div>
-    </div>
-    </section>
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    Anmelden
+                </button>
+            </div>
+
+            <div class="control">
+                <a class="button is-light" href="{% url 'volunteers:event_detail' event.pk %}">
+                    Abbrechen
+                </a>
+            </div>
+        </div>
+    </form>
 {% endblock %}

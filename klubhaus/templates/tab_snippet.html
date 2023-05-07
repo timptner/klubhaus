@@ -1,0 +1,17 @@
+<li>
+    {% if permission %}
+        <a href="{{ url }}">
+            <span class="icon is-small">
+                <i class="fa-solid {{ icon }}" aria-hidden="true"></i>
+            </span>
+            <span>{{ label }}</span>
+        </a>
+    {% else %}
+        <a>
+            <span class="icon is-small">
+                <i class="fa-solid fa-lock" aria-hidden="true"></i>
+            </span>
+            <span>{{ label }}</span>
+        </a>
+    {% endif %}
+</li>

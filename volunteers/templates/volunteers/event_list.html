@@ -1,99 +1,76 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ block.super }} | Veranstaltungen{% endblock %}
+{% block title %}
+    {{ block.super }} | Veranstaltungen
+{% endblock %}
 
 {% block content %}
     {% if user.is_staff %}
-        <section class="section">
-            <div class="container">
-                <div class="is-flex is-justify-content-end">
-                    <div class="dropdown is-right is-hoverable">
-                        <div class="dropdown-trigger">
-                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                            <span class="icon is-small">
-                                <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
-                            </span>
-                                <span>Optionen</span>
-                            </button>
-                        </div>
-
-                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                            <div class="dropdown-content">
-                                {% url 'volunteers:event_create' as url %}
-                                {% include 'dropdown_snippet.html' with permission=perms.volunteers.add_event url=url label="Neue Veranstaltung hinzufügen" %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div class="buttons is-justify-content-end">
+            {% url 'volunteers:event_create' as url %}
+            {% include 'button_snippet.html' with permission=perms.volunteers.add_event url=url label="Veranstaltung erstellen" %}
+        </div>
     {% endif %}
 
-    <section class="section">
-        <div class="container">
-            <h3 class="title">Veranstaltungen</h3>
+    <h3 class="title">Veranstaltungen</h3>
 
-            {% if personal_events %}
-                <article class="message is-info">
-                    <div class="message-body">
-                        Veranstaltungen, bei welchen du bereits als freiwilliger Helfer registriert bist zeigen ein
+    {% if personal_events %}
+        <article class="message is-info">
+            <div class="message-body">
+                Veranstaltungen, bei welchen du bereits als freiwilliger Helfer registriert bist zeigen ein
+                <span class="icon-text">
+                    <span>Herz-Symbol</span>
+                    <span class="icon has-text-danger">
+                        <i class="fa-solid fa-heart"></i>
+                    </span>
+                </span>
+                hinter dem Titel an.
+            </div>
+        </article>
+    {% endif %}
+
+    <div class="table-container">
+        <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Datum</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for event in event_list %}
+                <tr>
+                    <td>
                         <span class="icon-text">
                             <span>
-                                Herz-Symbol
+                                <a href="{% url 'volunteers:event_detail' event.pk %}">
+                                    {{ event.title }}
+                                </a>
                             </span>
-                            <span class="icon has-text-danger">
-                                <i class="fa-solid fa-heart"></i>
-                            </span>
+                            {% if event.pk in personal_events %}
+                                <span class="icon has-text-danger">
+                                    <i class="fa-solid fa-heart"></i>
+                                </span>
+                            {% endif %}
                         </span>
-                        hinter dem Titel an.
-                    </div>
-                </article>
-            {% endif %}
-
-            <div class="table-container">
-                <table class="table is-hoverable is-fullwidth">
-                    <thead>
-                    <tr>
-                        <th>Titel</th>
-                        <th>Datum</th>
-                        <th>Status</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    {% for event in event_list %}
-                        <tr>
-                            <td>
-                                <span class="icon-text">
-                                    <span>
-                                        <a href="{% url 'volunteers:event_detail' event.pk %}">
-                                            {{ event.title }}
-                                        </a>
-                                    </span>
-                                    {% if event.pk in personal_events %}
-                                        <span class="icon has-text-danger">
-                                            <i class="fa-solid fa-heart"></i>
-                                        </span>
-                                    {% endif %}
-                                </span>
-                            </td>
-                            <td>{{ event.date }}</td>
-                            <td>
-                                <span class="tag {{ event.get_state_color }}">
-                                    {{ event.get_state_display }}
-                                </span>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3" class="is-italic has-text-centered">
-                                Es wurde noch keine Veranstaltungen erstellt.
-                            </td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+                    </td>
+                    <td>{{ event.date }}</td>
+                    <td>
+                        <span class="tag {{ event.get_state_color }}">
+                            {{ event.get_state_display }}
+                        </span>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="is-italic has-text-centered">
+                        Es wurde noch keine Veranstaltungen erstellt.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

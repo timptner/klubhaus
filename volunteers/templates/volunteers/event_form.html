@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
 {% block title %}
     {{ block.super }} |
@@ -10,47 +10,41 @@
 {% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">
+    <h3 class="title">
+        {% if form.initial %}
+            Veranstaltung bearbeiten
+        {% else %}
+            Veranstaltung hinzufügen
+        {% endif %}
+    </h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    {% if form.initial %}
+                        Aktualisieren
+                    {% else %}
+                        Erstellen
+                    {% endif %}
+                </button>
+            </div>
+
+            <div class="control">
                 {% if form.initial %}
-                    Veranstaltung bearbeiten
+                    <a class="button is-light" href="{% url 'volunteers:event_detail' event.pk %}">
+                        Abbrechen
+                    </a>
                 {% else %}
-                    Veranstaltung hinzufügen
+                    <a class="button is-light" href="{% url 'volunteers:event_list' %}">
+                        Abbrechen
+                    </a>
                 {% endif %}
-            </h3>
-
-            <div class="box">
-                <form method="post">
-                    {% csrf_token %}
-
-                    {{ form }}
-
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">
-                                {% if form.initial %}
-                                    Aktualisieren
-                                {% else %}
-                                    Erstellen
-                                {% endif %}
-                            </button>
-                        </div>
-
-                        <div class="control">
-                            {% if form.initial %}
-                                <a class="button is-light" href="{% url 'volunteers:event_detail' event.pk %}">
-                                    Abbrechen
-                                </a>
-                            {% else %}
-                                <a class="button is-light" href="{% url 'volunteers:event_list' %}">
-                                    Abbrechen
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}
