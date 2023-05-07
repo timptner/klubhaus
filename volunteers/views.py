@@ -1,8 +1,9 @@
+from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, DetailView, UpdateView
-from volunteers.forms import EventForm, VolunteerForm
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
+from volunteers.forms import EventForm, VolunteerForm, VolunteerContactForm
 from volunteers.models import Event, Volunteer
 
 
@@ -84,3 +85,30 @@ class VolunteerListView(PermissionRequiredMixin, ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context['event'] = Event.objects.get(pk=self.kwargs['pk'])
         return context
+
+
+class VolunteerContactView(PermissionRequiredMixin, FormView):
+    permission_required = 'volunteers.contact_volunteer'
+    form_class = VolunteerContactForm
+    template_name = 'volunteers/volunteer_contact.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['event'] = Event.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        event = Event.objects.get(pk=self.kwargs['pk'])
+
+        errors = form.send_mail(event)
+
+        if errors:
+            msg = f"Es kam zu einem Problem beim Versenden der E-Mails. Bitte einen Administrator kontaktieren."
+            messages.error(self.request, msg)
+        else:
+            messages.success(self.request, f"Es wurden alle freiwilligen Helfer erfolgreich per E-Mails kontaktiert.")
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('volunteers:volunteer_list', kwargs={'pk': self.kwargs['pk']})

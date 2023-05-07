@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from volunteers.models import Event, Volunteer
+from klubhaus.mails import PostmarkTemplate
 
 
 class EventForm(forms.ModelForm):
@@ -49,3 +50,28 @@ class VolunteerForm(forms.ModelForm):
             volunteer.save()
 
         return volunteer
+
+
+class VolunteerContactForm(forms.Form):
+    message = forms.CharField(label="Nachricht", widget=forms.Textarea(attrs={'class': 'textarea'}))
+
+    def send_mail(self, event: Event):
+        template = PostmarkTemplate()
+
+        volunteers = Volunteer.objects.filter(event=event)
+
+        message = self.cleaned_data['message']
+
+        recipients = []
+        payloads = []
+        for volunteer in volunteers:
+            recipients.append(volunteer.user.email)
+            payload = {
+                'volunteer_name': volunteer.user.first_name,
+                'event_name': event.title,
+                'body': message,
+            }
+            payloads.append(payload)
+
+        errors = template.send_message_batch(recipients, payloads, 'volunteer-contact')
+        return errors

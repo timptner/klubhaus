@@ -49,6 +49,9 @@ class Volunteer(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['event', 'user'], name='unique_event_volunteer'),
         ]
+        permissions = [
+            ('contact_volunteer', "Can contact volunteer"),
+        ]
 
     def __str__(self):
         return self.user.get_full_name()

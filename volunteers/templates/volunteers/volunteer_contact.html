@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ block.super }} | Freiwillige Helfer kontaktieren{% endblock %}
+
+{% block content %}
+    <section class="section">
+        <div class="container">
+            <h3 class="title">Freiwillige Helfer kontaktieren</h3>
+
+            <article class="message is-info">
+                <div class="message-body">
+                    Jeder freiwillige Helfer bekommt die Nachricht per individueller E-Mail. Die Nachricht enthält
+                    bereits eine Anrede sowie die Signatur des Fachschaftsrates.
+                </div>
+            </article>
+
+            <div class="box">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {{ form }}
+
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary" type="submit">Abschicken</button>
+                        </div>
+
+                        <div class="control">
+                            <a class="button is-light" href="{% url 'volunteers:volunteer_list' event.pk %}">
+                                Abbrechen
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{% endblock %}
