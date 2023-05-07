@@ -1,13 +1,16 @@
-{% extends 'base.html' %}
+{% extends 'base_error.html' %}
 
-{% load i18n %}
-
-{% block title %}{% trans "Logged out" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Abgemeldet
+{% endblock %}
 
 {% block content %}
-    {% trans "Logged out" as header %}
-    {% blocktrans asvar body trimmed %}
-        You were logged out successfully. See you soon.
-    {% endblocktrans %}
-    {% include 'accounts/_message.html' with header=header body=body state='is-success' %}
+    <article class="message is-success">
+        <div class="message-header">
+            Abgemeldet
+        </div>
+        <div class="message-body">
+            Du wurdest erfolgreich abgemeldet. Bis bald.
+        </div>
+    </article>
 {% endblock %}

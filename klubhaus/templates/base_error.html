@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block page %}
+    <section class="hero is-fullheight">
+        <div class="hero-body is-justify-content-center">
+            <div style="max-width: 35rem">
+                {% include 'title_snippet.html' %}
+
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </section>
+{% endblock %}

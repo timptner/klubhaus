@@ -1,16 +1,18 @@
-{% extends 'base.html' %}
+{% extends 'base_error.html' %}
 
-{% load i18n %}
+{% block title %}
+    {{ block.super }} | Registrierung erledigt
+{% endblock %}
 
-{% block title %}{% trans "Registration" %}{% endblock %}
-
-{% block page %}
-    {% trans "New account was created" as header %}
-    {% blocktrans asvar body trimmed with expiry=link_expired|timeuntil %}
-        A new account for you was created successfully. Right now
-        <strong>your account is inactive</strong>. To validate your email address
-        <strong>we have emailed you</strong> a link. Please click on the link to activate your
-        account. The link will <strong>expire after {{ expiry }}</strong>.
-    {% endblocktrans %}
-    {% include 'accounts/_message.html' with header=header body=body state='is-warning' %}
+{% block content %}
+    <article class="message is-warning">
+        <div class="message-header">
+            <p>Neues Konto wurde erstellt</p>
+        </div>
+        <div class="message-body">
+            Ein neues Konto wurde erfolgreich für dich erstellt. Allerdings ist dein
+            <strong>Konto noch inaktiv</strong>. Wir haben dir eine E-Mail zum Aktivieren deines Kontos geschickt. Die
+            Aktivierung ist bis zum {{ link_expired }} möglich.
+        </div>
+    </article>
 {% endblock %}

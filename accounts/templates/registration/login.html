@@ -1,39 +1,29 @@
-{% extends 'base.html' %}
+{% extends 'registration/base.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Log in" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Anmelden
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-half">
-                    <h3 class="title">{% trans "Log in" %}</h3>
+    <h3 class="title">Anmelden</h3>
 
-                    <div class="box">
-                        <form method="post">
-                            {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                            {{ form }}
+        {{ form }}
 
-                            <div class="field is-grouped">
-                                <div class="control">
-                                    <button class="button is-primary" type="submit">
-                                        {% trans "Login" %}
-                                    </button>
-                                </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    Anmelden
+                </button>
+            </div>
 
-                                <div class="control">
-                                    <a class="button is-ghost" href="{% url 'accounts:password_reset' %}">
-                                        {% trans "Forget password?" %}
-                                    </a>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="control">
+                <a class="button is-ghost" href="{% url 'accounts:password_reset' %}">
+                    Passwort vergessen?
+                </a>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

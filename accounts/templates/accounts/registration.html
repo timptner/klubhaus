@@ -1,28 +1,28 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n %}
+{% block title %}
+    {{ block.super }} | Registrierung
+{% endblock %}
 
-{% block title %}{{ block.super }} | {% trans "Registration" %}{% endblock %}
-
-{% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">{% trans "Registration" %}</h3>
-
-            <article class="message is-info">
-                <div class="message-header">
-                    <p>{% trans "Privacy" %}</p>
-                </div>
-
-                <div class="message-body">
-                    <ul class="bullet-list">
-                        <li>{% trans "We use your full name for identification." %}</li>
-                        <li>{% trans "We use your email address for communication." %}</li>
-                    </ul>
-                </div>
-            </article>
-
+{% block form-content %}
+    <div class="columns is-centered">
+        <div class="column is-two-thirds">
             <div class="box">
+                <h3 class="title">Registrierung</h3>
+
+                <article class="message is-info">
+                    <div class="message-header">
+                        <p>Datenschutz</p>
+                    </div>
+
+                    <div class="message-body">
+                        <ul class="bullet-list">
+                            <li>Wir benötigen deinen vollständigen Namen zur Identifikation.</li>
+                            <li>Wir benötigen deine E-Mail-Adresse für die Kommunikation mit dir.</li>
+                        </ul>
+                    </div>
+                </article>
+
                 <form method="post">
                     {% csrf_token %}
 
@@ -30,11 +30,11 @@
 
                     <div class="field is-grouped">
                         <div class="control">
-                            <button class="button is-primary" type="submit">{% trans "Register" %}</button>
+                            <button class="button is-primary" type="submit">Konto erstellen</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-    </section>
+    </div>
 {% endblock %}
