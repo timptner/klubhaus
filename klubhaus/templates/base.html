@@ -30,21 +30,21 @@
 {% block page %}
     {% include 'navigation.html' %}
 
-    {% if messages %}
-        <section class="section">
-            <div class="container is-max-desktop">
-                <div class="messages">
+    <section class="section">
+        <div class="container is-max-desktop">
+            {% if messages %}
+                <div class="messages mb-5">
                     {% for message in messages %}
                         <div class="notification{% if message.tags %} {{ message.tags }}{% endif %}">
                             {{ message }}
                         </div>
                     {% endfor %}
                 </div>
-            </div>
-        </section>
-    {% endif %}
+            {% endif %}
 
-    {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
+        </div>
+    </section>
 
     <footer class="footer">
         <div class="container">

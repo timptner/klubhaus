@@ -1,50 +1,42 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Edit profile" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Daten aktualisieren
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">{% trans "Edit profile" %}</h3>
+    <h3 class="title">Daten aktualisieren</h3>
 
-            <article class="message is-warning">
-                <div class="message-body">
-                    {% blocktrans trimmed %}
-                        To change your email address please contact support.
-                    {% endblocktrans %}
-                </div>
-            </article>
+    <article class="message is-warning">
+        <div class="message-body">
+            Um deine E-Mail-Adresse zu ändern musst du Kontakt mit dem Fachschaftsrat aufnehmen.
+        </div>
+    </article>
 
-            <article class="message is-info">
-                <div class="message-header">{% trans "Privacy" %}</div>
+    <article class="message is-info">
+        <div class="message-header">Datenschutz</div>
 
-                <div class="message-body">
-                    <ul class="bullet-list">
-                        <li>{% trans "We use your full name for identification." %}</li>
-                        <li>{% trans "We use your mobile number for urgent communication." %}</li>
-                    </ul>
-                </div>
-            </article>
+        <div class="message-body">
+            <ul class="bullet-list">
+                <li>Wir benötigen deinen vollständigen Namen zur Identifikation.</li>
+                <li>Wir benötigen deine Mobilnummer für die kurzfristige Kommunikation.</li>
+            </ul>
+        </div>
+    </article>
 
-            <div class="box">
-                <form method="post">
-                    {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                    {{ form }}
+        {{ form }}
 
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">{% trans "Update" %}</button>
-                        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">Ändern</button>
+            </div>
 
-                        <div class="control">
-                            <a class="button is-light" href="{% url 'accounts:profile' %}">{% trans "Cancel" %}</a>
-                        </div>
-                    </div>
-                </form>
+            <div class="control">
+                <a class="button is-light" href="{% url 'accounts:profile' %}">Abbrechen</a>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

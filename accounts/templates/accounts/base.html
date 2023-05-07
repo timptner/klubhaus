@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="tabs">
+        <ul>
+            <li>
+                <a href="{% url 'accounts:profile' %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </span>
+                    <span>Profil</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'tournament:my_team_list' %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-people-group" aria-hidden="true"></i>
+                    </span>
+                    <span>Teams</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    {% block subcontent %}{% endblock %}
+{% endblock %}
