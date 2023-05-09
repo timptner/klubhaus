@@ -1,74 +1,56 @@
-{% extends 'base.html' %}
+{% extends 'field_trips/base.html' %}
 
-{% load static i18n %}
+{% load static %}
 
-{% block title %}{{ block.super }} | {% trans "Participants" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Teilnehmer
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
-                    <ul>
-                        <li><a href="{% url 'field_trips:field_trip_list' %}">{% trans "Field Trips" %}</a></li>
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
 
-                        <li>
-                            <a href="{% url 'field_trips:field_trip_detail' field_trip.pk %}">
-                                {{ field_trip.title }}
-                            </a>
-                        </li>
+{% block subcontent %}
+    <h3 class="title">Teilnehmer</h3>
 
-                        <li class="is-active">
-                            <a href="{% url 'field_trips:field_trip_participants' field_trip.pk %}" aria-current="page">
-                                {% trans "Participants" %}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </div>
-    </section>
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Angemeldet am</th>
+                <th></th>
+            </tr>
+            </thead>
 
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">{% trans "Participants" %}</h3>
+            <tbody>
+            {% for participant in participant_list %}
+                <tr>
+                    <td>{{ participant.user.get_full_name }}</td>
+                    <td>{{ participant.registered_at }}</td>
+                    <td>
+                        <a href="{% url 'field_trips:participant_delete' participant.pk %}">
+                            <span class="icon-text has-text-danger">
+                                <span class="icon">
+                                    <i class="fa-solid fa-skull"></i>
+                                </span>
 
-            <div class="table-container">
-                <table class="table is-fullwidth is-hoverable">
-                    <thead>
-
-                    <tr>
-                        <th>{% trans "Full name" %}</th>
-                        <th>{% trans "Enrolled since" %}</th>
-                        <th>{% trans "Actions" %}</th>
-                    </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                    {% for participant in object_list %}
-                        <tr>
-                            <td>{{ participant.user.get_full_name }}</td>
-                            <td>{{ participant.registered_at|timesince }}</td>
-                            <td>
-                                <a href="{% url 'field_trips:participant_delete' participant.pk %}">
-                                    <span class="icon has-text-danger">
-                                        <i class="fa-solid fa-skull"></i>
-                                    </span>
-                                </a>
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3" class="has-text-centered">No users have been registered yet</td>
-                        </tr>
-                    {% endfor %}
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
+                                <span>Löschen</span>
+                            </span>
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="is-italic has-text-centered">
+                        Es haben sich bisher noch keine Teilnehmer angemeldet
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 

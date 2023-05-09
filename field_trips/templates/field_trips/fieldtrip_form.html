@@ -1,14 +1,9 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n static %}
+{% load static %}
 
 {% block title %}
-    {{ block.super }} |
-    {% if form.initial %}
-        {% trans "Edit field trip" %}
-    {% else %}
-        {% trans "Add field trip" %}
-    {% endif %}
+    {{ block.super }} | Exkursion {% if form.initial %}bearbeiten{% else %}erstellen{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -17,48 +12,33 @@
 {% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">
+    <h3 class="title">
+        Exkursion {% if form.initial %}bearbeiten{% else %}erstellen{% endif %}
+    </h3>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    {% if form.initial %}Aktualisieren{% else %}Erstellen{% endif %}
+                </button>
+            </div>
+
+            <div class="control">
                 {% if form.initial %}
-                    {% trans "Edit field trip" %}
+                    <a class="button is-light" href="{% url 'field_trips:field_trip_detail' fieldtrip.pk %}">
+                        Abbrechen
+                    </a>
                 {% else %}
-                    {% trans "Add field trip" %}
+                    <a class="button is-light" href="{% url 'field_trips:field_trip_list' %}">
+                        Abbrechen
+                    </a>
                 {% endif %}
-            </h3>
-
-            <div class="box">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    {{ form }}
-
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">
-                                {% if form.initial %}
-                                    {% trans "Update" %}
-                                {% else %}
-                                    {% trans "Create" %}
-                                {% endif %}
-                            </button>
-                        </div>
-
-                        <div class="control">
-                            {% if form.initial %}
-                                <a class="button is-light" href="{% url 'field_trips:field_trip_detail' object.pk %}">
-                                    {% trans "Cancel" %}
-                                </a>
-                            {% else %}
-                                <a class="button is-light" href="{% url 'field_trips:field_trip_list' %}">
-                                    {% trans "Cancel" %}
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
-        </div>
-    </section>
+    </form>
 {% endblock %}

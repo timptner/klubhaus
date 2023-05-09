@@ -88,7 +88,7 @@ def register(request, pk):
         return redirect(reverse_lazy('field_trips:field_trip_detail', kwargs={'pk': pk}))
 
     context = {
-        'field_trip': field_trip,
+        'fieldtrip': field_trip,
         'conflicts': conflicts,
     }
 
@@ -104,7 +104,7 @@ class FieldTripParticipantListView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['field_trip'] = FieldTrip.objects.get(pk=self.kwargs['pk'])
+        context['fieldtrip'] = FieldTrip.objects.get(pk=self.kwargs['pk'])
         return context
 
 

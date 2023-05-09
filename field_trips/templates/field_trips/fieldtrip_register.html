@@ -1,107 +1,76 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Enrollment" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Zur Exkursion anmelden
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <nav class="breadcrumb" aria-label="breadcrumbs">
-                <ul>
-                    <li><a href="{% url 'field_trips:field_trip_list' %}">{% trans "Field Trips" %}</a></li>
+    <h3 class="title">Zur Exkursion anmelden</h3>
+    <h5 class="subtitle">{{ fieldtrip.title }}</h5>
 
-                    <li>
-                        <a href="{% url 'field_trips:field_trip_detail' field_trip.pk %}">
-                            {{ field_trip.title }}
-                        </a>
-                    </li>
+    <div class="columns has-text-centered">
+        <div class="column">
+            <span class="icon-text">
+                <span class="icon">
+                    <i class="fa-solid fa-calendar"></i>
+                </span>
 
-                    <li class="is-active">
-                        <a href="{% url 'field_trips:register' field_trip.pk %}" aria-current="page">
-                            {% trans "Enrollment" %}
-                        </a>
-                    </li>
+                <span>{{ fieldtrip.date }}</span>
+            </span>
+        </div>
+
+        {% if fieldtrip.location %}
+            <div class="column">
+                <span class="icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                </span>
+
+                <span>{{ fieldtrip.location }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if conflicts %}
+        <article class="message is-danger">
+            <div class="message-header">
+                <p>Die Anmeldung ist für dich gesperrt.</p>
+            </div>
+
+            <div class="message-body">
+                <ul class="bullet-list">
+                    {% for conflict in conflicts %}
+                        <li>{{ conflict }}</li>
+                    {% endfor %}
                 </ul>
-            </nav>
+            </div>
+        </article>
+    {% endif %}
+
+    <div class="columns is-vcentered">
+        <div class="column">
+            <progress class="progress" value="{{ fieldtrip.enrollments }}" max="{{ fieldtrip.seats }}">
+                {{ fieldtrip.progress }}
+            </progress>
         </div>
-    </section>
 
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">{% trans "Enrollment" %}</h3>
+        <div class="column is-narrow">
+            <p>{{ fieldtrip.enrollments }} / {{ fieldtrip.seats }}</p>
+        </div>
+    </div>
 
-            <div class="columns has-text-centered">
-                <p class="column">
-                    <span class="icon-text">
-                        <span class="icon">
-                            <i class="fa-solid fa-building"></i>
-                        </span>
+    <form method="post">
+        {% csrf_token %}
 
-                        <span>{{ field_trip.title }}</span>
-                    </span>
-                </p>
-
-                <p class="column">
-                    <span class="icon-text">
-                        <span class="icon">
-                            <i class="fa-solid fa-calendar"></i>
-                        </span>
-
-                        <span>{{ field_trip.date }}</span>
-                    </span>
-                </p>
-
-                {% if field_trip.location %}
-                    <p class="column">
-                        <span class="icon">
-                            <i class="fa-solid fa-location-dot"></i>
-                        </span>
-
-                        <span>{{ field_trip.location }}</span>
-                    </p>
-                {% endif %}
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary is-fullwidth" type="submit"{% if conflicts %} disabled{% endif %}>
+                    Anmelden
+                </button>
             </div>
 
-            {% if conflicts %}
-                <article class="message is-danger">
-                    <div class="message-header">
-                        <p>{% trans "Registration is disabled for you." %}</p>
-                    </div>
-
-                    <div class="message-body">
-                        <ul class="bullet-list">
-                            {% for conflict in conflicts %}
-                                <li>{{ conflict }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                </article>
-            {% endif %}
-
-            <div class="box">
-                <div class="columns is-vcentered">
-                    <div class="column">
-                        <progress class="progress" value="{{ field_trip.enrollments }}" max="{{ field_trip.seats }}">
-                            {{ field_trip.progress }}
-                        </progress>
-                    </div>
-
-                    <div class="column is-narrow">
-                        <p>{{ field_trip.enrollments }} / {{ field_trip.seats }}</p>
-                    </div>
-                </div>
-
-                <form method="post">
-                    {% csrf_token %}
-
-                    <button type="submit"
-                            class="button{% if conflicts %} is-light{% else %} is-primary{% endif %} is-fullwidth"
-                            {% if conflicts %}disabled{% endif %}>
-                        {% trans "Register for this field trip" %}
-                    </button>
-                </form>
+            <div class="control">
+                <a class="button is-light" href="{% url 'field_trips:field_trip_detail' fieldtrip.pk %}">Abbrechen</a>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

@@ -1,43 +1,33 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Delete participant" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Teilnehmer löschen
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">{% trans "Confirm delete" %}</h3>
+    <h3 class="title">Löschen bestätigen</h3>
 
-            <div class="box">
-                <p class="block">
-                    {% blocktrans trimmed with field_trip=object.field_trip.title participant=object.user.get_full_name %}
-                        Please confirm that <strong>{{ participant }}</strong> should be removed from the field trip
-                        <strong>{{ field_trip }}</strong>. The user will receive an email to notify him about his removal.
-                    {% endblocktrans %}
-                </p>
+    <p class="block">
+        Bitte bestätige, dass <strong>{{ participant }}</strong> von der Exkursion
+        <strong>{{ participant.field_trip }}</strong> entfernt werden soll. Der Benutzer wird per E-Mail darüber
+        informiert, nicht länger Teilnehmer dieser Exkursion zu sein.
+    </p>
 
-                <form method="post">
-                    {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                    {{ form }}
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-danger" type="submit">
+                    Entfernen
+                </button>
+            </div>
 
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button type="submit" class="button is-danger">
-                                {% trans "Delete" %}
-                            </button>
-                        </div>
-
-                        <div class="control">
-                            <a href="{% url 'field_trips:field_trip_participants' object.field_trip.pk %}"
-                               class="button is-light">
-                                {% trans "Cancel" %}
-                            </a>
-                        </div>
-                    </div>
-                </form>
+            <div class="control">
+                <a class="button is-light" href="{% url 'field_trips:field_trip_participants' object.field_trip.pk %}">
+                    Abbrechen
+                </a>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

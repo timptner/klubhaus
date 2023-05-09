@@ -1,114 +1,80 @@
-{% extends 'base.html' %}
+{% extends 'field_trips/base.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {{ fieldtrip.title }}{% endblock %}
+{% block title %}
+    {{ block.super }} | {{ fieldtrip.title }}
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
-                    <ul>
-                        <li><a href="{% url 'field_trips:field_trip_list' %}">{% trans "Field Trips" %}</a></li>
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
 
-                        <li class="is-active">
-                            <a href="{% url 'field_trips:field_trip_detail' fieldtrip.pk %}" aria-current="page">
-                                {{ fieldtrip.title }}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                {% if user.is_staff %}
-                    <div class="dropdown is-right is-hoverable">
-                        <div class="dropdown-trigger">
-                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                <span class="icon is-small">
-                                    <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
-                                </span>
-                                <span>{% trans "Options" %}</span>
-                            </button>
-                        </div>
-
-                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                            <div class="dropdown-content">
-                                {% url 'field_trips:field_trip_update' fieldtrip.pk as edit_url %}
-                                {% trans "Edit field trip" as label %}
-                                {% include 'dropdown_snippet.html' with permission=perms.field_trips.change_field_trip url=edit_url label=label %}
-
-                                <hr class="dropdown-divider">
-
-                                {% url 'field_trips:field_trip_participants' fieldtrip.pk as participants_url %}
-                                {% trans "View participants" as label %}
-                                {% include 'dropdown_snippet.html' with permission=perms.field_trips.view_participant url=participants_url label=label %}
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
+{% block subcontent %}
+    {% if user.is_staff %}
+        <div class="buttons is-justify-content-flex-end">
+            {% url 'field_trips:field_trip_update' fieldtrip.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.field_trips.change_field_trip url=url label="Exkursion bearbeiten" %}
         </div>
-    </section>
+    {% endif %}
 
-    <section class="section">
-        <div class="container">
-            <div class="columns is-vcentered">
-                {% if fieldtrip.image %}
-                    <div class="column">
-                        <div class="block">
-                            <figure class="image">
-                                <img src="{{ fieldtrip.image.url }}" alt="{% trans "Company image" %}">
-                            </figure>
-                        </div>
-                    </div>
-                {% endif %}
+    <h3 class="title has-text-centered">
+        {{ fieldtrip.title }}
+    </h3>
 
+    <h5 class="subtitle has-text-centered">
+        <div class="columns">
+            <div class="column">
+                <span class="icon-text">
+                    <span class="icon">
+                        <i class="fa-solid fa-calendar" aria-hidden="true"></i>
+                    </span>
+
+                    <span>{{ fieldtrip.date }}</span>
+                </span>
+            </div>
+
+            {% if fieldtrip.location %}
                 <div class="column">
-                    <h3 class="title">{{ fieldtrip.title }}</h3>
-                    {% if fieldtrip.website %}
-                        <h5 class="subtitle">
-                            <a href="{{ fieldtrip.website }}" target="_blank">
-                                <span class="icon-text">
-                                    <span>{% trans "Visit website" %}</span>
-
-                                    <span class="icon">
-                                        <i class="fa-solid fa-xs fa-external-link"></i>
-                                    </span>
-                                </span>
-                            </a>
-                        </h5>
-                    {% endif %}
-
-                    <div class="block">
-                        <p>
-                            <span class="icon-text">
-                                <span class="icon">
-                                    <i class="fa-solid fa-calendar"></i>
-                                </span>
-
-                                <span>{{ fieldtrip.date }}</span>
+                    <span class="icon-text">
+                            <span class="icon">
+                                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
                             </span>
-                        </p>
 
-                        {% if fieldtrip.location %}
-                            <p>
-                                <span class="icon">
-                                    <i class="fa-solid fa-location-dot"></i>
-                                </span>
-
-                                <span>{{ fieldtrip.location }}</span>
-                            </p>
-                        {% endif %}
-                    </div>
-
-                    <div class="content">
-                        {{ fieldtrip.desc_html|safe }}
-                    </div>
-
-                    <a class="button is-primary"
-                       href="{% url 'field_trips:register' fieldtrip.pk %}">{% trans "Register" %}</a>
+                            <span>{{ fieldtrip.location }}</span>
+                    </span>
                 </div>
-            </div>
+            {% endif %}
+
+            {% if fieldtrip.website %}
+                <div class="column">
+                    <a href="{{ fieldtrip.website }}" target="_blank">
+                        <span class="icon-text">
+                            <span class="icon">
+                                <i class="fa-solid fa-external-link"></i>
+                            </span>
+
+                            <span>Webseite</span>
+                        </span>
+                    </a>
+                </div>
+            {% endif %}
         </div>
-    </section>
+    </h5>
+
+    {% if fieldtrip.image %}
+        <div class="block">
+            <figure class="image">
+                <img src="{{ fieldtrip.image.url }}" alt="Bild vom Unternehmen">
+            </figure>
+        </div>
+    {% endif %}
+
+    <div class="content">
+        {{ fieldtrip.desc|linebreaks }}
+    </div>
+
+    <div class="buttons">
+        <a class="button is-primary" href="{% url 'field_trips:register' fieldtrip.pk %}">Zur Exkursion anmelden</a>
+    </div>
 {% endblock %}
