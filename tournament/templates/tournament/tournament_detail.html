@@ -1,118 +1,83 @@
-{% extends 'base.html' %}
+{% extends 'tournament/base.html' %}
 
-{% block title %}{{ block.super }} | {{ tournament.title }}{% endblock %}
+{% block title %}
+    {{ block.super }} | {{ tournament.title }}
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
-                    <ul>
-                        <li><a href="{% url 'tournament:tournament_list' %}">Turniere</a></li>
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
 
-                        <li class="is-active">
-                            <a href="{% url 'tournament:tournament_detail' tournament.pk %}" aria-current="page">
-                                {{ tournament.title }}
-                            </a>
-                        </li>
-                    </ul>
-                </nav>
-
-                {% if user.is_staff %}
-                    <div class="dropdown is-right is-hoverable">
-                        <div class="dropdown-trigger">
-                            <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                                <span class="icon is-small">
-                                    <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
-                                </span>
-                                <span>Optionen</span>
-                            </button>
-                        </div>
-
-                        <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                            <div class="dropdown-content">
-                                {% url 'tournament:tournament_update' tournament.pk as url %}
-                                {% include 'dropdown_snippet.html' with permission=perms.tournament.change_tournament url=url label="Turnier bearbeiten" %}
-
-                                <hr class="dropdown-divider">
-
-                                {% url 'tournament:team_list' tournament.pk as url %}
-                                {% include 'dropdown_snippet.html' with permission=perms.tournament.view_team url=url label="Teams anzeigen" %}
-                            </div>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
+{% block subcontent %}
+    {% if user.is_staff %}
+        <div class="buttons is-justify-content-flex-end">
+            {% url 'tournament:tournament_update' tournament.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.tournament.change_tournament url=url label="Turnier bearbeiten" %}
         </div>
-    </section>
+    {% endif %}
 
-    <section class="section">
-        <div class="container is-max-desktop">
-            <div class="is-flex is-align-items-center mb-3">
-                <h3 class="title mb-0 mr-3">
-                    {{ tournament.title }}
-                </h3>
-                {% include 'tournament/status_snippet.html' with status=tournament.get_status %}
+    <div class="is-flex is-align-items-center mb-5">
+        <h3 class="title mb-0 mr-3">
+            {{ tournament.title }}
+        </h3>
+
+        <span class="tag {{ tournament.get_state_color }}">
+            {{ tournament.get_state }}
+        </span>
+    </div>
+
+    {% if is_registered %}
+        <article class="message is-warning">
+            <div class="message-body">
+                Du hast bereits das Team
+                <strong><a href="{% url 'tournament:my_team_list' %}">{{ team.name }}</a></strong>
+                für dieses Turnier angemeldet.
             </div>
+        </article>
+    {% endif %}
 
-            {% if is_registered %}
-                <article class="message is-warning">
-                    <div class="message-body">
-                        Du hast bereits das Team
-                        <strong><a href="{% url 'tournament:my_team_list' %}">{{ team.name }}</a></strong>
-                        für dieses Turnier angemeldet.
-                    </div>
-                </article>
-            {% endif %}
+    <table class="table is-fullwidth">
+        <tbody>
+        <tr>
+            <td>Datum</td>
+            <td>{{ tournament.date }}</td>
+        </tr>
+        <tr>
+            <td>Spieler pro Team</td>
+            <td>{{ tournament.players }}</td>
+        </tr>
+        <tr>
+            <td>Beginn der Registrierung</td>
+            <td>{{ tournament.registration_start }}</td>
+        </tr>
+        <tr>
+            <td>Ende der Registrierung</td>
+            <td>{{ tournament.registration_end }}</td>
+        </tr>
+        <tr>
+            <td>Angemeldete Teams</td>
+            <td>{{ tournament.team_set.count }}</td>
+        </tr>
+        </tbody>
+    </table>
 
-            <div class="columns">
-                {% if tournament.desc %}
-                    <div class="column">
-                        <div class="content">
-                            {{ tournament.desc|linebreaks }}
-                        </div>
-                    </div>
-                {% endif %}
-
-                <div class="column">
-                    <table class="table is-fullwidth">
-                        <tbody>
-                        <tr>
-                            <td>Datum</td>
-                            <td>{{ tournament.date }}</td>
-                        </tr>
-                        <tr>
-                            <td>Spieler pro Team</td>
-                            <td>{{ tournament.players }}</td>
-                        </tr>
-                        <tr>
-                            <td>Beginn der Registrierung</td>
-                            <td>{{ tournament.registration_start }}</td>
-                        </tr>
-                        <tr>
-                            <td>Ende der Registrierung</td>
-                            <td>{{ tournament.registration_end }}</td>
-                        </tr>
-                        <tr>
-                            <td>Angemeldete Teams</td>
-                            <td>{{ tournament.team_set.count }}</td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="buttons">
-                {% if tournament.get_status == 'open' and not is_registered %}
-                    <a class="button is-primary" href="{% url 'tournament:registration' tournament.pk %}">
-                        Als Team einschreiben
-                    </a>
-                {% else %}
-                    <button class="button is-static">
-                        Als Team einschreiben
-                    </button>
-                {% endif %}
-            </div>
+    {% if tournament.desc %}
+        <div class="content">
+            {{ tournament.desc|linebreaks }}
         </div>
-    </section>
+    {% endif %}
+
+    <div class="buttons">
+        {% if tournament.get_state == 'Geöffnet' and not is_registered %}
+            <a class="button is-primary" href="{% url 'tournament:registration' tournament.pk %}">
+                Als Team einschreiben
+            </a>
+        {% else %}
+            <button class="button is-static">
+                Als Team einschreiben
+            </button>
+        {% endif %}
+    </div>
 {% endblock %}

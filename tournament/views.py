@@ -49,7 +49,7 @@ class TournamentUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateV
 def registration(request, pk):
     tournament = Tournament.objects.get(pk=pk)
 
-    if tournament.get_status() != 'open':
+    if tournament.get_state() != 'Geöffnet':
         raise PermissionDenied()
 
     # noinspection PyPep8Naming

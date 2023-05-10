@@ -1,49 +1,45 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% block title %}{{ block.super }} | Teams kontaktieren{% endblock %}
+{% block title %}
+    {{ block.super }} | Teams kontaktieren
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">Teams kontaktieren</h3>
+    <h3 class="title">Teams kontaktieren</h3>
 
-            <article class="message is-info">
-                <div class="message-body">
-                    Es wird an jeden Team-Kapitän eine E-Mail mit persönlicher Anrede verschickt. Vermeide daher
-                    Begrüßungsfloskeln oder eine Signatur in der Nachricht, da diese automatisch ergänzt werden.
+    <article class="message is-info">
+        <div class="message-body">
+            Es wird an jeden Team-Kapitän eine E-Mail mit persönlicher Anrede verschickt. Vermeide daher
+            Begrüßungsfloskeln oder eine Signatur in der Nachricht, da diese automatisch ergänzt werden.
+        </div>
+    </article>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="field">
+            {% include 'bulma/label_snippet.html' with label='Empfänger' required=True %}
+
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select disabled>
+                        <option>Zugelassene Teams</option>
+                    </select>
                 </div>
-            </article>
-
-            <div class="box">
-                <form method="post">
-                    {% csrf_token %}
-
-                    <div class="field">
-                        {% include 'bulma/label_snippet.html' with label='Empfänger' required=True %}
-
-                        <div class="control">
-                            <div class="select is-fullwidth">
-                                <select disabled>
-                                    <option>Zugelassene Teams</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{ form }}
-
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">Absenden</button>
-                        </div>
-
-                        <div class="control">
-                            <a class="button is-light"
-                               href="{% url 'tournament:team_list' tournament.pk %}">Abbrechen</a>
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
-    </section>
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">Absenden</button>
+            </div>
+
+            <div class="control">
+                <a class="button is-light"
+                   href="{% url 'tournament:team_list' tournament.pk %}">Abbrechen</a>
+            </div>
+        </div>
+    </form>
 {% endblock %}

@@ -1,48 +1,44 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% block title %}{{ block.super }} | Teams auslosen{% endblock %}
+{% block title %}
+    {{ block.super }} | Teams auslosen
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">Teams auslosen</h3>
+    <h3 class="title">Teams auslosen</h3>
 
-            <article class="message is-info">
-                <div class="message-body">
-                    Es werden alle Teams über ihre Zulassung oder Ablehnung per E-Mail benachrichtigt. Teams, welche
-                    bereits vor der Losung als zugelassen oder abgelehnt markiert wurden erhalten keine E-Mail.
-                </div>
-            </article>
+    <article class="message is-info">
+        <div class="message-body">
+            Es werden alle Teams über ihre Zulassung oder Ablehnung per E-Mail benachrichtigt. Teams, welche
+            bereits vor der Losung als zugelassen oder abgelehnt markiert wurden erhalten keine E-Mail.
+        </div>
+    </article>
 
-            {% if tournament.get_status == 'open' %}
-                <article class="message is-warning">
-                    <div class="message-body">
-                        <strong>Die Anmeldung ist noch offen!</strong> Die Auslosung der Teams sollte erst erfolgen,
-                        wenn die Anmeldung geschlossen ist. Die Anmeldefrist endet in
-                        {{ tournament.registration_end|timeuntil }}.
-                    </div>
-                </article>
-            {% endif %}
+    {% if tournament.get_status == 'open' %}
+        <article class="message is-warning">
+            <div class="message-body">
+                <strong>Die Anmeldung ist noch offen!</strong> Die Auslosung der Teams sollte erst erfolgen,
+                wenn die Anmeldung geschlossen ist. Die Anmeldefrist endet in
+                {{ tournament.registration_end|timeuntil }}.
+            </div>
+        </article>
+    {% endif %}
 
-            <div class="box">
-                <form method="post">
-                    {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                    {{ form }}
+        {{ form }}
 
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">Per Zufall auslosen</button>
-                        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">Per Zufall auslosen</button>
+            </div>
 
-                        <div class="control">
-                            <a class="button is-light" href="{% url 'tournament:team_list' tournament.pk %}">
-                                Abbrechen
-                            </a>
-                        </div>
-                    </div>
-                </form>
+            <div class="control">
+                <a class="button is-light" href="{% url 'tournament:team_list' tournament.pk %}">
+                    Abbrechen
+                </a>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

@@ -8,75 +8,76 @@
     <h3 class="title">Meine Teams</h3>
 
     <div class="columns is-multiline">
-    {% for team in team_list %}
-        <div class="column is-one-third">
-            <div class="card">
-                <header class="card-header">
-                    <p class="card-header-title">
-                        {{ team.name }}
-                    </p>
+        {% for team in team_list %}
+            <div class="column is-one-third">
+                <div class="card">
+                    <header class="card-header">
+                        <p class="card-header-title">
+                            {{ team.name }}
+                        </p>
 
-                    <p class="card-header-icon">
-                        <span class="tag {{ team.get_state_color }}">
-                            {{ team.get_state_display }}
-                        </span>
-                    </p>
-                </header>
+                        <p class="card-header-icon">
+                            <span class="tag {{ team.get_state_color }}">
+                                {{ team.get_state_display }}
+                            </span>
+                        </p>
+                    </header>
 
-                <div class="card-content">
-                    <div class="content">
-                        <p class="has-text-centered">Spieler</p>
+                    <div class="card-content">
+                        <div class="content">
+                            <p class="has-text-centered">Spieler</p>
 
-                        <ul>
-                            <li>
-                                <span class="icon-text">
-                                    <span>{{ team.captain.get_full_name }}</span>
-                                    <span class="icon">
-                                        <i class="fa-solid fa-chess-king"></i>
+                            <ul>
+                                <li>
+                                    <span class="icon-text">
+                                        <span>{{ team.captain.get_full_name }}</span>
+                                        <span class="icon">
+                                            <i class="fa-solid fa-chess-king"></i>
+                                        </span>
                                     </span>
-                                </span>
-                            </li>
+                                </li>
 
-                            {% for player in team.player_set.all %}
-                                <li>{{ player.get_full_name }}</li>
-                            {% endfor %}
-                        </ul>
+                                {% for player in team.player_set.all %}
+                                    <li>{{ player.get_full_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <hr>
+
+                        <p class="block has-text-centered">Turnier</p>
+
+                        <p>
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-trophy fa-fw" aria-hidden="true"></i>
+                                </span>
+                                <span>{{ team.tournament.title }}</span>
+                            </span>
+                        </p>
+
+                        <p>
+                            <span class="icon-text">
+                                <span class="icon">
+                                    <i class="fa-solid fa-calendar fa-fw" aria-hidden="true"></i>
+                                </span>
+                                <span>{{ team.tournament.date }}</span>
+                            </span>
+                        </p>
+
                     </div>
 
-                    <hr>
-
-                    <p class="block has-text-centered">Turnier</p>
-
-                    <p>
-                        <span class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-trophy fa-fw" aria-hidden="true"></i>
-                            </span>
-                            <span>{{ team.tournament.title }}</span>
-                        </span>
-                    </p>
-
-                    <p>
-                        <span class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-calendar fa-fw" aria-hidden="true"></i>
-                            </span>
-                            <span>{{ team.tournament.date }}</span>
-                        </span>
-                    </p>
-
+                    <footer class="card-footer">
+                        <a class="card-footer-item" href="{% url 'tournament:tournament_detail' team.tournament.pk %}">
+                            Turnier anzeigen
+                        </a>
+                    </footer>
                 </div>
-
-                <footer class="card-footer">
-                    <a class="card-footer-item" href="{% url 'tournament:tournament_detail' team.tournament.pk %}">
-                        Turnier anzeigen
-                    </a>
-                </footer>
             </div>
-        </div>
-    {% empty %}
-        <div class="column">
-            <p>Bisher hast du noch keine Teams angemeldet.</p>
-        </div>
-    {% endfor %}
+        {% empty %}
+            <div class="column">
+                <p>Bisher hast du noch keine Teams angemeldet.</p>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}

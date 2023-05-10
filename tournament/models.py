@@ -34,19 +34,29 @@ class Tournament(models.Model):
     def __str__(self):
         return self.title
 
-    def get_status(self):
+    def get_state(self):
         now = timezone.now()
 
         if now.date() > self.date:
-            return 'expired'
+            return 'Abgelaufen'
 
         if now > self.registration_end:
-            return 'closed'
+            return 'Geschlossen'
 
         if now < self.registration_start:
-            return 'planned'
+            return 'Geplant'
 
-        return 'open'
+        return 'Geöffnet'
+
+    def get_state_color(self):
+        state = self.get_state()
+        colors = {
+            'Geplant': 'is-light is-info',
+            'Geöffnet': 'is-light is-success',
+            'Geschlossen': 'is-light is-danger',
+            'Abgelaufen': 'is-light',
+        }
+        return colors[state]
 
 
 class Team(models.Model):

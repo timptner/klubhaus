@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="{% url 'tournament:tournament_list' %}">Turniere</a></li>
+
+            <li class="is-active">
+                <a href="{% url 'tournament:tournament_detail' tournament.pk %}" aria-current="page">
+                    {{ tournament.title }}
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {% if user.is_staff %}
+        <div class="tabs">
+            <ul>
+                {% url 'tournament:tournament_detail' tournament.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.tournament.view_tournament url=url label="Informationen" icon="fa-circle-info" %}
+
+                {% url 'tournament:team_list' tournament.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.tournament.view_team url=url label="Teams" icon="fa-people-group" %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {{ block.super }}
+
+    {% block subcontent %}{% endblock %}
+{% endblock %}
