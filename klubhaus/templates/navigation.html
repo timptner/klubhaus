@@ -1,67 +1,64 @@
-<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">{% load i18n %}
+<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
     <div class="container">
-        <div class="navbar-brand">
+        <div class="navbar-brand{% if user.is_anonymous %} is-justify-content-space-between{% endif %}">
             <a class="navbar-item" href="{% url 'home:landing_page' %}">
                 <strong>Klubhaus</strong>
             </a>
 
-            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
+            {% if user.is_authenticated %}
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarMain">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
+            {% else %}
+                <div class="navbar-item is-hidden-tablet">
+                    {% include 'nav_buttons_snippet.html' %}
+                </div>
+            {% endif %}
         </div>
 
         <div id="navbarMain" class="navbar-menu">
             {% if user.is_authenticated %}
                 <div class="navbar-start">
-                    <a class="navbar-item" href="{% url 'field_trips:field_trip_list' %}">
-                        <span class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-route"></i>
-                            </span>
-                            <span>{% trans "Field trips" %}</span>
+                    <a class="navbar-item icon-text" href="{% url 'field_trips:field_trip_list' %}">
+                        <span class="icon">
+                            <i class="fa-solid fa-route" aria-hidden="true"></i>
                         </span>
+                        <span>Exkursionen</span>
                     </a>
 
-                    <a class="navbar-item" href="{% url 'tournament:tournament_list' %}">
-                        <span class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-trophy"></i>
-                            </span>
-                            <span>Turniere</span>
+                    <a class="navbar-item icon-text" href="{% url 'tournament:tournament_list' %}">
+                        <span class="icon">
+                            <i class="fa-solid fa-trophy" aria-hidden="true"></i>
                         </span>
+                        <span>Turniere</span>
                     </a>
 
-                    <a class="navbar-item" href="{% url 'volunteers:event_list' %}">
-                        <span class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-hand-holding-heart"></i>
-                            </span>
-                            <span>Helfende Hände</span>
+                    <a class="navbar-item icon-text" href="{% url 'volunteers:event_list' %}">
+                        <span class="icon">
+                            <i class="fa-solid fa-hand-holding-heart" aria-hidden="true"></i>
                         </span>
+                        <span>Helfende Hände</span>
                     </a>
 
-                    {% if perms.accounts.view_user %}
-                        <a class="navbar-item" href="{% url 'accounts:user_list' %}">
-                            <span class="icon-text">
+                    {% if user.is_staff %}
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <a class="navbar-link icon-text">
                                 <span class="icon">
-                                    <i class="fa-solid fa-user"></i>
+                                    <i class="fa-solid fa-users" aria-hidden="true"></i>
                                 </span>
-                                <span>{% trans "Users" %}</span>
-                            </span>
-                        </a>
-                    {% endif %}
+                                <span>Konten</span>
+                            </a>
 
-                    {% if perms.auth.view_group %}
-                        <a class="navbar-item" href="{% url 'accounts:group_list' %}">
-                            <span class="icon-text">
-                                <span class="icon">
-                                    <i class="fa-solid fa-user-group"></i>
-                                </span>
-                                <span>{% trans "Groups" %}</span>
-                            </span>
-                        </a>
+                            <div class="navbar-dropdown is-boxed">
+                                {% url 'accounts:user_list' as url %}
+                                {% include 'nav_dropdown_snippet.html' with permission=perms.accounts.view_user url=url label="Benutzer" icon="fa-user" %}
+
+                                {% url 'accounts:group_list' as url %}
+                                {% include 'nav_dropdown_snippet.html' with permission=perms.auth.view_group url=url label="Gruppen" icon="fa-user-group" %}
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
             {% endif %}
@@ -80,23 +77,17 @@
 
                         <div class="navbar-dropdown is-right is-boxed">
                             <a class="navbar-item" href="{% url 'accounts:profile' %}">
-                                {% trans "Profile" %}
+                                Profil
                             </a>
 
                             <a class="navbar-item" href="{% url 'accounts:logout' %}">
-                                {% trans "Logout" %}
+                                Abmelden
                             </a>
                         </div>
                     </div>
                 {% else %}
                     <div class="navbar-item">
-                        <div class="buttons">
-                            <a class="button is-primary" href="{% url 'accounts:register' %}">
-                                <strong>{% trans "Sign up" %}</strong>
-                            </a>
-
-                            <a class="button is-light" href="{% url 'accounts:login' %}">{% trans "Log in" %}</a>
-                        </div>
+                        {% include 'nav_buttons_snippet.html' %}
                     </div>
                 {% endif %}
             </div>

@@ -1,0 +1,17 @@
+{% if permission %}
+    <a class="navbar-item icon-text is-flex-wrap-nowrap" href="{{ url }}">
+        <span class="icon">
+            <i class="fa-solid {{ icon }}" aria-hidden="true"></i>
+        </span>
+
+        <span>{{ label }}</span>
+    </a>
+{% else %}
+    <div class="navbar-item has-text-grey-light icon-text">
+        <span class="icon">
+            <i class="fa-solid fa-lock" aria-hidden="true"></i>
+        </span>
+
+        <span>{{ label }}</span>
+    </div>
+{% endif %}
