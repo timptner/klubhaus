@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 class Tournament(models.Model):
     title = models.CharField("Titel", max_length=250, unique=True)
     date = models.DateField("Datum")
+    players = models.PositiveSmallIntegerField("Spieler")
     desc = models.TextField("Beschreibung", blank=True)
     registration_start = models.DateTimeField("Beginn der Einschreibung")
     registration_end = models.DateTimeField("Ende der Einschreibung")

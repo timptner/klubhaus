@@ -53,7 +53,7 @@ def registration(request, pk):
         raise PermissionDenied()
 
     # noinspection PyPep8Naming
-    PlayerFormSet = formset_factory(PlayerForm, extra=1)
+    PlayerFormSet = formset_factory(PlayerForm, extra=tournament.players - 1)
 
     if request.method == 'POST':
         team_form = TeamForm(request.POST, tournament=tournament, captain=request.user)
