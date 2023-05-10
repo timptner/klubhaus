@@ -4,6 +4,12 @@
     {{ block.super }} | Freiwillige
 {% endblock %}
 
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
 {% block subcontent %}
     <div class="buttons is-justify-content-flex-end">
         {% url 'volunteers:volunteer_contact' event.pk as url %}

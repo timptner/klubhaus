@@ -4,6 +4,12 @@
     {{ block.super }} | {{ event.title }}
 {% endblock %}
 
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
 {% block subcontent %}
     {% if user.is_staff %}
         <div class="buttons is-justify-content-flex-end">
