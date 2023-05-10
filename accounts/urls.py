@@ -1,9 +1,8 @@
 from accounts import views
 from django.contrib.auth import views as auth_views
-from django.urls import path, include
+from django.urls import path
 
 app_name = 'accounts'
-
 urlpatterns = [
     path('users/', views.UserListView.as_view(), name='user_list'),
     path('users/<int:pk>/', views.UserDetailView.as_view(), name='user_detail'),

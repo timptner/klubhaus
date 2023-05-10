@@ -68,7 +68,7 @@ def registration(request, pk):
                 player.save()
 
             messages.success(request, "Du hast dein Team erfolgreich für das Turnier angemeldet.")
-            return redirect(reverse_lazy('tournament:my_team_list'))
+            return redirect(reverse_lazy('accounts:profile_teams'))
     else:
         team_form = TeamForm(tournament=tournament, captain=request.user)
         player_formset = PlayerFormSet()
