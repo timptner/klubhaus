@@ -1,0 +1,23 @@
+<div class="tags">
+    {% if account.is_active %}
+        <span class="tag is-success is-light">
+            Aktiv
+        </span>
+    {% else %}
+        <span class="tag is-danger is-light">
+            Inaktiv
+        </span>
+    {% endif %}
+
+    {% if account.is_staff %}
+        <span class="tag is-info is-light">
+            Mitarbeiter
+        </span>
+    {% endif %}
+
+    {% if account.is_superuser %}
+        <span class="tag is-link is-light">
+            Administrator
+        </span>
+    {% endif %}
+</div>

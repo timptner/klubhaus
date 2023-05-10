@@ -1,86 +1,57 @@
-{% extends 'base.html' %}
+{% extends 'auth/base_group.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {{ group.name }}{% endblock %}
+{% block title %}
+    {{ block.super }} | {{ group.name }}
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <div class="is-flex is-justify-content-space-between is-align-items-center">
-                <nav class="breadcrumb mb-0" aria-label="breadcrumbs">
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <div class="buttons is-justify-content-flex-end">
+        {% url 'accounts:group_update' group.pk as url %}
+        {% include 'button_snippet.html' with permission=perms.auth.change_group url=url label="Gruppe bearbeiten" %}
+
+        {% url 'accounts:group_members' group.pk as url %}
+        {% include 'button_snippet.html' with permission=perms.auth.change_group url=url label="Mitglieder bearbeiten" %}
+    </div>
+
+    <h3 class="title">{{ group.name }}</h3>
+
+    <div class="columns">
+        <div class="column">
+            <h5 class="title is-5">Berechtigungen</h5>
+
+            {% if group.permissions.count > 0 %}
+                <div class="content">
                     <ul>
-                        <li><a href="{% url 'accounts:group_list' %}">{% trans "Groups" %}</a></li>
-
-                        <li class="is-active">
-                            <a href="{% url 'accounts:group_detail' group.pk %}" aria-current="page">
-                                {{ group.name }}
-                            </a>
-                        </li>
+                        {% for permission in group.permissions.all %}
+                            <li>{{ permission.name }}</li>
+                        {% endfor %}
                     </ul>
-                </nav>
-
-                <div class="dropdown is-right is-hoverable">
-                    <div class="dropdown-trigger">
-                        <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
-                            <span class="icon is-small">
-                                <i class="fas fa-screwdriver-wrench" aria-hidden="true"></i>
-                            </span>
-                            <span>{% trans "Options" %}</span>
-                        </button>
-                    </div>
-
-                    <div class="dropdown-menu" id="dropdown-menu" role="menu">
-                        <div class="dropdown-content">
-                            {% url 'accounts:group_update' group.pk as edit_url %}
-                            {% trans "Edit group" as label %}
-                            {% include 'dropdown_snippet.html' with permission=perms.auth.change_group url=edit_url label=label %}
-
-                            <hr class="dropdown-divider">
-
-                            {% url 'accounts:group_members' group.pk as members_url %}
-                            {% trans "Edit members" as label %}
-                            {% include 'dropdown_snippet.html' with permission=perms.auth.change_group url=members_url label=label %}
-                        </div>
-                    </div>
                 </div>
-            </div>
+            {% else %}
+                <p class="is-italic">Gruppe hat keine Berechtigungen</p>
+            {% endif %}
         </div>
-    </section>
 
-    <section class="section">
-        <div class="container">
-            <h3 class="title">{{ group.name }}</h3>
+        <div class="column">
+            <h5 class="title is-5">Mitglieder</h5>
 
-            <div class="columns">
-                <div class="column">
-                    <h5 class="title is-5">{% trans "Permissions" %}</h5>
-
-                    {% if group.permissions.count > 0 %}
-                        <ul class="bullet-list">
-                            {% for permission in group.permissions.all %}
-                                <li>{{ permission.name }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="is-italic">{% trans "Group has no permissions" %}</p>
-                    {% endif %}
+            {% if group.user_set.count > 0 %}
+                <div class="content">
+                    <ul>
+                        {% for member in group.user_set.all %}
+                            <li>{{ member }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
-
-                <div class="column">
-                    <h5 class="title is-5">{% trans "Members" %}</h5>
-
-                    {% if group.user_set.count > 0 %}
-                        <ul class="bullet-list">
-                            {% for member in group.user_set.all %}
-                                <li>{{ member }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <p class="is-italic">{% trans "Group has no members" %}</p>
-                    {% endif %}
-                </div>
-            </div>
+            {% else %}
+                <p class="is-italic">Gruppe hat keine Mitglieder</p>
+            {% endif %}
         </div>
-    </section>
+    </div>
 {% endblock %}

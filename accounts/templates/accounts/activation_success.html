@@ -1,21 +1,42 @@
-{% extends 'base.html' %}
+{% extends 'base_error.html' %}
 
-{% load i18n %}
+{% block title %}
+    {{ block.super }} | Aktivierung {% if valid_link %}erfolgreich{% else %}fehlgeschlagen{% endif %}
+{% endblock %}
 
-{% block title %}{% trans "Activation" %}{% endblock %}
+{% block content %}
+    <article class="message {{ state }}">
+        {% if valid_link %}
+            <div class="message-header">
+                <p>Aktivierung erfolgreich</p>
+            </div>
 
-{% block page %}
-    {% if valid_link %}
-        {% trans "Account was activated" as header %}
-        {% blocktrans asvar body trimmed %}
-            Your account was activated successfully. You can now log in.
-        {% endblocktrans %}
-    {% else %}
-        {% trans "Account was not activated" as header %}
-        {% blocktrans asvar body trimmed %}
-            Your account was not activated because the activation link is malformed or expired. Please contact support
-            to request a manual activation.
-        {% endblocktrans %}
-    {% endif %}
-    {% include 'accounts/_message.html' with header=header body=body state=state %}
+            <div class="message-body">
+                <p class="block">Dein Konto wurde erfolgreich aktiviert. Du kannst dich nun anmelden.</p>
+
+                <div class="buttons">
+                    <a class="button is-success" href="{% url 'accounts:login' %}">Zur Anmeldung</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="message-header">
+                <p>Aktivierung fehlgeschlagen</p>
+            </div>
+
+            <div class="message-body">
+                <p class="block">
+                    Dein Konto wurde <strong>nicht aktiviert</strong> weil der Aktivierungslink
+                    <strong>fehlerhaft oder abgelaufen</strong>
+                    ist. Bitte melde dich per E-Mail beim <a href="https://www.farafmb.de">Fachschaftsrat Maschinenbau</a>, um eine manuelle
+                    Aktivierung anzufragen.
+                </p>
+
+                <div class="buttons">
+                    <a class="button is-danger" href="mailto:farafmb@ovgu.de?subject=Konto aktivieren">
+                        Kontakt aufnehmen
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </article>
 {% endblock %}

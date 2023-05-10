@@ -1,37 +1,37 @@
-{% extends 'accounts/base.html' %}
+{% extends 'accounts/base_profile.html' %}
 
 {% block title %}
     {{ block.super }} | Profil
 {% endblock %}
 
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
 {% block subcontent %}
-    <div class="block">
-        <p>
-            <span class="icon-text">
-                <span class="icon">
-                    <i class="fa-solid fa-user fa-fw" aria-hidden="true"></i>
-                </span>
-                <span>{{ user.get_full_name }}</span>
-            </span>
-        </p>
+    <h3 class="title">Profil</h3>
 
-        <p>
-            <span class="icon-text">
-                <span class="icon">
-                    <i class="fa-solid fa-envelope fa-fw" aria-hidden="true"></i>
-                </span>
-                <span>{{ user.email }}</span>
-            </span>
-        </p>
+    <div class="table-container">
+        <table class="table is-fullwidth">
+            <tbody>
+            <tr>
+                <td>Vor- & Nachname</td>
+                <td>{{ user.get_full_name }}</td>
+            </tr>
 
-        <p>
-            <span class="icon-text">
-                <span class="icon">
-                    <i class="fa-solid fa-phone fa-fw" aria-hidden="true"></i>
-                </span>
-                <span>{{ user.phone }}</span>
-            </span>
-        </p>
+            <tr>
+                <td>E-Mail-Adresse</td>
+                <td>{{ user.email }}</td>
+            </tr>
+
+            <tr>
+                <td>Mobilnummer</td>
+                <td>{{ user.phone }}</td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
     <div class="buttons">

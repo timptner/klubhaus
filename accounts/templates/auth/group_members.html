@@ -1,35 +1,29 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Edit members" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Mitglieder bearbeiten
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-    <div class="container is-max-desktop">
-        <h3 class="title">{% trans "Edit members" %}</h3>
+    <h3 class="title">Mitglieder bearbeiten</h3>
 
-        <div class="box">
-            <form method="post">
-                {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                {{ form }}
+        {{ form }}
 
-                <div class="field is-grouped">
-                    <div class="control">
-                        <button class="button is-primary" type="submit">
-                            {% trans "Update members" %}
-                        </button>
-                    </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    Ändern
+                </button>
+            </div>
 
-                    <div class="control">
-                        <a class="button is-light" href="{% url 'accounts:group_detail' group.pk %}">
-                            {% trans "Cancel" %}
-                        </a>
-                    </div>
-                </div>
-            </form>
+            <div class="control">
+                <a class="button is-light" href="{% url 'accounts:group_detail' group.pk %}">
+                    Abbrechen
+                </a>
+            </div>
         </div>
-    </div>
-    </section>
+    </form>
 {% endblock %}

@@ -1,51 +1,44 @@
 {% extends 'base.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Users" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Benutzer
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container">
-            <h3 class="title">{% trans "Users" %}</h3>
+    <div class="container is-max-desktop">
 
-            <div class="table-container">
-                <table class="table is-fullwidth is-hoverable">
-                    <thead>
+        {{ block.super }}
+
+        <h3 class="title">Benutzer</h3>
+
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Registriert am</th>
+                    <th>Status</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for account in account_list %}
                     <tr>
-                        <th>{% trans "Full name" %}</th>
-                        <th>{% trans "Email address" %}</th>
-                        <th>{% trans "Active" %}</th>
-                        <th>{% trans "Joined" %}</th>
-                    </tr>
-                    </thead>
+                        <td>
+                            <a href="{% url 'accounts:user_detail' account.pk %}">
+                                {{ account.get_full_name }}
+                            </a>
+                        </td>
 
-                    <tbody>
-                    {% for account in account_list %}
-                        <tr>
-                            <td>
-                                <a href="{% url 'accounts:user_detail' account.pk %}">
-                                    {{ account.get_full_name }}
-                                </a>
-                            </td>
-                            <td>
-                                {{ account.email }}
-                            </td>
-                            <td>
-                                <span class="icon">
-                                    {% if account.is_active %}
-                                        <i class="fa-solid fa-check fa-fw"></i>
-                                    {% else %}
-                                        <i class="fa-solid fa-times fa-fw"></i>
-                                    {% endif %}
-                                </span>
-                            </td>
-                            <td>{{ account.date_joined|timesince }}</td>
-                        </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                        <td>{{ account.date_joined }}</td>
+
+                        <td>
+                            {% include 'accounts/state_tags_snippet.html' %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
-    </section>
+    </div>
 {% endblock %}

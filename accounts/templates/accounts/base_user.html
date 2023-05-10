@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="{% url 'accounts:user_list' %}">Benutzer</a></li>
+
+            <li class="is-active">
+                <a href="{% url 'accounts:user_detail' account.pk %}" aria-current="page">
+                    {{ account.get_full_name }}
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+{#    <div class="tabs">#}
+{#        <ul>#}
+{#            <li>#}
+{#                <a href="{% url 'accounts:user_detail' account.pk %}">#}
+{#                    <span class="icon is-small">#}
+{#                        <i class="fa-solid fa-circle-info"></i>#}
+{#                    </span>#}
+{#                    <span>Informationen</span>#}
+{#                </a>#}
+{#            </li>#}
+{#        </ul>#}
+{#    </div>#}
+
+    {{ block.super }}
+
+    {% block subcontent %}{% endblock %}
+{% endblock %}

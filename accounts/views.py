@@ -20,6 +20,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView, CreateView
+from tournament.models import Team
 
 
 class RegistrationView(UserPassesTestMixin, FormView):
@@ -260,3 +261,10 @@ class GroupMembersView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
 
     def get_success_url(self):
         return reverse_lazy('accounts:group_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class ProfileTeamsView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/profile_teams.html'
+
+    def get_queryset(self):
+        return Team.objects.filter(captain=self.request.user).order_by('-tournament__date')

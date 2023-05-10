@@ -1,58 +1,35 @@
-{% extends 'base.html' %}
-
-{% load i18n %}
+{% extends 'base_form.html' %}
 
 {% block title %}
-    {{ block.super }} |
-    {% if form.initial %}
-        {% trans "Edit group" %}
-    {% else %}
-        {% trans "Add group" %}
-    {% endif %}
+    {{ block.super }} | {% if form.initial %}Gruppe bearbeiten{% else %}Gruppe erstellen{% endif %}
 {% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">
+    <h3 class="title">{% if form.initial %}Gruppe bearbeiten{% else %}Gruppe erstellen{% endif %}</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    {% if form.initial %}Ändern{% else %}Hinzufügen{% endif %}
+                </button>
+            </div>
+
+            <div class="control">
                 {% if form.initial %}
-                    {% trans "Edit group" %}
+                    <a class="button is-light" href="{% url 'accounts:group_detail' group.pk %}">
+                        Abbrechen
+                    </a>
                 {% else %}
-                    {% trans "Add group" %}
+                    <a class="button is-light" href="{% url 'accounts:group_list' %}">
+                        Abbrechen
+                    </a>
                 {% endif %}
-            </h3>
-
-            <div class="box">
-                <form method="post">
-                    {% csrf_token %}
-
-                    {{ form }}
-
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">
-                                {% if form.initial %}
-                                    {% trans "Update group" %}
-                                {% else %}
-                                    {% trans "Create group" %}
-                                {% endif %}
-                            </button>
-                        </div>
-
-                        <div class="control">
-                            {% if form.initial %}
-                                <a class="button is-light" href="{% url 'accounts:group_detail' group.pk %}">
-                                    {% trans "Cancel" %}
-                                </a>
-                            {% else %}
-                                <a class="button is-light" href="{% url 'accounts:group_list' %}">
-                                    {% trans "Cancel" %}
-                                </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </form>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

@@ -61,7 +61,9 @@
                         <span class="tags has-addons">
                             <span class="tag {{ team.get_state_color }}">{{ team.get_state_display }}</span>
 
-                            <a class="tag" href="{% url 'tournament:change_team_status' team.pk %}">
+                            <a class="tag"
+                               href="{% url 'tournament:change_team_status' team.pk %}"
+                               style="text-decoration: none">
                                 <span class="icon">
                                     <i class="fa-solid fa-pen"></i>
                                 </span>

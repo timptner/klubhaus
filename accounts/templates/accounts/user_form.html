@@ -1,33 +1,27 @@
-{% extends 'base.html' %}
+{% extends 'base_form.html' %}
 
-{% load i18n %}
-
-{% block title %}{{ block.super }} | {% trans "Edit user" %}{% endblock %}
+{% block title %}
+    {{ block.super }} | Benutzer bearbeiten
+{% endblock %}
 
 {% block content %}
-    <section class="section">
-        <div class="container is-max-desktop">
-            <h3 class="title">{% trans "Edit user" %}</h3>
+    <h3 class="title">Benutzer bearbeiten</h3>
 
-            <div class="box">
-                <form method="post">
-                    {% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
 
-                    {{ form }}
+        {{ form }}
 
-                    <div class="field is-grouped">
-                        <div class="control">
-                            <button class="button is-primary" type="submit">{% trans "Update" %}</button>
-                        </div>
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">Ändern</button>
+            </div>
 
-                        <div class="control">
-                            <a class="button is-light" href="{% url 'accounts:user_detail' account.pk %}">
-                                {% trans "Cancel" %}
-                            </a>
-                        </div>
-                    </div>
-                </form>
+            <div class="control">
+                <a class="button is-light" href="{% url 'accounts:user_detail' account.pk %}">
+                    Abbrechen
+                </a>
             </div>
         </div>
-    </section>
+    </form>
 {% endblock %}

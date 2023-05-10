@@ -91,9 +91,9 @@ class Team(models.Model):
 
     def get_state_color(self) -> str:
         colors = {
-            self.ENROLLED: 'is-info',
-            self.APPROVED: 'is-success',
-            self.REJECTED: 'is-danger',
+            self.ENROLLED: 'is-light is-info',
+            self.APPROVED: 'is-light is-success',
+            self.REJECTED: 'is-light is-danger',
         }
         try:
             color = colors[self.state]
