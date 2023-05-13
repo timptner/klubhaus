@@ -46,3 +46,22 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+
+
+class Modification(models.Model):
+    REQUESTED = 0
+    ACCEPTED = 1
+    REJECTED = 2
+    STATE_CHOICES = [
+        (REQUESTED, "Beantragt"),
+        (ACCEPTED, "Angenommen"),
+        (REJECTED, "Abgelehnt"),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.JSONField("Inhalt")
+    state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=REQUESTED)
+    created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Veränderung"
+        verbose_name_plural = "Veränderungen"
