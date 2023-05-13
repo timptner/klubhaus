@@ -5,6 +5,7 @@ from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, Pas
                                        PasswordChangeForm, SetPasswordForm)
 from django.contrib.auth.models import Group
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
 from django.utils.encoding import force_bytes
@@ -151,29 +152,52 @@ class ProfileForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.original = {}
+        for field in self.Meta.fields:
+            self.original[field] = getattr(self.instance, field)
+
         for field in ['first_name', 'last_name']:
             self.fields[field].required = True
 
-    def save(self, commit=True):
-        user: User = self.instance
-        content = {
-            'old': {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'email': user.email,
-                'phone': user.phone,
-            },
-            'new': {
-                'first_name': self.cleaned_data['first_name'],
-                'last_name': self.cleaned_data['last_name'],
-                'email': self.cleaned_data['email'],
-                'phone': self.cleaned_data['phone'],
+    def clean_phone(self):
+        data = self.cleaned_data['phone']
+        data = data.replace(' ', '')
+        return data
+
+    def _get_diff(self) -> dict:
+        diff = {}
+        for field in self.Meta.fields:
+            old_value = self.original[field]
+            new_value = self.cleaned_data[field]
+            if old_value == new_value:
+                continue
+
+            diff[field] = {
+                'old': old_value,
+                'new': new_value,
             }
-        }
+
+        print(diff)
+
+        return diff
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        is_valid = all([field in cleaned_data.keys() for field in self.Meta.fields])
+        if is_valid:
+            diff = self._get_diff()
+            if len(diff) == 0:
+                raise ValidationError("Es wurden keine Änderungen vorgenommen.")
+
+    def save(self, commit=True):
+        diff = self._get_diff()
+
         Modification.objects.create(
             user=self.instance,
-            content=content,
+            content=diff,
         )
+
         return self.instance
 
 

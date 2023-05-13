@@ -33,8 +33,8 @@ class User(AbstractUser):
     phone_validator = PhoneValidator()
 
     username = None
-    email = models.EmailField(_('email address'), unique=True, validators=[email_validator])
-    phone = models.CharField(_('mobile number'), max_length=50, validators=[phone_validator], blank=True)
+    email = models.EmailField("E-Mail-Adresse", unique=True, validators=[email_validator])
+    phone = models.CharField("Mobilnummer", max_length=50, validators=[phone_validator], blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']
@@ -42,6 +42,8 @@ class User(AbstractUser):
     objects = UserManager()
 
     class Meta:
+        verbose_name = "Benutzer"
+        verbose_name_plural = "Benutzer"
         ordering = ['email']
 
     def __str__(self):
@@ -65,3 +67,22 @@ class Modification(models.Model):
     class Meta:
         verbose_name = "Veränderung"
         verbose_name_plural = "Veränderungen"
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return self.user.get_full_name()
+
+    def get_state_color(self) -> str:
+        colors = {
+            self.REQUESTED: 'is-light',
+            self.ACCEPTED: 'is-light is-success',
+            self.REJECTED: 'is-light is-danger',
+        }
+        return colors[self.state]
+
+    def content_with_labels(self) -> dict:
+        labels = {}
+        for field, value in self.content.items():
+            label = User._meta.get_field(field).verbose_name
+            labels[label] = value
+        return labels

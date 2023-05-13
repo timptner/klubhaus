@@ -1,0 +1,58 @@
+{% extends 'accounts/base_profile.html' %}
+
+{% block title %}
+    {{ block.super }} | Veränderungen
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <h3 class="title">Änderungsanträge</h3>
+    <div class="columns is-multiline">
+        {% for modification in modification_list %}
+            <div class="column is-half">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="is-flex is-justify-content-space-between is-align-items-center mb-5">
+                            <p class="title is-4 mb-0">{{ modification.created_at }}</p>
+
+                            <span class="tag {{ modification.get_state_color }}">
+                                {{ modification.get_state_display }}
+                            </span>
+                        </div>
+
+                        <table class="table">
+                            <tbody>
+                            {% for label, value in modification.content_with_labels.items %}
+                                <tr>
+                                    <td>{{ label }}</td>
+
+                                    <td>
+                                        <span class="icon-text">
+                                            <span>{{ value.old }}</span>
+
+                                            <span class="icon">
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                            </span>
+
+                                            <span>{{ value.new }}</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="column">
+                <p>Du hast noch keine Änderungen deiner persönlichen Daten beantragt.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

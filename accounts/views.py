@@ -203,8 +203,8 @@ class ProfileView(LoginRequiredMixin, DetailView):
 class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     template_name = 'accounts/profile_form.html'
     form_class = ProfileForm
-    success_url = reverse_lazy('accounts:profile')
-    success_message = "Änderungsantrag wurde erfolgreich gestellt"
+    success_url = reverse_lazy('accounts:profile_modifications')
+    success_message = "Änderung wurde erfolgreich beantragt"
 
     def test_func(self):
         has_pending_modifications = Modification.objects.filter(
@@ -226,6 +226,13 @@ class ProfileTeamsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Team.objects.filter(captain=self.request.user).order_by('-tournament__date')
+
+
+class ProfileModificationsView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/profile_modifications.html'
+
+    def get_queryset(self):
+        return Modification.objects.filter(user=self.request.user)
 
 
 class GroupListView(PermissionRequiredMixin, ListView):

@@ -16,9 +16,10 @@
     {% if is_expired %}
         <article class="message is-warning">
             <div class="message-body">
-                Es existiert ein Änderungsantrag zur Aktualisierung deiner persönlichen Daten. Daher sind einige der
-                folgenden Angaben möglicherweise nicht mehr aktuell. Solange der Antrag noch nicht akzeptiert oder
-                abgelehnt wurde kannst du keine neuen Änderungen beantragen.
+                Es existiert ein <a href="{% url 'accounts:profile_modifications' %}">Änderungsantrag</a> zur
+                Aktualisierung deiner persönlichen Daten. Daher sind einige der folgenden Angaben möglicherweise nicht
+                mehr aktuell. Solange der Antrag noch nicht akzeptiert oder abgelehnt wurde kannst du keine neuen
+                Änderungen beantragen.
             </div>
         </article>
     {% endif %}
