@@ -11,6 +11,28 @@
 
         <h3 class="title">Benutzer</h3>
 
+        <div class="columns has-text-centered">
+            <div class="column">
+                <p>Gesamt</p>
+                <p class="is-size-3">{{ statistics.total }}</p>
+            </div>
+
+            <div class="column">
+                <p>Aktiv</p>
+                <p class="is-size-3">{{ statistics.active }}</p>
+            </div>
+
+            <div class="column">
+                <p>Inaktiv</p>
+                <p class="is-size-3">{{ statistics.inactive }}</p>
+            </div>
+
+            <div class="column">
+                <p>Mitarbeiter</p>
+                <p class="is-size-3">{{ statistics.staff }}</p>
+            </div>
+        </div>
+
         <div class="table-container">
             <table class="table is-fullwidth is-hoverable">
                 <thead>
