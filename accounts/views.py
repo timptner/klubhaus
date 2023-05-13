@@ -221,6 +221,13 @@ class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageM
         return self.request.user
 
 
+class ProfileTeamsView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/profile_teams.html'
+
+    def get_queryset(self):
+        return Team.objects.filter(captain=self.request.user).order_by('-tournament__date')
+
+
 class GroupListView(PermissionRequiredMixin, ListView):
     permission_required = 'auth.view_group'
     model = Group
@@ -290,10 +297,3 @@ class GroupMembersView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
 
     def get_success_url(self):
         return reverse_lazy('accounts:group_detail', kwargs={'pk': self.kwargs['pk']})
-
-
-class ProfileTeamsView(LoginRequiredMixin, ListView):
-    template_name = 'accounts/profile_teams.html'
-
-    def get_queryset(self):
-        return Team.objects.filter(captain=self.request.user).order_by('-tournament__date')
