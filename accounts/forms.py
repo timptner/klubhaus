@@ -1,4 +1,4 @@
-from accounts.models import User
+from accounts.models import User, Modification
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, PasswordResetForm,
@@ -141,10 +141,11 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'phone']
+        fields = ['first_name', 'last_name', 'email', 'phone']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
+            'email': forms.EmailInput(attrs={'class': 'input'}),
             'phone': forms.TextInput(attrs={'class': 'input'}),
         }
 
@@ -152,6 +153,28 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field in ['first_name', 'last_name']:
             self.fields[field].required = True
+
+    def save(self, commit=True):
+        user: User = self.instance
+        content = {
+            'old': {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'email': user.email,
+                'phone': user.phone,
+            },
+            'new': {
+                'first_name': self.cleaned_data['first_name'],
+                'last_name': self.cleaned_data['last_name'],
+                'email': self.cleaned_data['email'],
+                'phone': self.cleaned_data['phone'],
+            }
+        }
+        Modification.objects.create(
+            user=self.instance,
+            content=content,
+        )
+        return self.instance
 
 
 class GroupForm(forms.ModelForm):

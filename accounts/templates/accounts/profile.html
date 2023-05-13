@@ -13,6 +13,16 @@
 {% block subcontent %}
     <h3 class="title">Profil</h3>
 
+    {% if is_expired %}
+        <article class="message is-warning">
+            <div class="message-body">
+                Es existiert ein Änderungsantrag zur Aktualisierung deiner persönlichen Daten. Daher sind einige der
+                folgenden Angaben möglicherweise nicht mehr aktuell. Solange der Antrag noch nicht akzeptiert oder
+                abgelehnt wurde kannst du keine neuen Änderungen beantragen.
+            </div>
+        </article>
+    {% endif %}
+
     <div class="table-container">
         <table class="table is-fullwidth">
             <tbody>
@@ -35,9 +45,15 @@
     </div>
 
     <div class="buttons">
-        <a class="button is-primary" href="{% url 'accounts:profile_edit' %}">
-            Daten aktualisieren
-        </a>
+        {% if is_expired %}
+            <button class="button is-primary" disabled>
+                Daten aktualisieren
+            </button>
+        {% else %}
+            <a class="button is-primary" href="{% url 'accounts:profile_edit' %}">
+                Daten aktualisieren
+            </a>
+        {% endif %}
 
         <a class="button is-light" href="{% url 'accounts:password_change' %}">
             Passwort ändern

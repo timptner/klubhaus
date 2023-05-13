@@ -1,4 +1,4 @@
-from accounts.models import User
+from accounts.models import User, Modification
 from accounts.forms import (CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm,
                             CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm, GroupForm,
                             MembershipForm)
@@ -191,12 +191,31 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         return self.request.user
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['is_expired'] = Modification.objects.filter(
+            user=self.request.user,
+            state=Modification.REQUESTED,
+        ).exists()
+        return context
 
-class ProfileUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+
+class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     template_name = 'accounts/profile_form.html'
     form_class = ProfileForm
     success_url = reverse_lazy('accounts:profile')
-    success_message = _("Your profile was updated successfully.")
+    success_message = "Änderungsantrag wurde erfolgreich gestellt"
+
+    def test_func(self):
+        has_pending_modifications = Modification.objects.filter(
+            user=self.request.user,
+            state=Modification.REQUESTED,
+        ).exists()
+
+        if has_pending_modifications:
+            return False
+
+        return True
 
     def get_object(self, queryset=None):
         return self.request.user
