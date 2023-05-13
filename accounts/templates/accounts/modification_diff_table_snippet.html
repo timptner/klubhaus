@@ -1,0 +1,21 @@
+<table class="table is-fullwidth">
+    <tbody>
+    {% for label, value in modification.content_with_labels.items %}
+        <tr>
+            <td>{{ label }}</td>
+
+            <td>
+                <span class="icon-text">
+                    <span>{{ value.old|default:'ERSTELLEN' }}</span>
+
+                    <span class="icon">
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+
+                    <span>{{ value.new|default:'LÖSCHEN' }}</span>
+                </span>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

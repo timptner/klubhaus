@@ -57,6 +57,9 @@
 
                                 {% url 'accounts:group_list' as url %}
                                 {% include 'nav_dropdown_snippet.html' with permission=perms.auth.view_group url=url label="Gruppen" icon="fa-user-group" %}
+
+                                {% url 'accounts:modification_list' as url %}
+                                {% include 'nav_dropdown_snippet.html' with permission=perms.accounts.view_modification url=url label="Anträge" icon="fa-file-contract" %}
                             </div>
                         </div>
                     {% endif %}

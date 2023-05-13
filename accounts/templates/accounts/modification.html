@@ -1,0 +1,62 @@
+{% extends 'base_form.html' %}
+
+{% block title %}
+    {{ block.super }} | Antrag verarbeiten
+{% endblock %}
+
+{% block content %}
+    <h3 class="title">Antrag verarbeiten</h3>
+
+    <article class="message is-info">
+        <div class="message-body">
+            Falls ein Antrag zum Löschen der Mobilnummer gestellt wurde ist zu prüfen, ob der Benutzer für noch
+            bevorstehende Exkursionen oder Veranstaltungen (Helfende Hände) angemeldet ist. In diesem Fall sind
+            Rücksprachen mit den Sachgebieten Exkursionen und/oder Veranstaltungen zu halten, ob die Mobilnummer
+            weiterhin benötigt wird.
+        </div>
+    </article>
+
+    <div class="block">
+        <h5 class="title is-5">Details</h5>
+
+        <table class="table is-fullwidth">
+            <tbody>
+            <tr>
+                <td>Benutzer</td>
+                <td>{{ modification.user.get_full_name }}</td>
+            </tr>
+
+            <tr>
+                <td>Antrag erstellt am</td>
+                <td>{{ modification.created_at }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="block">
+        <h5 class="title is-5">Änderungen</h5>
+
+        {% include 'accounts/modification_diff_table_snippet.html' %}
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <input class="button is-success" type="submit" value="Akzeptieren" name="decision">
+            </div>
+
+            <div class="control">
+                <input class="button is-danger" type="submit" value="Ablehnen" name="decision">
+            </div>
+
+            <div class="control">
+                <a class="button is-light" href="{% url 'accounts:modification_list' %}">
+                    Abbrechen
+                </a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

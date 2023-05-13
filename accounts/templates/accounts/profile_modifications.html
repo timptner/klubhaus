@@ -25,27 +25,7 @@
                             </span>
                         </div>
 
-                        <table class="table">
-                            <tbody>
-                            {% for label, value in modification.content_with_labels.items %}
-                                <tr>
-                                    <td>{{ label }}</td>
-
-                                    <td>
-                                        <span class="icon-text">
-                                            <span>{{ value.old }}</span>
-
-                                            <span class="icon">
-                                                <i class="fa-solid fa-arrow-right"></i>
-                                            </span>
-
-                                            <span>{{ value.new }}</span>
-                                        </span>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
+                        {% include 'accounts/modification_diff_table_snippet.html' %}
                     </div>
                 </div>
             </div>

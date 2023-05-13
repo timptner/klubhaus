@@ -4,13 +4,16 @@ from accounts.forms import (CustomUserCreateForm, CustomAuthenticationForm, Cust
                             MembershipForm)
 from datetime import timedelta
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.exceptions import ImproperlyConfigured, ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError, PermissionDenied, BadRequest
 from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -20,6 +23,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView, CreateView
+from klubhaus.mails import PostmarkTemplate
 from tournament.models import Team
 
 
@@ -304,3 +308,63 @@ class GroupMembersView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
 
     def get_success_url(self):
         return reverse_lazy('accounts:group_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class ModificationListView(PermissionRequiredMixin, ListView):
+    permission_required = 'accounts.view_modification'
+    model = Modification
+    queryset = Modification.objects.filter(state=Modification.REQUESTED)
+
+
+@permission_required(['accounts.change_modification', 'accounts.change_user'])
+def handle_modification(request, pk):
+    modification = Modification.objects.get(pk=pk)
+
+    if modification.state != Modification.REQUESTED:
+        raise PermissionDenied()
+
+    if request.method == 'POST':
+        if 'decision' in request.POST:
+            decision = request.POST['decision']
+            if decision == 'Akzeptieren':
+                modification.state = Modification.ACCEPTED
+                modification.save()
+
+                user: User = modification.user
+
+                for field, values in modification.content.items():
+                    setattr(user, field, values['new'])
+
+                user.save()
+
+                template = PostmarkTemplate()
+                payload = {
+                    'name': user.first_name,
+                }
+                template.send_message(user.email, 'modification-accepted', payload)
+
+            elif decision == 'Ablehnen':
+                modification.state = Modification.REJECTED
+                modification.save()
+
+                user: User = modification.user
+
+                template = PostmarkTemplate()
+                payload = {
+                    'name': user.first_name,
+                }
+                template.send_message(user.email, 'modification-rejected', payload)
+
+            else:
+                raise BadRequest()
+
+            messages.success(request, "Antrag erfolgreich verarbeitet")
+            return redirect(reverse_lazy('accounts:modification_list'))
+        else:
+            raise BadRequest()
+
+    context = {
+        'modification': modification,
+    }
+
+    return render(request, 'accounts/modification.html', context=context)

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ block.super }} | Offene Anträge
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+
+        {{ block.super }}
+
+        <h3 class="title">Offene Anträge</h3>
+
+        <div class="table-container">
+            <table class="table is-hoverable is-fullwidth">
+                <thead>
+                <tr>
+                    <th>Benutzer</th>
+                    <th>Offen seit</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for modification in modification_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'accounts:modification_handle' modification.pk %}">
+                                {{ modification.user.get_full_name }}
+                            </a>
+                        </td>
+
+                        <td>{{ modification.created_at|timesince }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                    <td colspan="2" class="is-italic has-text-centered">Kein offenen Anträge vorhanden</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
