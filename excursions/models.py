@@ -1,17 +1,18 @@
 import markdown
 
-from accounts.models import User
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
+from accounts.models import User
+
 
 def image_path(instance, filename):
     suffix = filename.split('.')[-1]
-    return f'field_trips/field_trip_{instance.pk}/thumbnail.{suffix}'
+    return f'excursions/{instance.pk}/thumbnail.{suffix}'
 
 
-class FieldTrip(models.Model):
+class Excursion(models.Model):
     title = models.CharField(max_length=200)
     location = models.CharField(max_length=200, blank=True)
     desc = models.TextField(_('description'))
@@ -48,12 +49,12 @@ class FieldTrip(models.Model):
 
 class Participant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    field_trip = models.ForeignKey(FieldTrip, on_delete=models.CASCADE)
+    excursion = models.ForeignKey(Excursion, on_delete=models.CASCADE)
     registered_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         constraints = [
-            models.UniqueConstraint('user', 'field_trip', name='unique_participant'),
+            models.UniqueConstraint('user', 'excursion', name='unique_participant'),
         ]
         ordering = ('registered_at',)
 

@@ -1,11 +1,12 @@
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from field_trips.models import FieldTrip
+
+from .models import Excursion
 
 
-class FieldTripForm(forms.ModelForm):
+class ExcursionForm(forms.ModelForm):
     class Meta:
-        model = FieldTrip
+        model = Excursion
         fields = ['title', 'location', 'website', 'image', 'desc', 'date', 'seats']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'input'}),

@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='FieldTrip',
+            name='Excursion',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=200)),
@@ -32,7 +32,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('registered_at', models.DateTimeField(auto_now_add=True)),
-                ('field_trip', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='field_trips.fieldtrip')),
+                ('excursion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='excursions.excursion')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
@@ -41,6 +41,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AddConstraint(
             model_name='participant',
-            constraint=models.UniqueConstraint(models.F('user'), models.F('field_trip'), name='unique_participant'),
+            constraint=models.UniqueConstraint(models.F('user'), models.F('excursion'), name='unique_participant'),
         ),
     ]
