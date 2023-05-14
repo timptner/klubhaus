@@ -2,9 +2,10 @@ from markdown import markdown
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import redirect, render
 from django.template import loader
@@ -13,7 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from .models import Excursion, Participant
-from .forms import ExcursionForm
+from .forms import ExcursionForm, ParticipantForm
 
 
 class ExcursionListView(LoginRequiredMixin, ListView):
@@ -21,88 +22,101 @@ class ExcursionListView(LoginRequiredMixin, ListView):
 
 
 class ExcursionCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'excursions.add_excursion'
     model = Excursion
     form_class = ExcursionForm
     success_url = reverse_lazy('excursions:excursion_list')
-    success_message = _("%(title)s was created successfully")
-    permission_required = 'excursions.add_excursion'
+    success_message = "%(title)s wurde erfolgreich erstellt"
 
 
 class ExcursionDetailView(LoginRequiredMixin, DetailView):
     model = Excursion
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+        if excursion.state == Excursion.PLANNED:
+            color = 'is-info'
+            message = "Die Anmeldung ist im Moment noch geschlossen. Schaue in ein paar Tagen noch einmal vorbei."
+        elif excursion.state == Excursion.CLOSED:
+            color = 'is-danger'
+            message = "Die Anmeldung ist beendet und wird nicht wieder geöffnet."
+        elif excursion.state == Excursion.ARCHIVED:
+            color = 'is-info'
+            message = "Die Veranstaltung wurde archiviert."
+        elif excursion.participant_set.filter(user=self.request.user).exists():
+            color = 'is-warning'
+            message = "Du bist für diese Exkursion bereits angemeldet."
+        elif not self.request.user.phone:
+            url = reverse_lazy('accounts:profile')
+            color = 'is-danger'
+            message = ("Bitte ergänze deine Mobilnummer in deinem "
+                       f"<a href=\"{url}\">Profil</a>, um dich anmelden zu können.")
+        else:
+            color = None
+            message = None
+
+        if color and message:
+            context['feedback'] = {
+                'color': color,
+                'message': message,
+            }
+        return context
+
 
 class ExcursionUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Excursion
     form_class = ExcursionForm
-    success_message = _("%(title)s was updated successfully")
+    success_message = "%(title)s wurde erfolgreich aktualisiert"
     permission_required = 'excursions.change_excursion'
 
     def get_success_url(self):
         return reverse_lazy('excursions:excursion_detail', kwargs={'pk': self.object.pk})
 
 
-@login_required
-def register(request, pk):
-    excursion = Excursion.objects.get(pk=pk)
+class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
+    model = Participant
+    form_class = ParticipantForm
+    success_message = "Du hast dich erfolgreich zur Exkursion angemeldet"
 
-    conflicts = []
+    def test_func(self):
+        excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+        if excursion.state != Excursion.OPENED:
+            return False
 
-    if excursion.is_expired:
-        conflicts.append(_("This excursion is expired."))
+        if not self.request.user.phone:
+            # TODO add matrikel check
+            return False
 
-    if excursion.participant_set.count() >= excursion.seats:
-        conflicts.append(_("All seats are taken."))
+        if excursion.participant_set.filter(user=self.request.user).exists():
+            return False
 
-    if request.user.phone == '':
-        conflicts.append(_("Your mobile number is missing in your profile."))
+        return True
 
-    if request.user.pk in excursion.participant_set.values_list('user', flat=True):
-        conflicts.append(_("You are already registered."))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
+        return context
 
-    if request.method == 'POST':
-        if conflicts:
-            messages.error(request, _("You were not registered for this excursion."))
-            return redirect(reverse_lazy('excursions:register', kwargs={'pk': pk}))
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user,
+            'excursion': Excursion.objects.get(pk=self.kwargs['pk'])
+        })
+        return kwargs
 
-        Participant.objects.create(user=request.user, excursion=excursion)
-
-        mail_context = {
-            'name': request.user.get_short_name(),
-            'title': excursion.title,
-            'date': excursion.date,
-            'pk': excursion.pk,
-            'protocol': 'https' if request.is_secure() else 'http',
-            'domain': get_current_site(request).domain,
-        }
-        msg = loader.render_to_string('excursions/mail/confirm_registration.md', mail_context, request)
-        email = EmailMultiAlternatives(
-            subject=_("Registration confirmation"),
-            body=msg,
-            from_email=None,
-            to=[request.user.email],
-        )
-        email.attach_alternative(markdown(msg), 'text/html')
-        email.send()
-
-        messages.success(request, _("You were successfully registered for this excursion."))
-
-        return redirect(reverse_lazy('excursions:excursion_detail', kwargs={'pk': pk}))
-
-    context = {
-        'excursion': excursion,
-        'conflicts': conflicts,
-    }
-
-    return render(request, 'excursions/excursion_register.html', context=context)
+    def get_success_url(self):
+        return reverse_lazy('excursions:excursion_detail', kwargs={'pk': self.kwargs['pk']})
 
 
 class ParticipantListView(PermissionRequiredMixin, ListView):
-    model = Participant
     permission_required = 'excursions.view_participant'
+    model = Participant
 
     def get_queryset(self):
-        return Participant.objects.filter(field_trip_id=self.kwargs['pk'])
+        return Participant.objects.filter(excursion_id=self.kwargs['pk'])
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)

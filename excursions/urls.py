@@ -8,7 +8,7 @@ urlpatterns = [
     path('add/', views.ExcursionCreateView.as_view(), name='excursion_create'),
     path('<int:pk>/', views.ExcursionDetailView.as_view(), name='excursion_detail'),
     path('<int:pk>/edit/', views.ExcursionUpdateView.as_view(), name='excursion_update'),
-    path('<int:pk>/register/', views.register, name='register'),
+    path('<int:pk>/register/', views.ParticipantCreateView.as_view(), name='participant_create'),
     path('<int:pk>/participants/', views.ParticipantListView.as_view(), name='participant_list'),
     path('participants/<int:pk>/delete/', views.ParticipantDeleteView.as_view(), name='participant_delete'),
 ]

@@ -1,4 +1,4 @@
-{% extends 'excursions/base.html' %}
+{% extends 'excursions/base_excursion.html' %}
 
 {% load static %}
 
@@ -28,10 +28,14 @@
             <tbody>
             {% for participant in participant_list %}
                 <tr>
-                    <td>{{ participant.user.get_full_name }}</td>
-                    <td>{{ participant.registered_at }}</td>
                     <td>
-                        <a href="{% url 'field_trips:participant_delete' participant.pk %}">
+                        <a href="{% url 'accounts:user_detail' participant.user.pk %}">
+                            {{ participant.user.get_full_name }}
+                        </a>
+                    </td>
+                    <td>{{ participant.created_at }}</td>
+                    <td>
+                        <a href="{% url 'excursions:participant_delete' participant.pk %}">
                             <span class="icon-text has-text-danger">
                                 <span class="icon">
                                     <i class="fa-solid fa-skull"></i>

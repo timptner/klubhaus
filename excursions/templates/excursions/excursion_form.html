@@ -30,11 +30,11 @@
 
             <div class="control">
                 {% if form.initial %}
-                    <a class="button is-light" href="{% url 'field_trips:field_trip_detail' fieldtrip.pk %}">
+                    <a class="button is-light" href="{% url 'excursions:excursion_detail' excursion.pk %}">
                         Abbrechen
                     </a>
                 {% else %}
-                    <a class="button is-light" href="{% url 'field_trips:field_trip_list' %}">
+                    <a class="button is-light" href="{% url 'excursions:excursion_list' %}">
                         Abbrechen
                     </a>
                 {% endif %}

@@ -10,8 +10,8 @@
 
         {% if user.is_staff %}
             <div class="buttons is-justify-content-flex-end">
-                {% url 'field_trips:field_trip_create' as url %}
-                {% include 'button_snippet.html' with permission=perms.field_trips.add_fiel_trip url=url label="Exkursion erstellen" %}
+                {% url 'excursions:excursion_create' as url %}
+                {% include 'button_snippet.html' with permission=perms.excursions.add_excursion url=url label="Exkursion erstellen" %}
             </div>
         {% endif %}
 
@@ -22,25 +22,29 @@
             <tr>
                 <th>Titel</th>
                 <th>Datum</th>
-                <th>Anmeldungen</th>
+                <th>Status</th>
             </tr>
             </thead>
 
             <tbody>
-            {% for field_trip in fieldtrip_list %}
+            {% for excursion in excursion_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'field_trips:field_trip_detail' field_trip.pk %}">
-                            {{ field_trip.title }}
+                        <a href="{% url 'excursions:excursion_detail' excursion.pk %}">
+                            {{ excursion.title }}
                         </a>
                     </td>
-                    <td>{{ field_trip.date }}</td>
-                    <td>{{ field_trip.progress }} %</td>
+                    <td>{{ excursion.date }}</td>
+                    <td>
+                        <span class="tag {{ excursion.get_state_color }}">
+                            {{ excursion.get_state_display }}
+                        </span>
+                    </td>
                 </tr>
             {% empty %}
                 <tr>
                     <td colspan="3" class="is-italic has-text-centered">
-                        Es wurden bisher noch keine Exkursionen erstellt
+                        Keine Exkursionen verfügbar
                     </td>
                 </tr>
             {% endfor %}
