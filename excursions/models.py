@@ -1,6 +1,12 @@
+import logging
+
 from django.db import models
 
 from accounts.models import User
+from klubhaus.mails import PostmarkTemplate
+
+
+logger = logging.getLogger(__name__)
 
 
 def image_path():
@@ -45,9 +51,18 @@ class Excursion(models.Model):
 
 
 class Participant(models.Model):
+    ENROLLED = 0
+    APPROVED = 1
+    REJECTED = 2
+    STATE_CHOICES = [
+        (ENROLLED, "Eingeschrieben"),
+        (APPROVED, "Zugelassen"),
+        (REJECTED, "Abgelehnt"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     excursion = models.ForeignKey(Excursion, on_delete=models.CASCADE)
     comment = models.TextField("Bemerkung", blank=True)
+    state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=ENROLLED)
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 
     class Meta:
@@ -60,3 +75,42 @@ class Participant(models.Model):
 
     def __str__(self):
         return self.user.get_full_name()
+
+    def get_state_color(self):
+        colors = {
+            self.ENROLLED: 'is-light is-info',
+            self.APPROVED: 'is-light is-success',
+            self.REJECTED: 'is-light is-danger',
+        }
+        return colors[self.state]
+
+    def set_state(self, state) -> bool:
+        states = [choice for choice, label in self.STATE_CHOICES]
+        if state not in states:
+            choices = ', '.join(states)
+            raise ValueError(f"You can only set a state to one of the available choices. ({choices})")
+
+        self.state = state
+        self.save()
+
+        template = PostmarkTemplate()
+        payload = {
+            'user_name': self.user.first_name,
+            'excursion_name': self.excursion.title,
+        }
+
+        if state == self.APPROVED:
+            error = template.send_message(self.user.email, 'participant-approved', payload)
+        elif state == self.REJECTED:
+            error = template.send_message(self.user.email, 'participant-rejected', payload)
+        elif state == self.ENROLLED:
+            raise NotImplementedError(f"Can not reset state to '{self.ENROLLED}'. Please request an administrator to "
+                                      "use the available django-admin command.")
+        else:
+            error = None
+
+        if error:
+            logger.error("Failed to send email about changed state for participant '%s'", self.__str__())
+            return False
+
+        return True

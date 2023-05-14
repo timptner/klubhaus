@@ -20,8 +20,9 @@
             <thead>
             <tr>
                 <th>Name</th>
+                <th>Bemerkung</th>
                 <th>Angemeldet am</th>
-                <th></th>
+                <th>Status</th>
             </tr>
             </thead>
 
@@ -33,23 +34,32 @@
                             {{ participant.user.get_full_name }}
                         </a>
                     </td>
-                    <td>{{ participant.created_at }}</td>
-                    <td>
-                        <a href="{% url 'excursions:participant_delete' participant.pk %}">
-                            <span class="icon-text has-text-danger">
-                                <span class="icon">
-                                    <i class="fa-solid fa-skull"></i>
-                                </span>
 
-                                <span>Löschen</span>
+                    <td>{{ participant.comment }}</td>
+
+                    <td>{{ participant.created_at }}</td>
+
+                    <td>
+                        <span class="tags has-addons">
+                            <span class="tag {{ participant.get_state_color }}">
+                                {{ participant.get_state_display }}
                             </span>
-                        </a>
+                            {% if perms.excursions.change_participant %}
+                                <a class="tag"
+                                   href="{% url 'excursions:participant_state_update' participant.pk %}"
+                                   style="text-decoration: none">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </span>
+                                </a>
+                            {% endif %}
+                        </span>
                     </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="3" class="is-italic has-text-centered">
-                        Es haben sich bisher noch keine Teilnehmer angemeldet
+                    <td colspan="4" class="is-italic has-text-centered">
+                        Bisher haben sich keine Teilnehmer angemeldet
                     </td>
                 </tr>
             {% endfor %}

@@ -1,4 +1,5 @@
 from django import forms
+from django.core.exceptions import ValidationError
 
 from .models import Excursion, Participant
 
@@ -51,3 +52,36 @@ class ParticipantForm(forms.ModelForm):
             participant.save()
 
         return participant
+
+
+ENROLLED_DISPLAY = dict(Participant.STATE_CHOICES).get(Participant.ENROLLED)
+
+
+class ParticipantStateForm(forms.ModelForm):
+    class Meta:
+        model = Participant
+        fields = ['state']
+        widgets = {
+            'state': forms.RadioSelect,
+        }
+
+    def clean_state(self):
+        data = self.cleaned_data['state']
+
+        if data == Participant.ENROLLED:
+            raise ValidationError(
+                "Der Status \"%(state)s\" kann nur durch einen Administrator gesetzt werden.",
+                params={'state': ENROLLED_DISPLAY},
+                code='forbidden state',
+            )
+
+        return data
+
+    def save(self, commit=True):
+        if commit is False:
+            raise NotImplementedError("A changed team status will be committed immediately")
+
+        state = self.cleaned_data['state']
+        self.instance.set_state(state)
+
+        return self.instance

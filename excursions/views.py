@@ -1,20 +1,10 @@
-from markdown import markdown
-
-from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.sites.shortcuts import get_current_site
-from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMultiAlternatives
-from django.shortcuts import redirect, render
-from django.template import loader
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 
 from .models import Excursion, Participant
-from .forms import ExcursionForm, ParticipantForm
+from .forms import ExcursionForm, ParticipantForm, ParticipantStateForm
 
 
 class ExcursionListView(LoginRequiredMixin, ListView):
@@ -124,42 +114,15 @@ class ParticipantListView(PermissionRequiredMixin, ListView):
         return context
 
 
-class ParticipantDeleteView(LoginRequiredMixin, PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
+class ParticipantStateUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'excursions.change_participant'
     model = Participant
-    permission_required = 'excursions.delete_participant'
-
-    def get_success_url(self):
-        participant: Participant = self.object
-        return reverse_lazy('excursions:participant_list', kwargs={'pk': participant.excursion.pk})
+    form_class = ParticipantStateForm
+    template_name = 'excursions/participant_state_form.html'
 
     def get_success_message(self, cleaned_data):
         participant: Participant = self.object
-        return _("%(first_name)s was removed successfully") % {'first_name': participant.user.first_name}
+        return f"Status von {participant.user.get_full_name()} erfolgreich geändert"
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-
-        participant: Participant = self.object
-
-        payload = {
-            'name': participant.user.get_short_name(),
-            'title': participant.excursion.title,
-        }
-
-        text_content = loader.render_to_string(
-            'excursions/mail/removed.md',
-            context=payload,
-            request=self.request,
-        )
-        html_content = markdown(text_content)
-
-        mail = EmailMultiAlternatives(
-            subject=_("Removed from field trip"),
-            body=text_content,
-            to=[participant.user.email],
-            reply_to=['farafmb@ovgu.de'],
-        )
-        mail.attach_alternative(html_content, 'text/html')
-        mail.send()
-
-        return response
+    def get_success_url(self):
+        return reverse_lazy('excursions:participant_list', kwargs={'pk': self.kwargs['pk']})

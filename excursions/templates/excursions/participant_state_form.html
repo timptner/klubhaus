@@ -1,0 +1,46 @@
+{% extends 'base_form.html' %}
+
+{% block title %}
+    {{ block.super }} | Status bearbeiten
+{% endblock %}
+
+{% block content %}
+    <h3 class="title">Status bearbeiten</h3>
+    <h5 class="subtitle">{{ participant }}</h5>
+
+    <article class="message is-info">
+        <div class="message-body">
+            Teams erhalten bei Änderung des Status eine Benachrichtigung per E-Mail.
+        </div>
+    </article>
+
+    {% if team.state != team.ENROLLED %}
+        <article class="message is-warning">
+            <div class="message-body">
+                Das Team besitzt bereits den Status "{{ team.get_state_display }}". Bitte beachte, dass beim
+                Ändern des Status erneut eine E-Mail an den Team-Kapitän verschickt wird. Dies wird zu
+                Verwirrungen beim Team führen, ob sie nun beim Turnier dabei sind oder nicht!
+            </div>
+        </article>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    Ändern
+                </button>
+            </div>
+
+            <div class="control">
+                <a class="button is-light" href="{% url 'excursions:participant_list' participant.excursion.pk %}">
+                    Abbrechen
+                </a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
