@@ -182,6 +182,48 @@ class UserDetailView(PermissionRequiredMixin, DetailView):
     context_object_name = 'account'
 
 
+class UserExcursionsView(PermissionRequiredMixin, ListView):
+    permission_required = 'accounts.view_user'
+    template_name = 'accounts/user_excursions.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['account'] = User.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_queryset(self):
+        user = User.objects.get(pk=self.kwargs['pk'])
+        return user.participant_set.all()
+
+
+class UserTeamsView(PermissionRequiredMixin, ListView):
+    permission_required = 'accounts.view_user'
+    template_name = 'accounts/user_teams.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['account'] = User.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_queryset(self):
+        user = User.objects.get(pk=self.kwargs['pk'])
+        return user.team_set.all()
+
+
+class UserEventsView(PermissionRequiredMixin, ListView):
+    permission_required = 'accounts.view_user'
+    template_name = 'accounts/user_events.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['account'] = User.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_queryset(self):
+        user = User.objects.get(pk=self.kwargs['pk'])
+        return user.volunteer_set.all()
+
+
 class UserUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     permission_required = 'accounts.change_user'
     model = User

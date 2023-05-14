@@ -1,0 +1,42 @@
+{% extends 'accounts/base_user.html' %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <div class="table-container">
+        <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Datum</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for volunteer in volunteer_list %}
+                {% with volunteer.event as event %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'volunteers:event_detail' event.pk %}">
+                                {{ event.title }}
+                            </a>
+                        </td>
+
+                        <td>{{ event.date }}</td>
+                    </tr>
+                {% endwith %}
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="is-italic has-text-centered">
+                        Keine Veranstaltungen verfügbar
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

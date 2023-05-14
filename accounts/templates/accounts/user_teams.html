@@ -1,0 +1,49 @@
+{% extends 'accounts/base_user.html' %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <div class="table-container">
+        <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+                <th>Turnier</th>
+                <th>Team</th>
+                <th>Datum</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for team in team_list %}
+                <tr>
+                    {% with team.tournament as tournament %}
+                        <td>
+                            <a href="{% url 'tournament:tournament_detail' tournament.pk %}">
+                                {{ tournament.title }}
+                            </a>
+                        </td>
+                        <td>{{ team.name }}</td>
+                        <td>{{ tournament.date }}</td>
+                    {% endwith %}
+                    <td>
+                        <span class="tag {{ team.get_state_color }}">
+                            {{ team.get_state_display }}
+                        </span>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="is-italic has-text-centered">
+                        Keine Teams verfügbar
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

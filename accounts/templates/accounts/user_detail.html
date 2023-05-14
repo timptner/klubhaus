@@ -1,9 +1,5 @@
 {% extends 'accounts/base_user.html' %}
 
-{% block title %}
-    {{ block.super }} | {{ account.get_full_name }}
-{% endblock %}
-
 {% block content %}
     <div class="container is-max-desktop">
         {{ block.super }}
@@ -15,10 +11,6 @@
         {% url 'accounts:user_edit' account.pk as url %}
         {% include 'button_snippet.html' with permission=perms.accounts.change_user url=url label="Benutzer bearbeiten" %}
     </div>
-
-    <h3 class="title">{{ account.get_full_name }}</h3>
-
-    <h5 class="title is-5">Persönliche Daten</h5>
 
     <div class="table-container">
         <table class="table is-fullwidth">
@@ -46,121 +38,5 @@
             </tr>
             </tbody>
         </table>
-    </div>
-
-    <div class="columns">
-        {% if account.participant_set.exists %}
-            <div class="column">
-                <h5 class="title is-5">Exkursionen</h5>
-                <div class="content">
-                    <ul>
-                        {% for participant in account.participant_set.all %}
-                            <li>
-                                <a href="{% url 'excursions:excursion_detail' participant.excursion.pk %}">
-                                    {{ participant.excursion }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
-
-        {% if account.team_set.exists %}
-            <div class="column">
-                <h5 class="title is-5">Turniere</h5>
-
-                <article class="message">
-                    <div class="message-header">
-                        <p>Legende</p>
-                    </div>
-
-                    <div class="message-body">
-                        <div class="icon-text">
-                            <span class="icon has-text-info">
-                                <i class="fa-solid fa-question-circle fa-fw"></i>
-                            </span>
-
-                            <span>Eingeschrieben</span>
-                        </div>
-
-                        <div class="icon-text">
-                            <span class="icon has-text-success">
-                                <i class="fa-solid fa-check-circle fa-fw"></i>
-                            </span>
-
-                            <span>Zugelassen</span>
-                        </div>
-
-                        <div class="icon-text">
-                            <span class="icon has-text-danger">
-                                <i class="fa-solid fa-times-circle fa-fw"></i>
-                            </span>
-
-                            <span>Abgelehnt</span>
-                        </div>
-                    </div>
-                </article>
-
-                <div class="content">
-                    {% for team in account.team_set.all %}
-                        <div class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-trophy fa-fw" aria-hidden="true"></i>
-                            </span>
-
-                            <span>
-                                <a href="{% url 'tournament:tournament_detail' team.tournament.pk %}">
-                                    {{ team.tournament }}
-                                </a>
-                            </span>
-                        </div>
-
-                        <div class="icon-text">
-                            <span class="icon">
-                                <i class="fa-solid fa-user-group fa-fw" aria-hidden="true"></i>
-                            </span>
-
-                            <span>{{ team }}</span>
-
-                            {% if team.state == team.APPROVED %}
-                                <span class="icon has-text-success">
-                                    <i class="fa-solid fa-check-circle"></i>
-                                </span>
-                            {% elif team.state == team.REJECTED %}
-                                <span class="icon has-text-danger">
-                                    <i class="fa-solid fa-times-circle"></i>
-                                </span>
-                            {% elif team.state == team.ENROLLED %}
-                                <span class="icon has-text-info">
-                                    <i class="fa-solid fa-question-circle"></i>
-                                </span>
-                            {% endif %}
-                        </div>
-
-                        {% if not forloop.last %}
-                            <hr>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-
-        {% if account.volunteer_set.exists %}
-            <div class="column">
-                <h5 class="title is-5">Veranstaltungen</h5>
-                <div class="content">
-                    <ul>
-                        {% for volunteer in account.volunteer_set.all %}
-                            <li>
-                                <a href="{% url 'volunteers:event_detail' volunteer.event.pk %}">
-                                    {{ volunteer.event }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-        {% endif %}
     </div>
 {% endblock %}

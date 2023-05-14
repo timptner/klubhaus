@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 
+{% block title %}
+    {{ block.super }} | {{ account.get_full_name }}
+{% endblock %}
+
 {% block content %}
     <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -13,18 +17,45 @@
         </ul>
     </nav>
 
-{#    <div class="tabs">#}
-{#        <ul>#}
-{#            <li>#}
-{#                <a href="{% url 'accounts:user_detail' account.pk %}">#}
-{#                    <span class="icon is-small">#}
-{#                        <i class="fa-solid fa-circle-info"></i>#}
-{#                    </span>#}
-{#                    <span>Informationen</span>#}
-{#                </a>#}
-{#            </li>#}
-{#        </ul>#}
-{#    </div>#}
+    <div class="tabs">
+        <ul>
+            <li>
+                <a href="{% url 'accounts:user_detail' account.pk %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </span>
+                    <span>Informationen</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'accounts:user_excursions' account.pk %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-car"></i>
+                    </span>
+                    <span>Exkursionen</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'accounts:user_teams' account.pk %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-people-group"></i>
+                    </span>
+                    <span>Teams</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{% url 'accounts:user_events' account.pk %}">
+                    <span class="icon is-small">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </span>
+                    <span>Veranstaltungen</span>
+                </a>
+            </li>
+        </ul>
+    </div>
 
     {{ block.super }}
 

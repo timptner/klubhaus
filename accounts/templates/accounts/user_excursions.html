@@ -1,0 +1,47 @@
+{% extends 'accounts/base_user.html' %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <div class="table-container">
+        <table class="table is-hoverable is-fullwidth">
+            <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Datum</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for participant in participant_list %}
+                <tr>
+                    {% with participant.excursion as excursion %}
+                        <td>
+                            <a href="{% url 'excursions:excursion_detail' excursion.pk %}">
+                                {{ excursion.title }}
+                            </a>
+                        </td>
+                        <td>{{ excursion.date }}</td>
+                    {% endwith %}
+                    <td>
+                        <span class="tag {{ participant.get_state_color }}">
+                            {{ participant.get_state_display }}
+                        </span>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="is-italic has-text-centered">
+                        Keine Exkursionen verfügbar
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
