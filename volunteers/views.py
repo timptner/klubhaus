@@ -9,13 +9,27 @@ from volunteers.models import Event, Volunteer
 
 class EventListView(LoginRequiredMixin, ListView):
     model = Event
-    ordering = ['-date']
+    queryset = Event.objects.exclude(state=Event.ARCHIVED)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        personal_events = Volunteer.objects.filter(user=self.request.user).values_list('event__pk', flat=True)
-        context['personal_events'] = personal_events
+
+        personal_events = Volunteer.objects.exclude(
+            event__state=Event.ARCHIVED
+        ).filter(
+            user=self.request.user
+        ).values_list('event__pk', flat=True)
+
+        if personal_events:
+            context['personal_events'] = personal_events
+
         return context
+
+
+class EventArchiveListView(PermissionRequiredMixin, ListView):
+    permission_required = 'volunteers.view_event'
+    model = Event
+    queryset = Event.objects.filter(state=Event.ARCHIVED)
 
 
 class EventCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):

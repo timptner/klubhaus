@@ -6,8 +6,6 @@
 
 {% block content %}
     <div class="container is-max-desktop">
-        {{ block.super }}
-
         {% if user.is_staff %}
             <div class="buttons is-justify-content-end">
                 {% url 'volunteers:event_create' as url %}
@@ -17,12 +15,36 @@
 
         <h3 class="title">Veranstaltungen</h3>
 
+        {% if user.is_staff %}
+            <div class="tabs">
+                <ul>
+                    {% url 'volunteers:event_list' as url %}
+                    {% include 'tab_snippet.html' with permission=perms.volunteers.view_event label="Geplant" url=url icon="fa-rocket" %}
+
+                    {% url 'volunteers:event_archive_list' as url %}
+                    {% include 'tab_snippet.html' with permission=perms.volunteers.view_event label="Archiv" url=url icon="fa-box-archive" %}
+                </ul>
+            </div>
+
+            {% url 'volunteers:event_archive_list' as url %}
+            {% if request.path == url %}
+                <article class="message is-info">
+                    <div class="message-body">
+                        Archivierte Veranstaltungen sehen nur Mitarbeiter.
+                    </div>
+                </article>
+            {% endif %}
+        {% endif %}
+
+        {{ block.super }}
+
         {% if personal_events %}
             <article class="message is-info">
                 <div class="message-body">
                     Veranstaltungen, bei welchen du bereits als freiwilliger Helfer registriert bist zeigen ein
                     <span class="icon-text">
                         <span>Herz-Symbol</span>
+
                         <span class="icon has-text-danger">
                             <i class="fa-solid fa-heart"></i>
                         </span>
@@ -59,7 +81,9 @@
                                 {% endif %}
                             </span>
                         </td>
+
                         <td>{{ event.date }}</td>
+
                         <td>
                             <span class="tag {{ event.get_state_color }}">
                                 {{ event.get_state_display }}
@@ -69,7 +93,7 @@
                 {% empty %}
                     <tr>
                         <td colspan="3" class="is-italic has-text-centered">
-                            Es wurde noch keine Veranstaltungen erstellt.
+                            Keine Veranstaltungen verfügbar
                         </td>
                     </tr>
                 {% endfor %}

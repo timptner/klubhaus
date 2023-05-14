@@ -21,7 +21,7 @@ class Event(models.Model):
     class Meta:
         verbose_name = "Veranstaltung"
         verbose_name_plural = "Veranstaltungen"
-        ordering = ['date']
+        ordering = ['-date']
 
     def __str__(self):
         return self.title
