@@ -30,24 +30,10 @@
 
     <h5 class="subtitle">{{ event.date }}</h5>
 
-    {% if event.state == event.PREPARED %}
-        <article class="message is-info">
+    {% if feedback %}
+        <article class="message {{ feedback.color }}">
             <div class="message-body">
-                Die Registrierung ist im Moment noch geschlossen. Schaue in ein paar Tagen noch einmal vorbei.
-            </div>
-        </article>
-    {% elif event.state == event.CLOSED %}
-        <article class="message is-danger">
-            <div class="message-body">
-                Die Registrierung ist beendet und wird nicht wieder geöffnet.
-            </div>
-        </article>
-    {% endif %}
-
-    {% if is_registered and not is_disabled %}
-        <article class="message is-warning">
-            <div class="message-body">
-                Du bist für diese Veranstaltung bereits als Helfer registriert.
+                {{ feedback.message|safe }}
             </div>
         </article>
     {% endif %}
@@ -57,10 +43,10 @@
     </div>
 
     <div class="buttons">
-        {% if is_disabled or is_registered %}
-            <button class="button is-static">
+        {% if feedback %}
+            <a class="button is-primary" disabled>
                 Als Helfer registrieren
-            </button>
+            </a>
         {% else %}
             <a class="button is-primary" href="{% url 'volunteers:volunteer_create' event.pk %}">
                 Als Helfer registrieren

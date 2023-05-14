@@ -32,8 +32,34 @@ class EventDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         event: Event = self.object
-        context['is_disabled'] = event.state != Event.OPENED
-        context['is_registered'] = event.volunteer_set.filter(user=self.request.user).exists()
+
+        if event.state == Event.PREPARED:
+            color = 'is-info'
+            msg = "Die Registrierung ist im Moment noch geschlossen. Schaue in ein paar Tagen noch einmal vorbei."
+        elif event.state == Event.CLOSED:
+            color = 'is-danger'
+            msg = "Die Registrierung ist beendet und wird nicht wieder geöffnet."
+        elif event.state == Event.ARCHIVED:
+            color = 'is-info'
+            msg = "Die Veranstaltung wurde archiviert."
+        elif event.volunteer_set.filter(user=self.request.user).exists():
+            color = 'is-warning'
+            msg = "Du bist für diese Veranstaltung bereits als Helfer registriert."
+        elif not self.request.user.phone:
+            url = reverse_lazy('accounts:profile')
+            color = 'is-danger'
+            msg = ("Bitte ergänze deine Mobilnummer in deinem "
+                   f"<a href=\"{url}\">Profil</a>, um dich anmelden zu können.")
+        else:
+            color = None
+            msg = None
+
+        if color and msg:
+            context['feedback'] = {
+                'color': color,
+                'message': msg,
+            }
+
         return context
 
 
