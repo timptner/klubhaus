@@ -1,0 +1,48 @@
+{% extends 'accounts/base_profile.html' %}
+
+{% block title %}
+    {{ block.super }} | Meine Exkursionen
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    <h3 class="title">Meine Exkursionen</h3>
+
+    <div class="columns is-multiline">
+        {% for participant in participant_list %}
+            <div class="column is-half">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="is-pulled-right">
+                            <span class="tag {{ participant.get_state_color }}">
+                                {{ participant.get_state_display }}
+                            </span>
+                        </div>
+
+                        {% with participant.excursion as excursion %}
+                            <h4 class="title is-4">{{ excursion.title }}</h4>
+
+                            <h6 class="subtitle is-6">{{ excursion.date }}</h6>
+
+                            <div class="buttons">
+                                <a class="button is-light"
+                                   href="{% url 'excursions:excursion_detail' excursion.pk %}">
+                                    Exkursion anzeigen
+                                </a>
+                            </div>
+                        {% endwith %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="column">
+                <p>Du hast dich noch für keine Exkursion angemeldet.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

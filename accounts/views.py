@@ -1,8 +1,5 @@
-from accounts.models import User, Modification
-from accounts.forms import (CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm,
-                            CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm, GroupForm,
-                            MembershipForm)
 from datetime import timedelta
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -23,8 +20,15 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView, CreateView
+
 from klubhaus.mails import PostmarkTemplate
 from tournament.models import Team
+
+from .forms import (
+    CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm, CustomSetPasswordForm,
+    CustomPasswordResetForm, UserForm, ProfileForm, GroupForm, MembershipForm
+)
+from .models import User, Modification
 
 
 class RegistrationView(UserPassesTestMixin, FormView):
@@ -237,6 +241,13 @@ class ProfileModificationsView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         return Modification.objects.filter(user=self.request.user)
+
+
+class ProfileExcursionsView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/profile_excursions.html'
+
+    def get_queryset(self):
+        return self.request.user.participant_set.order_by('-excursion__date')
 
 
 class GroupListView(PermissionRequiredMixin, ListView):

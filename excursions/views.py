@@ -98,7 +98,7 @@ class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
         return kwargs
 
     def get_success_url(self):
-        return reverse_lazy('excursions:excursion_detail', kwargs={'pk': self.kwargs['pk']})
+        return reverse_lazy('accounts:profile_excursions')
 
 
 class ParticipantListView(PermissionRequiredMixin, ListView):
