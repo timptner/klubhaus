@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
 from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm, TeamContactForm, TeamStatusForm
-from tournament.models import Tournament, Team
+from tournament.models import Tournament, Team, Player
 
 
 class TournamentListView(LoginRequiredMixin, ListView):
@@ -90,7 +90,15 @@ class TeamListView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['tournament'] = Tournament.objects.get(pk=self.kwargs['pk'])
+        tournament = Tournament.objects.get(pk=self.kwargs['pk'])
+        context['tournament'] = tournament
+        amount_teams = Team.objects.filter(tournament=tournament).count()
+        # Team captain does not count as player, therefore amount of teams must be added
+        amount_players = Player.objects.filter(team__tournament=tournament).count() + amount_teams
+        context['statistics'] = {
+            'amount_teams': amount_teams,
+            'amount_players': amount_players,
+        }
         return context
 
 
