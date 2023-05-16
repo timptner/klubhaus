@@ -142,9 +142,6 @@ class Player(models.Model):
         verbose_name = "Spieler"
         verbose_name_plural = "Spieler"
         ordering = ['first_name', 'last_name']
-        constraints = [
-            models.UniqueConstraint(fields=['team', 'first_name', 'last_name'], name='unique_team_player'),
-        ]
 
     def __str__(self):
         return self.get_full_name
