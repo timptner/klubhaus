@@ -48,12 +48,12 @@ class TeamForm(forms.ModelForm):
         name = cleaned_data['name']
 
         is_registered = Team.objects.filter(tournament=self.tournament, captain=self.captain).exists()
-        if is_registered:
+        if is_registered and not self.instance.tournament == self.tournament:
             raise ValidationError("Du hast bereits ein Team für dieses Turnier angemeldet.")
 
         if name:
             is_duplicated = Team.objects.filter(tournament=self.tournament, name=name).exists()
-            if is_duplicated:
+            if is_duplicated and not self.instance.name == name:
                 error = ValidationError("Ein Team mit diesem Namen gibt es bereits.")
                 self.add_error('name', error)
 

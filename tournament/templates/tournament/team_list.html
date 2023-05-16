@@ -47,7 +47,9 @@
             <tbody>
             {% for team in team_list %}
                 <tr>
-                    <td>{{ team.name }}</td>
+                    <td>
+                        <a href="{% url 'tournament:team_update' team.pk %}">{{ team.name }}</a>
+                    </td>
 
                     <td>
                         <ul>

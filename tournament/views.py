@@ -1,14 +1,16 @@
+from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.forms import formset_factory
+from django.forms import formset_factory, modelformset_factory
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
-from tournament.forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm, TeamContactForm, TeamStatusForm
-from tournament.models import Tournament, Team, Player
+
+from .forms import TournamentForm, TeamForm, PlayerForm, TeamDrawingForm, TeamContactForm, TeamStatusForm
+from .models import Tournament, Team, Player
 
 
 class TournamentListView(LoginRequiredMixin, ListView):
@@ -100,6 +102,44 @@ class TeamListView(PermissionRequiredMixin, ListView):
             'amount_players': amount_players,
         }
         return context
+
+
+@permission_required(['tournament.change_team', 'tournament.change_player'])
+def team_update(request, pk):
+    team = Team.objects.get(pk=pk)
+
+    # noinspection PyPep8Naming
+    PlayerFormSet = modelformset_factory(
+        model=Player,
+        form=PlayerForm,
+        extra=team.tournament.players - team.player_set.count() - 1,
+    )
+
+    if request.method == 'POST':
+        team_form = TeamForm(request.POST, instance=team, tournament=team.tournament, captain=team.captain)
+        player_formset = PlayerFormSet(request.POST, queryset=team.player_set.all())
+
+        if team_form.is_valid() and player_formset.is_valid():
+            team = team_form.save()
+            for player_form in player_formset:
+                player = player_form.save(commit=False)
+                player.team = team
+                player.save()
+
+            messages.success(request, "Team erfolgreich aktualisiert")
+            return redirect(reverse_lazy('tournament:team_list', kwargs={'pk': team.tournament.pk}))
+
+    else:
+        team_form = TeamForm(instance=team, tournament=team.tournament, captain=team.captain)
+        player_formset = PlayerFormSet(queryset=team.player_set.all())
+
+    context = {
+        'team': team,
+        'team_form': team_form,
+        'player_formset': player_formset,
+    }
+
+    return render(request, 'tournament/team_form.html', context=context)
 
 
 @permission_required('tournaments.change_team')
