@@ -1,30 +1,43 @@
 {% extends 'base_form.html' %}
 
 {% block title %}
-    {{ block.super }} | Team bearbeiten
+    {{ block.super }} | {% if team_form.initial %}Team bearbeiten{% else %}Team erstellen{% endif %}
 {% endblock %}
 
 {% block content %}
-    <h3 class="title">Team bearbeiten</h3>
+    <h3 class="title">
+        {% if team_form.initial %}
+            Team bearbeiten
+        {% else %}
+            Team erstellen
+        {% endif %}
+    </h3>
+
+    {% if not team_form.initial %}
+        <article class="message is-info">
+            <div class="message-body">
+                Du bist als Gründer des Teams automatisch Mitspieler bzw. Team-Kapitän.
+            </div>
+        </article>
+    {% endif %}
 
     <form method="post">
         {% csrf_token %}
 
-        <h4 class="title is-4 has-text-centered">Team</h4>
+        <p class="subtitle is-5">Team</p>
 
         {{ team_form }}
 
         <hr>
 
-        <h4 class="title is-4 has-text-centered">Spieler</h4>
-        <h5 class="subtitle is-5">
+        <p class="subtitle is-5">
             <span class="icon-text">
                 <span>Spieler 1</span>
                 <span class="icon">
                     <i class="fa-solid fa-chess-king"></i>
                 </span>
             </span>
-        </h5>
+        </p>
 
         <div class="block">
             <p>
@@ -33,9 +46,13 @@
                         <i class="fa-solid fa-user" aria-hidden="true"></i>
                     </span>
                     <span>
-                        <a href="{% url 'accounts:user_detail' team.captain.pk %}">
-                            {{ team.captain.get_full_name }}
-                        </a>
+                        {% if team_form.initial %}
+                            <a href="{% url 'accounts:user_detail' team.captain.pk %}">
+                                {{ team.captain.get_full_name }}
+                            </a>
+                        {% else %}
+                            {{ user.get_full_name }}
+                        {% endif %}
                     </span>
                 </span>
             </p>
@@ -44,7 +61,7 @@
         {{ player_formset.management_form }}
 
         {% for player_form in player_formset %}
-            <h5 class="subtitle is-5">Spieler {{ forloop.counter|add:1 }}</h5>
+            <p class="subtitle is-5">Spieler {{ forloop.counter|add:1 }}</p>
 
             {% for hidden_field in player_form.hidden_fields %}
                 {{ hidden_field }}
@@ -62,14 +79,24 @@
         <div class="field is-grouped">
             <div class="control">
                 <button class="button is-primary" type="submit">
-                    Ändern
+                    {% if form.initial %}
+                        Ändern
+                    {% else %}
+                        Anmelden
+                    {% endif %}
                 </button>
             </div>
 
             <div class="content">
-                <a class="button is-light" href="{% url 'tournament:team_list' team.tournament.pk %}">
-                    Abbrechen
-                </a>
+                {% if team_form.initial %}
+                    <a class="button is-light" href="{% url 'tournament:team_list' team.tournament.pk %}">
+                        Abbrechen
+                    </a>
+                {% else %}
+                    <a class="button is-light" href="{% url 'tournament:tournament_detail' tournament.pk %}">
+                        Abbrechen
+                    </a>
+                {% endif %}
             </div>
         </div>
     </form>

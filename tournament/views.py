@@ -1,9 +1,8 @@
-from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.forms import formset_factory, modelformset_factory
+from django.forms import modelformset_factory
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -32,8 +31,34 @@ class TournamentDetailView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['is_registered'] = self.object.team_set.filter(captain=self.request.user).exists()
-        context['team'] = Team.objects.filter(tournament=self.object, captain=self.request.user).first()
+
+        team = Team.objects.filter(tournament=self.object, captain=self.request.user).first()
+        context['team'] = team
+
+        if self.object.get_state() == 'Abgelaufen':
+            color = 'is-info'
+            message = "Die Veranstaltung hat bereits stattgefunden."
+        elif self.object.get_state() == 'Geschlossen':
+            color = 'is-warning'
+            message = "Die Anmeldung ist beendet."
+        elif self.object.get_state() == 'Geplant':
+            color = 'is-info'
+            message = f"Die Anmeldung öffnet erst in einiger Zeit. Schaue später noch einmal vorbei!"
+        elif self.object.team_set.filter(captain=self.request.user).exists():
+            url = reverse_lazy('accounts:profile_teams')
+            color = 'is-warning'
+            message = (f"Du hast bereits das Team <strong><a href=\"{url}\">{team.name}</a></strong> für dieses "
+                       "Turnier angemeldet.")
+        else:
+            color = None
+            message = None
+
+        if color and message:
+            context['feedback'] = {
+                'color': color,
+                'message': message,
+            }
+
         return context
 
 
@@ -48,14 +73,19 @@ class TournamentUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateV
 
 
 @login_required
-def registration(request, pk):
+def team_create(request, pk):
     tournament = Tournament.objects.get(pk=pk)
 
     if tournament.get_state() != 'Geöffnet':
         raise PermissionDenied()
 
+    is_registered = tournament.team_set.filter(captain=request.user).exists()
+    if is_registered:
+        raise PermissionDenied()
+
+    amount = tournament.players - 1
     # noinspection PyPep8Naming
-    PlayerFormSet = formset_factory(PlayerForm, extra=tournament.players - 1)
+    PlayerFormSet = modelformset_factory(model=Player, form=PlayerForm, min_num=amount, max_num=amount)
 
     if request.method == 'POST':
         team_form = TeamForm(request.POST, tournament=tournament, captain=request.user)
@@ -73,15 +103,15 @@ def registration(request, pk):
             return redirect(reverse_lazy('accounts:profile_teams'))
     else:
         team_form = TeamForm(tournament=tournament, captain=request.user)
-        player_formset = PlayerFormSet()
+        player_formset = PlayerFormSet(queryset=Player.objects.none())
 
     context = {
         'tournament': tournament,
         'team_form': team_form,
         'player_formset': player_formset,
-        'is_registered': tournament.team_set.filter(captain=request.user).exists(),
     }
-    return render(request, 'tournament/registration.html', context=context)
+
+    return render(request, 'tournament/team_form.html', context=context)
 
 
 class TeamListView(PermissionRequiredMixin, ListView):
@@ -108,11 +138,13 @@ class TeamListView(PermissionRequiredMixin, ListView):
 def team_update(request, pk):
     team = Team.objects.get(pk=pk)
 
+    amount = team.tournament.players - team.player_set.count() - 1
     # noinspection PyPep8Naming
     PlayerFormSet = modelformset_factory(
         model=Player,
         form=PlayerForm,
-        extra=team.tournament.players - team.player_set.count() - 1,
+        min_num=amount,
+        max_num=amount,
     )
 
     if request.method == 'POST':
