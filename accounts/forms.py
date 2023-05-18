@@ -17,17 +17,20 @@ from markdown import markdown
 class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'phone']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'student', 'faculty']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
             'phone': forms.TextInput(attrs={'class': 'input'}),
+            'student': forms.TextInput(attrs={'class': 'input'}),
         }
         help_texts = {
             'phone': "Wenn du an Exkursionen teilnehmen möchtest oder dich als Helfer für eine unserer Veranstaltungen "
                      "meldest, solltest du bereits jetzt deine Mobilnummer mit angeben, um dir später Wartezeit bei "
                      "der Anmeldung zu ersparen.",
+            'student': "Wenn du an Exkursionen teilnehmen möchtest solltest du bereits jetzt deine Matrikelnummer mit "
+                       "angeben, um dir später Wartezeit bei der Anmeldung zu ersparen.",
         }
 
     def __init__(self, *args, **kwargs):
@@ -42,6 +45,11 @@ class RegistrationForm(UserCreationForm):
             self.fields[field].widget.attrs.update({'class': 'input'})
 
         self.fields['password1'].help_text = '<br>'.join(password_validation.password_validators_help_texts())
+
+    def clean_phone(self):
+        data = self.cleaned_data['phone']
+        data = data.replace(' ', '')
+        return data
 
     @staticmethod
     def send_mail(subject, email_template_name, context, from_email, to_email):
