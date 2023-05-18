@@ -149,6 +149,12 @@ class UserForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'class': 'input'}),
             'student': forms.TextInput(attrs={'class': 'input'}),
         }
+        help_texts = {
+            'is_active': "Legt fest, ob der Benutzer sich anmelden kann. Neu registrierte Benutzer sind standardmäßig "
+                         "deaktiviert, da sie erst ihre E-Mail-Adresse validieren müssen.",
+            'is_staff': "Legt fest, ob der Benutzer bestimmte Seiten und Schaltflächen zur Verwaltung der Angebote "
+                        "sehen kann. Dieser Status vergibt noch keine Berechtigungen!",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

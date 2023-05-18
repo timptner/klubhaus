@@ -7,6 +7,24 @@
 {% block content %}
     <h3 class="title">Benutzer bearbeiten</h3>
 
+    <article class="message is-small is-info">
+        <div class="message-body">
+            <p class="mb-2">
+                Benutzer erhalten nach der Registrierung eine E-Mail zur Validierung ihrer E-Mail-Adresse. Der
+                Bestätigungslink in dieser E-Mail ist 3 Tage gültig. Falls die Benutzer ihre E-Mail-Adresse nicht
+                rechtzeitig validieren müssen diese manuell aktiviert werden. Dazu ist deren hinterlegte E-Mail-Adresse
+                auf Korrektheit zu prüfen bevor der Benutzer auf Aktiv gesetzt wird.
+            </p>
+
+            <p class="mb-2">
+                Der Mitarbeiter-Status ist nur an Mitglieder des Fachschaftsrates zu vergeben! Zusätzlich müssen die
+                benötigten Rechte durch Hinzufügen des Mitglieds zu einer bestimmten Gruppe vergeben werden.
+            </p>
+
+            <p>Der Administrator-Status ist nur an Mitglieder aus dem Sachgebiet Technik zu vergeben!</p>
+        </div>
+    </article>
+
     <form method="post">
         {% csrf_token %}
 
