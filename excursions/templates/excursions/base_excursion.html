@@ -17,10 +17,10 @@
         <div class="tabs">
             <ul>
                 {% url 'excursions:excursion_detail' excursion.pk as url %}
-                {% include 'tab_snippet.html' with permission=perms.excursions.view_excursion url=url label="Informationen" icon="fa-circle-info" %}
+                {% include 'tab_snippet.html' with permission=perms.excursions.view_excursion url=url label="Details" icon="fa-circle-info" %}
 
                 {% url 'excursions:participant_list' excursion.pk as url %}
-                {% include 'tab_snippet.html' with permission=perms.excursions.view_participant url=url label="Teilnehmer anzeigen" icon="fa-people-group" %}
+                {% include 'tab_snippet.html' with permission=perms.excursions.view_participant url=url label="Teilnehmer" icon="fa-people-group" %}
 
                 {% url 'excursions:participant_statistics' excursion.pk as url %}
                 {% include 'tab_snippet.html' with permission=perms.excursions.view_participant url=url label="Statistik" icon="fa-calculator" %}
