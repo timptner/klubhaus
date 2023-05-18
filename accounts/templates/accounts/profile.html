@@ -39,7 +39,17 @@
 
             <tr>
                 <td>Mobilnummer</td>
-                <td>{{ user.phone }}</td>
+                <td>{{ user.phone|default:'-' }}</td>
+            </tr>
+
+            <tr>
+                <td>Matrikelnummer</td>
+                <td>{{ user.student|default:'-' }}</td>
+            </tr>
+
+            <tr>
+                <td>Fakultät</td>
+                <td>{{ user.get_faculty_display|default:'-' }}</td>
             </tr>
             </tbody>
         </table>

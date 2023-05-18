@@ -41,6 +41,16 @@
             </tr>
 
             <tr>
+                <td>Matrikelnummer</td>
+                <td>{{ account.student|default:'-' }}</td>
+            </tr>
+
+            <tr>
+                <td>Fakultät</td>
+                <td>{{ account.get_faculty_display|default:'-' }}</td>
+            </tr>
+
+            <tr>
                 <td>Beitritt</td>
                 <td>{{ account.date_joined }}</td>
             </tr>
