@@ -10,18 +10,7 @@
             <div class="box">
                 <h3 class="title">Registrierung</h3>
 
-                <article class="message is-info">
-                    <div class="message-header">
-                        <p>Datenschutz</p>
-                    </div>
-
-                    <div class="message-body">
-                        <ul class="bullet-list">
-                            <li>Wir benötigen deinen vollständigen Namen zur Identifikation.</li>
-                            <li>Wir benötigen deine E-Mail-Adresse für die Kommunikation mit dir.</li>
-                        </ul>
-                    </div>
-                </article>
+                {% include 'accounts/privacy_snippet.html' %}
 
                 <form method="post">
                     {% csrf_token %}

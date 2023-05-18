@@ -9,21 +9,12 @@
 
     <article class="message is-warning">
         <div class="message-body">
-            Sämtliche Änderungen werden erst durch Bestätigung eines Mitglieds des Fachschaftsrates gültig.
+            Sämtliche Änderungen müssen erst durch einen Administrator bestätigt werden, welches ein paar Tage dauern
+            kann.
         </div>
     </article>
 
-    <article class="message is-small is-info">
-        <div class="message-header">Datenschutz</div>
-
-        <div class="message-body">
-            <ul class="bullet-list">
-                <li>Wir benötigen deinen vollständigen Namen zur Identifikation.</li>
-                <li>Wir benötigen deine E-Mail-Adresse für die generelle Kommunikation.</li>
-                <li>Wir benötigen deine Mobilnummer für die kurzfristige Kommunikation.</li>
-            </ul>
-        </div>
-    </article>
+    {% include 'accounts/privacy_snippet.html' %}
 
     <form method="post">
         {% csrf_token %}

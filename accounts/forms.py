@@ -26,11 +26,12 @@ class RegistrationForm(UserCreationForm):
             'student': forms.TextInput(attrs={'class': 'input'}),
         }
         help_texts = {
+            'email': "Bitte verwende deine studentische E-Mail-Adressen der Otto-von-Guericke-Universität.",
             'phone': "Wenn du an Exkursionen teilnehmen möchtest oder dich als Helfer für eine unserer Veranstaltungen "
-                     "meldest, solltest du bereits jetzt deine Mobilnummer mit angeben, um dir später Wartezeit bei "
-                     "der Anmeldung zu ersparen.",
-            'student': "Wenn du an Exkursionen teilnehmen möchtest solltest du bereits jetzt deine Matrikelnummer mit "
-                       "angeben, um dir später Wartezeit bei der Anmeldung zu ersparen.",
+                     "meldest, solltest du bereits jetzt deine Mobilnummer angeben, um dir später zusätzliche "
+                     "Wartezeit bei der Anmeldung zu ersparen.",
+            'student': "Wenn du an Exkursionen teilnehmen möchtest solltest du bereits jetzt deine Matrikelnummer "
+                       "angeben, um dir später zusätzliche Wartezeit bei der Anmeldung zu ersparen.",
         }
 
     def __init__(self, *args, **kwargs):
@@ -139,12 +140,14 @@ class CustomSetPasswordForm(SetPasswordForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'phone', 'is_active', 'is_staff', 'is_superuser']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'student', 'faculty',
+                  'is_active', 'is_staff', 'is_superuser']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
             'phone': forms.TextInput(attrs={'class': 'input'}),
+            'student': forms.TextInput(attrs={'class': 'input'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -156,12 +159,13 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'phone']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'student', 'faculty']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
             'phone': forms.TextInput(attrs={'class': 'input'}),
+            'student': forms.TextInput(attrs={'class': 'input'}),
         }
 
     def __init__(self, *args, **kwargs):
