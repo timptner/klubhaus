@@ -1,8 +1,5 @@
-from accounts.models import User, Modification
-from accounts.forms import (CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm,
-                            CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm, GroupForm,
-                            MembershipForm)
 from datetime import timedelta
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -23,13 +20,19 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView, CreateView
+
 from klubhaus.mails import PostmarkTemplate
 from tournament.models import Team
 
+from .models import User, Modification
+from .forms import (RegistrationForm, CustomAuthenticationForm, CustomPasswordChangeForm,
+                    CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm, GroupForm,
+                    MembershipForm)
 
-class RegistrationView(UserPassesTestMixin, FormView):
+
+class RegistrationFormView(UserPassesTestMixin, FormView):
     email_template_name = 'accounts/mail/activate_account.md'
-    form_class = CustomUserCreateForm
+    form_class = RegistrationForm
     success_url = reverse_lazy('accounts:register_success')
     template_name = 'accounts/registration.html'
     token_generator = default_token_generator

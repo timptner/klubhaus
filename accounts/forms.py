@@ -14,14 +14,20 @@ from django.utils.translation import gettext_lazy as _
 from markdown import markdown
 
 
-class CustomUserCreateForm(UserCreationForm):
+class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'phone']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
+            'phone': forms.TextInput(attrs={'class': 'input'}),
+        }
+        help_texts = {
+            'phone': "Wenn du an Exkursionen teilnehmen möchtest oder dich als Helfer für eine unserer Veranstaltungen "
+                     "meldest, solltest du bereits jetzt deine Mobilnummer mit angeben, um dir später Wartezeit bei "
+                     "der Anmeldung zu ersparen.",
         }
 
     def __init__(self, *args, **kwargs):
@@ -29,8 +35,8 @@ class CustomUserCreateForm(UserCreationForm):
         for field in ['first_name', 'last_name']:
             self.fields[field].required = True
 
-        self.fields['first_name'].widget.attrs.update({'autofocus': True})
         self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({'autofocus': False})
+        self.fields['first_name'].widget.attrs.update({'autofocus': True})
 
         for field in ['password1', 'password2']:
             self.fields[field].widget.attrs.update({'class': 'input'})
