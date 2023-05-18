@@ -25,7 +25,9 @@ class ExcursionDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        user = self.request.user
         excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+
         if excursion.state == Excursion.PLANNED:
             color = 'is-info'
             message = "Die Anmeldung ist im Moment noch geschlossen. Schaue in ein paar Tagen noch einmal vorbei."
@@ -35,14 +37,23 @@ class ExcursionDetailView(LoginRequiredMixin, DetailView):
         elif excursion.state == Excursion.ARCHIVED:
             color = 'is-info'
             message = "Die Veranstaltung wurde archiviert."
-        elif excursion.participant_set.filter(user=self.request.user).exists():
+        elif excursion.participant_set.filter(user=user).exists():
             color = 'is-warning'
             message = "Du bist für diese Exkursion bereits angemeldet."
-        elif not self.request.user.phone:
+        elif not user.phone or not user.student:
             url = reverse_lazy('accounts:profile')
             color = 'is-danger'
-            message = ("Bitte ergänze deine Mobilnummer in deinem "
-                       f"<a href=\"{url}\">Profil</a>, um dich anmelden zu können.")
+
+            missing = []
+
+            if not user.phone:
+                missing.append('deine Mobilnummer')
+
+            if not user.student:
+                missing.append('deine Matrikelnummer')
+
+            message = (f"Ergänze {' und '.join(missing)} <a href=\"{url}\">in deinem Profil</a>, "
+                       "um dich anmelden zu können.")
         else:
             color = None
             message = None
@@ -52,6 +63,7 @@ class ExcursionDetailView(LoginRequiredMixin, DetailView):
                 'color': color,
                 'message': message,
             }
+
         return context
 
 
@@ -71,18 +83,17 @@ class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
     success_message = "Du hast dich erfolgreich zur Exkursion angemeldet"
 
     def test_func(self):
+        user = self.request.user
         excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+
         if excursion.state != Excursion.OPENED:
             return False
-
-        if not self.request.user.phone:
-            # TODO add matrikel check
+        elif not user.phone or not user.student:
             return False
-
-        if excursion.participant_set.filter(user=self.request.user).exists():
+        elif excursion.participant_set.filter(user=user).exists():
             return False
-
-        return True
+        else:
+            return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
