@@ -1,18 +1,18 @@
 {% extends 'base_error.html' %}
 
 {% block title %}
-    {{ block.super }} | Registrierung erledigt
+    {{ block.super }} | Registrierung erfolgreich
 {% endblock %}
 
 {% block content %}
     <article class="message is-warning">
         <div class="message-header">
-            <p>Neues Konto wurde erstellt</p>
+            <p>Registrierung erfolgreich</p>
         </div>
         <div class="message-body">
-            Ein neues Konto wurde erfolgreich für dich erstellt. Allerdings ist dein
-            <strong>Konto noch inaktiv</strong>. Wir haben dir eine E-Mail zum Aktivieren deines Kontos geschickt. Die
-            Aktivierung ist bis zum {{ link_expired }} möglich.
+            Ein neues Konto wurde für dich erstellt. Allerdings ist dein <strong>Konto noch inaktiv</strong>. Wir
+            haben dir eine E-Mail zum Aktivieren deines Kontos geschickt. Der Aktivierungslink in der E-Mail ist
+            noch <strong>{{ link_expired|timeuntil }}</strong> gültig.
         </div>
     </article>
 {% endblock %}

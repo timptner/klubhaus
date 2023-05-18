@@ -1,4 +1,5 @@
-from accounts.models import User, Modification
+from markdown import markdown
+
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, PasswordResetForm,
@@ -8,10 +9,14 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
-from markdown import markdown
+
+from klubhaus.mails import PostmarkTemplate
+
+from .models import User, Modification
 
 
 class RegistrationForm(UserCreationForm):
@@ -53,38 +58,38 @@ class RegistrationForm(UserCreationForm):
         return data
 
     @staticmethod
-    def send_mail(subject, email_template_name, context, from_email, to_email):
-        body = loader.render_to_string(email_template_name, context)
+    def send_mail(recipient, first_name, activation_link, link_expired):
+        template = PostmarkTemplate()
 
-        email = EmailMultiAlternatives(
-            subject=subject,
-            body=body,
-            from_email=from_email,
-            to=[to_email],
-        )
-        email.attach_alternative(markdown(body), 'text/html')
-        email.send()
+        payload = {
+            'first_name': first_name,
+            'action_url': activation_link,
+            'link_expired': link_expired,
+        }
 
-    def save(self, commit=True, token_generator=None, request=None, use_https=False, email_template_name=None):
+        error = template.send_message(recipient, 'account-activation', payload)
+        if error:
+            raise Exception("Error while trying to send email.")
+
+    def save(self, commit=True, token_generator=None, request=None, use_https=False, link_expired=None):
         user = super().save(commit=False)
         user.is_active = False
         if commit:
             user.save()
 
+        scheme = 'https' if use_https else 'http'
+
         current_site = get_current_site(request)
-        site_name = current_site.name
         domain = current_site.domain
 
-        context = {
-            'site_name': site_name,
-            'protocol': 'https' if use_https else 'http',
-            'domain': domain,
-            'user': user,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        path = reverse_lazy('accounts:activate', kwargs={
+            'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': token_generator.make_token(user),
-        }
-        subject = _("Activate your account")
-        self.send_mail(subject, email_template_name, context, None, user.email)
+        })
+
+        activation_link = f"{scheme}://{domain}{path}"
+
+        self.send_mail(user.email, user.first_name, activation_link, link_expired)
 
         return user
 

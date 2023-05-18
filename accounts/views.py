@@ -47,11 +47,12 @@ class RegistrationFormView(UserPassesTestMixin, FormView):
         return self.request.user.is_anonymous
 
     def form_valid(self, form):
+        link_expired = timezone.localtime(timezone.now() + timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT))
         options = {
             'use_https': self.request.is_secure(),
             'token_generator': self.token_generator,
-            'email_template_name': self.email_template_name,
             'request': self.request,
+            'link_expired': link_expired.strftime('%d.%m.%Y %H:%M %Z'),
         }
         form.save(**options)
         return super().form_valid(form)
