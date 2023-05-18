@@ -149,7 +149,6 @@ class PasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
 
 class PasswordResetView(auth_views.PasswordResetView):
     form_class = CustomPasswordResetForm
-    email_template_name = 'registration/mail/password_reset.md'
     success_url = reverse_lazy('accounts:password_reset_done')
 
 

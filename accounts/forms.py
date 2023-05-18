@@ -108,20 +108,28 @@ class CustomPasswordResetForm(PasswordResetForm):
 
     def send_mail(self, subject_template_name, email_template_name, context,
                   from_email, to_email, html_email_template_name=None):
-        if html_email_template_name:
-            raise NotImplementedError()
+        template = PostmarkTemplate()
 
-        subject = _("Reset password")
-        body = loader.render_to_string(email_template_name, context)
+        scheme = context['protocol']
+        domain = context['domain']
 
-        email = EmailMultiAlternatives(
-            subject=subject,
-            body=body,
-            from_email=from_email,
-            to=[to_email],
-        )
-        email.attach_alternative(markdown(body), "text/html")
-        email.send()
+        kwargs = {
+            'uidb64': context['uid'],
+            'token': context['token'],
+        }
+        path = reverse_lazy('accounts:password_reset_confirm', kwargs=kwargs)
+
+        reset_link = f"{scheme}://{domain}{path}"
+
+        payload = {
+            'first_name': context['user'].first_name,
+            'action_url': reset_link,
+        }
+
+        errors = template.send_message(to_email, 'password-reset', payload)
+
+        if errors:
+            raise Exception("Error while trying to send email.")
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):
