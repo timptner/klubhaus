@@ -110,7 +110,17 @@ class ParticipantListView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
+
+        excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+
+        context['excursion'] = excursion
+        context['statistics'] = {
+            'total': excursion.participant_set.count(),
+            'enrolled': excursion.participant_set.filter(state=Participant.ENROLLED).count(),
+            'approved': excursion.participant_set.filter(state=Participant.APPROVED).count(),
+            'rejected': excursion.participant_set.filter(state=Participant.REJECTED).count(),
+        }
+
         return context
 
 

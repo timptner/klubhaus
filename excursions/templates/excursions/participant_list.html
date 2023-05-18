@@ -15,6 +15,28 @@
 {% block subcontent %}
     <h3 class="title">Teilnehmer</h3>
 
+    <div class="columns has-text-centered">
+        <div class="column">
+            <p>Gesamt</p>
+            <p class="is-size-3">{{ statistics.total }}</p>
+        </div>
+
+        <div class="column">
+            <p>Eingeschrieben</p>
+            <p class="is-size-3">{{ statistics.enrolled }}</p>
+        </div>
+
+        <div class="column">
+            <p>Zugelassen</p>
+            <p class="is-size-3">{{ statistics.approved }}</p>
+        </div>
+
+        <div class="column">
+            <p>Abgelehnt</p>
+            <p class="is-size-3">{{ statistics.rejected }}</p>
+        </div>
+    </div>
+
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable">
             <thead>
