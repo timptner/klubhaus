@@ -1,6 +1,7 @@
 import logging
 
 from django.db import models
+from django.db.models import Q
 
 from accounts.models import User
 from klubhaus.mails import PostmarkTemplate
@@ -30,6 +31,7 @@ class Excursion(models.Model):
     date = models.DateField("Datum")
     image = models.ImageField("Bild", blank=True, null=True)
     website = models.URLField("Webseite", blank=True)
+    ask_for_car = models.BooleanField("Auto-Besitz abfragen", default=False)
     state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=PLANNED)
 
     class Meta:
@@ -62,6 +64,8 @@ class Participant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     excursion = models.ForeignKey(Excursion, on_delete=models.CASCADE)
     comment = models.TextField("Bemerkung", blank=True)
+    is_driver = models.BooleanField("Fahrer", null=True)
+    seats = models.PositiveSmallIntegerField("Sitzplätze", null=True)
     state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=ENROLLED)
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 
@@ -71,6 +75,13 @@ class Participant(models.Model):
         ordering = ['created_at']
         constraints = [
             models.UniqueConstraint('user', 'excursion', name='unique_participant'),
+            models.CheckConstraint(
+                check=(
+                    (Q(is_driver__isnull=True) & Q(seats__isnull=True)) |
+                    (Q(is_driver__isnull=False) & Q(seats__isnull=False))
+                ),
+                name='driver_has_seats_or_null',
+            )
         ]
 
     def __str__(self):

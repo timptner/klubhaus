@@ -1,0 +1,62 @@
+{% extends 'excursions/base_excursion.html' %}
+
+{% block title %}
+    {{ block.super }} | Statistik
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    {% if excursion.ask_for_car %}
+        <div class="table-container">
+            <table class="table is-fullwidth">
+                <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Personen</th>
+                    <th>Fahrzeuge</th>
+                    <th>Sitzplätze</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for row in data %}
+                    <tr>
+                        <td>{{ row.label }}</td>
+                        <td>{{ row.people }}</td>
+                        <td>{{ row.cars }}</td>
+                        <td>{{ row.seats|default_if_none:0 }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+
+                <tfoot>
+                <tr>
+                    <th>{{ total.label }}</th>
+                    <th>{{ total.people }}</th>
+                    <th>{{ total.cars }}</th>
+                    <th>{{ total.seats|default_if_none:0 }}</th>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    {% else %}
+        <div class="columns has-text-centered">
+            <div class="column">
+                <p>{{ total.label }}</p>
+                <p class="is-size-3">{{ total.people }}</p>
+            </div>
+
+            {% for row in data %}
+                <div class="column">
+                    <p>{{ row.label }}</p>
+                    <p class="is-size-3">{{ row.people }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

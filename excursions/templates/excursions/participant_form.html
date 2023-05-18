@@ -8,6 +8,17 @@
     <h3 class="title">Zur Exkursion anmelden</h3>
     <h5 class="subtitle">{{ excursion.title }}</h5>
 
+    {% if excursion.ask_for_car %}
+        <article class="message is-info">
+            <div class="message-body">
+                Um allen Teilnehmern die Anreise zum Unternehmen zu ermöglichen benötigen wir Studierende, welche ein
+                Auto besitzen und bereit sind eine Fahrgemeinschaft zu bilden. Aus diesem Grund werden Besitzer eines
+                Autos vorzugsweise zur Exkursion zugelassen. Zur Deckung von Tankkosten und Verschleiß zahlen wir den
+                Fahrern eine Fahrkostenpauschale von 30 Cent pro Kilometer.
+            </div>
+        </article>
+    {% endif %}
+
     <form method="post">
         {% csrf_token %}
 

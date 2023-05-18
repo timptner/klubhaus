@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import Sum
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
 
 from .models import Excursion, Participant
-from .forms import ExcursionForm, ParticipantForm, ParticipantStateForm
+from .forms import ExcursionForm, ParticipantForm, ExtendedParticipantForm, ParticipantStateForm
 
 
 class ExcursionListView(LoginRequiredMixin, ListView):
@@ -79,7 +80,6 @@ class ExcursionUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateVi
 
 class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Participant
-    form_class = ParticipantForm
     success_message = "Du hast dich erfolgreich zur Exkursion angemeldet"
 
     def test_func(self):
@@ -99,6 +99,14 @@ class ParticipantCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMess
         context = super().get_context_data(**kwargs)
         context['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
         return context
+
+    def get_form_class(self):
+        excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+
+        if excursion.ask_for_car:
+            return ExtendedParticipantForm
+        else:
+            return ParticipantForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -121,17 +129,7 @@ class ParticipantListView(PermissionRequiredMixin, ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-
-        excursion = Excursion.objects.get(pk=self.kwargs['pk'])
-
-        context['excursion'] = excursion
-        context['statistics'] = {
-            'total': excursion.participant_set.count(),
-            'enrolled': excursion.participant_set.filter(state=Participant.ENROLLED).count(),
-            'approved': excursion.participant_set.filter(state=Participant.APPROVED).count(),
-            'rejected': excursion.participant_set.filter(state=Participant.REJECTED).count(),
-        }
-
+        context['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
         return context
 
 
@@ -146,4 +144,41 @@ class ParticipantStateUpdateView(PermissionRequiredMixin, SuccessMessageMixin, U
         return f"Status von {participant.user.get_full_name()} erfolgreich geändert"
 
     def get_success_url(self):
-        return reverse_lazy('excursions:participant_list', kwargs={'pk': self.kwargs['pk']})
+        participant = Participant.objects.get(pk=self.kwargs['pk'])
+        return reverse_lazy('excursions:participant_list', kwargs={'pk': participant.excursion.pk})
+
+
+class ParticipantStatisticsView(PermissionRequiredMixin, TemplateView):
+    permission_required = 'excursions.view_participant'
+    template_name = 'excursions/participant_statistics.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        excursion = Excursion.objects.get(pk=self.kwargs['pk'])
+
+        context['excursion'] = excursion
+
+        data = []
+        for state, label in Participant.STATE_CHOICES:
+            row = {
+                'label': label,
+                'people': excursion.participant_set.filter(state=state).count(),
+                'cars': excursion.participant_set.filter(state=state, is_driver=True).count(),
+                'seats': excursion.participant_set.filter(
+                    state=state,
+                    is_driver=True,
+                ).aggregate(Sum('seats'))['seats__sum'],
+            }
+            data.append(row)
+
+        context['data'] = data
+
+        context['total'] = {
+            'label': "Gesamt",
+            'people': excursion.participant_set.count(),
+            'cars': excursion.participant_set.filter(is_driver=True).count(),
+            'seats': excursion.participant_set.filter(is_driver=True).aggregate(Sum('seats'))['seats__sum'],
+        }
+
+        return context

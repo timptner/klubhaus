@@ -15,33 +15,14 @@
 {% block subcontent %}
     <h3 class="title">Teilnehmer</h3>
 
-    <div class="columns has-text-centered">
-        <div class="column">
-            <p>Gesamt</p>
-            <p class="is-size-3">{{ statistics.total }}</p>
-        </div>
-
-        <div class="column">
-            <p>Eingeschrieben</p>
-            <p class="is-size-3">{{ statistics.enrolled }}</p>
-        </div>
-
-        <div class="column">
-            <p>Zugelassen</p>
-            <p class="is-size-3">{{ statistics.approved }}</p>
-        </div>
-
-        <div class="column">
-            <p>Abgelehnt</p>
-            <p class="is-size-3">{{ statistics.rejected }}</p>
-        </div>
-    </div>
-
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable">
             <thead>
             <tr>
                 <th>Name</th>
+                {% if excursion.ask_for_car %}
+                    <th>Fahrer</th>
+                {% endif %}
                 <th>Bemerkung</th>
                 <th>Angemeldet am</th>
                 <th>Status</th>
@@ -56,6 +37,23 @@
                             {{ participant.user.get_full_name }}
                         </a>
                     </td>
+
+                    {% if excursion.ask_for_car %}
+                        <td>
+                            <span class="icon-text">
+                                {% if participant.is_driver %}
+                                    <span class="icon has-text-success">
+                                           <i class="fa-solid fa-check-circle fa-fw"></i>
+                                    </span>
+                                    <span>({{ participant.seats }})</span>
+                                {% else %}
+                                    <span class="icon has-text-danger">
+                                        <i class="fa-solid fa-times-circle fa-fw"></i>
+                                    </span>
+                                {% endif %}
+                            </span>
+                        </td>
+                    {% endif %}
 
                     <td>{{ participant.comment }}</td>
 

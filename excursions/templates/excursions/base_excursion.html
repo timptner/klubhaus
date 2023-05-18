@@ -21,6 +21,9 @@
 
                 {% url 'excursions:participant_list' excursion.pk as url %}
                 {% include 'tab_snippet.html' with permission=perms.excursions.view_participant url=url label="Teilnehmer anzeigen" icon="fa-people-group" %}
+
+                {% url 'excursions:participant_statistics' excursion.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.excursions.view_participant url=url label="Statistik" icon="fa-calculator" %}
             </ul>
         </div>
     {% endif %}
