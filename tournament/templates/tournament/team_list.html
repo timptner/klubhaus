@@ -21,6 +21,18 @@
 
     <h3 class="title">Teams</h3>
 
+    <div class="columns has-text-centered">
+        <div class="column">
+            <p>Teams</p>
+            <p class="is-size-3">{{ statistics.amount_teams }}</p>
+        </div>
+
+        <div class="column">
+            <p>Spieler</p>
+            <p class="is-size-3">{{ statistics.amount_players }}</p>
+        </div>
+    </div>
+
     <div class="table-container">
         <table class="table is-hoverable is-fullwidth">
             <thead>
@@ -35,7 +47,9 @@
             <tbody>
             {% for team in team_list %}
                 <tr>
-                    <td>{{ team.name }}</td>
+                    <td>
+                        <a href="{% url 'tournament:team_update' team.pk %}">{{ team.name }}</a>
+                    </td>
 
                     <td>
                         <ul>

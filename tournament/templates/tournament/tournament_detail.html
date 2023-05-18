@@ -28,12 +28,10 @@
         </span>
     </div>
 
-    {% if is_registered %}
-        <article class="message is-warning">
+    {% if feedback %}
+        <article class="message {{ feedback.color }}">
             <div class="message-body">
-                Du hast bereits das Team
-                <strong><a href="{% url 'accounts:profile_teams' %}">{{ team.name }}</a></strong>
-                für dieses Turnier angemeldet.
+                {{ feedback.message|safe }}
             </div>
         </article>
     {% endif %}
@@ -70,14 +68,14 @@
     {% endif %}
 
     <div class="buttons">
-        {% if tournament.get_state == 'Geöffnet' and not is_registered %}
-            <a class="button is-primary" href="{% url 'tournament:registration' tournament.pk %}">
+        {% if feedback %}
+            <a class="button is-primary" disabled>
                 Als Team einschreiben
             </a>
         {% else %}
-            <button class="button is-static">
+            <a class="button is-primary" href="{% url 'tournament:team_create' tournament.pk %}">
                 Als Team einschreiben
-            </button>
+            </a>
         {% endif %}
     </div>
 {% endblock %}

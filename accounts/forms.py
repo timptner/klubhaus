@@ -1,4 +1,5 @@
-from accounts.models import User, Modification
+from markdown import markdown
+
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth.forms import (UserCreationForm, AuthenticationForm, PasswordResetForm,
@@ -8,20 +9,34 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMultiAlternatives
 from django.template import loader
+from django.urls import reverse_lazy
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
-from markdown import markdown
+
+from klubhaus.mails import PostmarkTemplate
+
+from .models import User, Modification
 
 
-class CustomUserCreateForm(UserCreationForm):
+class RegistrationForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'student', 'faculty']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
+            'phone': forms.TextInput(attrs={'class': 'input'}),
+            'student': forms.TextInput(attrs={'class': 'input'}),
+        }
+        help_texts = {
+            'email': "Bitte verwende deine studentische E-Mail-Adressen der Otto-von-Guericke-Universität.",
+            'phone': "Wenn du an Exkursionen teilnehmen möchtest oder dich als Helfer für eine unserer Veranstaltungen "
+                     "meldest, solltest du bereits jetzt deine Mobilnummer angeben, um dir später zusätzliche "
+                     "Wartezeit bei der Anmeldung zu ersparen.",
+            'student': "Wenn du an Exkursionen teilnehmen möchtest solltest du bereits jetzt deine Matrikelnummer "
+                       "angeben, um dir später zusätzliche Wartezeit bei der Anmeldung zu ersparen.",
         }
 
     def __init__(self, *args, **kwargs):
@@ -29,47 +44,52 @@ class CustomUserCreateForm(UserCreationForm):
         for field in ['first_name', 'last_name']:
             self.fields[field].required = True
 
-        self.fields['first_name'].widget.attrs.update({'autofocus': True})
         self.fields[self._meta.model.USERNAME_FIELD].widget.attrs.update({'autofocus': False})
+        self.fields['first_name'].widget.attrs.update({'autofocus': True})
 
         for field in ['password1', 'password2']:
             self.fields[field].widget.attrs.update({'class': 'input'})
 
         self.fields['password1'].help_text = '<br>'.join(password_validation.password_validators_help_texts())
 
+    def clean_phone(self):
+        data = self.cleaned_data['phone']
+        data = data.replace(' ', '')
+        return data
+
     @staticmethod
-    def send_mail(subject, email_template_name, context, from_email, to_email):
-        body = loader.render_to_string(email_template_name, context)
+    def send_mail(recipient, first_name, activation_link, link_expired):
+        template = PostmarkTemplate()
 
-        email = EmailMultiAlternatives(
-            subject=subject,
-            body=body,
-            from_email=from_email,
-            to=[to_email],
-        )
-        email.attach_alternative(markdown(body), 'text/html')
-        email.send()
+        payload = {
+            'first_name': first_name,
+            'action_url': activation_link,
+            'link_expired': link_expired,
+        }
 
-    def save(self, commit=True, token_generator=None, request=None, use_https=False, email_template_name=None):
+        error = template.send_message(recipient, 'account-activation', payload)
+        if error:
+            raise Exception("Error while trying to send email.")
+
+    def save(self, commit=True, token_generator=None, request=None, use_https=False, link_expired=None):
         user = super().save(commit=False)
         user.is_active = False
         if commit:
             user.save()
 
+        scheme = 'https' if use_https else 'http'
+
         current_site = get_current_site(request)
-        site_name = current_site.name
         domain = current_site.domain
 
-        context = {
-            'site_name': site_name,
-            'protocol': 'https' if use_https else 'http',
-            'domain': domain,
-            'user': user,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        path = reverse_lazy('accounts:activate', kwargs={
+            'uidb64': urlsafe_base64_encode(force_bytes(user.pk)),
             'token': token_generator.make_token(user),
-        }
-        subject = _("Activate your account")
-        self.send_mail(subject, email_template_name, context, None, user.email)
+        })
+
+        activation_link = f"{scheme}://{domain}{path}"
+
+        self.send_mail(user.email, user.first_name, activation_link, link_expired)
 
         return user
 
@@ -88,20 +108,28 @@ class CustomPasswordResetForm(PasswordResetForm):
 
     def send_mail(self, subject_template_name, email_template_name, context,
                   from_email, to_email, html_email_template_name=None):
-        if html_email_template_name:
-            raise NotImplementedError()
+        template = PostmarkTemplate()
 
-        subject = _("Reset password")
-        body = loader.render_to_string(email_template_name, context)
+        scheme = context['protocol']
+        domain = context['domain']
 
-        email = EmailMultiAlternatives(
-            subject=subject,
-            body=body,
-            from_email=from_email,
-            to=[to_email],
-        )
-        email.attach_alternative(markdown(body), "text/html")
-        email.send()
+        kwargs = {
+            'uidb64': context['uid'],
+            'token': context['token'],
+        }
+        path = reverse_lazy('accounts:password_reset_confirm', kwargs=kwargs)
+
+        reset_link = f"{scheme}://{domain}{path}"
+
+        payload = {
+            'first_name': context['user'].first_name,
+            'action_url': reset_link,
+        }
+
+        errors = template.send_message(to_email, 'password-reset', payload)
+
+        if errors:
+            raise Exception("Error while trying to send email.")
 
 
 class CustomPasswordChangeForm(PasswordChangeForm):
@@ -125,12 +153,20 @@ class CustomSetPasswordForm(SetPasswordForm):
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'phone', 'is_active', 'is_staff', 'is_superuser']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'student', 'faculty',
+                  'is_active', 'is_staff', 'is_superuser']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
             'phone': forms.TextInput(attrs={'class': 'input'}),
+            'student': forms.TextInput(attrs={'class': 'input'}),
+        }
+        help_texts = {
+            'is_active': "Legt fest, ob der Benutzer sich anmelden kann. Neu registrierte Benutzer sind standardmäßig "
+                         "deaktiviert, da sie erst ihre E-Mail-Adresse validieren müssen.",
+            'is_staff': "Legt fest, ob der Benutzer bestimmte Seiten und Schaltflächen zur Verwaltung der Angebote "
+                        "sehen kann. Dieser Status vergibt noch keine Berechtigungen!",
         }
 
     def __init__(self, *args, **kwargs):
@@ -142,12 +178,13 @@ class UserForm(forms.ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ['first_name', 'last_name', 'email', 'phone']
+        fields = ['first_name', 'last_name', 'email', 'phone', 'student', 'faculty']
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'input'}),
             'last_name': forms.TextInput(attrs={'class': 'input'}),
             'email': forms.EmailInput(attrs={'class': 'input'}),
             'phone': forms.TextInput(attrs={'class': 'input'}),
+            'student': forms.TextInput(attrs={'class': 'input'}),
         }
 
     def __init__(self, *args, **kwargs):

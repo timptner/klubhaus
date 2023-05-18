@@ -1,7 +1,9 @@
-from accounts.validators import StudentEmailValidator, PhoneValidator
+import re
+
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.core.validators import RegexValidator
 from django.utils.translation import gettext_lazy as _
 
 
@@ -29,12 +31,52 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    email_validator = StudentEmailValidator()
-    phone_validator = PhoneValidator()
+    email_validator = RegexValidator(
+        regex=r'^[\w\-\.]+@st\.ovgu\.de$',
+        message=("Die E-Mail-Adresse darf nur aus Buchstaben, Ziffern, Bindestrichen oder Punkten bestehen und muss "
+                 "mit \"@st.ovgu.de\" enden."),
+        flags=re.ASCII,
+    )
+    phone_validator = RegexValidator(
+        regex=r'^\+[\d]+$',
+        message=("Die Mobilnummer darf nur aus Ziffern bestehen und muss einen Ländercode, beginnen mit einem "
+                 "Pluszeichen, besitzen."),
+        flags=re.ASCII,
+    )
+    student_validator = RegexValidator(
+        regex=r'^\d{6}$',
+        message="Die Matrikelnummer darf nur aus sechs Ziffern bestehen.",
+        flags=re.ASCII,
+    )
+
+    MECHANICS = 'FMB'
+    PROCESSING = 'FVST'
+    ELECTRICS = 'FEIT'
+    COMPUTER = 'FIN'
+    MATHEMATICS = 'FMA'
+    NATURE = 'FNW'
+    MEDICINE = 'FME'
+    HUMANITIES = 'FHW'
+    ECONOMICS = 'FWW'
+
+    FACULTY_CHOICES = [
+        (MECHANICS,  "Maschinenbau"),
+        (PROCESSING, "Verfahrens- und Systemtechnik"),
+        (ELECTRICS, "Elektro- und Informationstechnik"),
+        (COMPUTER, "Informatik"),
+        (MATHEMATICS, "Mathematik"),
+        (NATURE, "Naturwissenschaften"),
+        (MEDICINE, "Medizin"),
+        (HUMANITIES, "Humanwissenschaften"),
+        (ECONOMICS, "Wirtschaftswissenschaften"),
+    ]
 
     username = None
     email = models.EmailField("E-Mail-Adresse", unique=True, validators=[email_validator])
     phone = models.CharField("Mobilnummer", max_length=50, validators=[phone_validator], blank=True)
+    student = models.CharField("Matrikelnummer", max_length=6, unique=True,
+                               validators=[student_validator], blank=True, null=True)
+    faculty = models.CharField("Fakultät", max_length=4, choices=FACULTY_CHOICES, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name']

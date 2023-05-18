@@ -24,16 +24,15 @@ from django.views.generic import FormView, UpdateView, TemplateView, ListView, D
 from klubhaus.mails import PostmarkTemplate
 from tournament.models import Team
 
-from .forms import (
-    CustomUserCreateForm, CustomAuthenticationForm, CustomPasswordChangeForm, CustomSetPasswordForm,
-    CustomPasswordResetForm, UserForm, ProfileForm, GroupForm, MembershipForm
-)
 from .models import User, Modification
+from .forms import (RegistrationForm, CustomAuthenticationForm, CustomPasswordChangeForm,
+                    CustomSetPasswordForm, CustomPasswordResetForm, UserForm, ProfileForm, GroupForm,
+                    MembershipForm)
 
 
-class RegistrationView(UserPassesTestMixin, FormView):
+class RegistrationFormView(UserPassesTestMixin, FormView):
     email_template_name = 'accounts/mail/activate_account.md'
-    form_class = CustomUserCreateForm
+    form_class = RegistrationForm
     success_url = reverse_lazy('accounts:register_success')
     template_name = 'accounts/registration.html'
     token_generator = default_token_generator
@@ -48,11 +47,12 @@ class RegistrationView(UserPassesTestMixin, FormView):
         return self.request.user.is_anonymous
 
     def form_valid(self, form):
+        link_expired = timezone.localtime(timezone.now() + timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT))
         options = {
             'use_https': self.request.is_secure(),
             'token_generator': self.token_generator,
-            'email_template_name': self.email_template_name,
             'request': self.request,
+            'link_expired': link_expired.strftime('%d.%m.%Y %H:%M %Z'),
         }
         form.save(**options)
         return super().form_valid(form)
@@ -149,7 +149,6 @@ class PasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
 
 class PasswordResetView(auth_views.PasswordResetView):
     form_class = CustomPasswordResetForm
-    email_template_name = 'registration/mail/password_reset.md'
     success_url = reverse_lazy('accounts:password_reset_done')
 
 
