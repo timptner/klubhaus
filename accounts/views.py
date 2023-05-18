@@ -22,7 +22,6 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import FormView, UpdateView, TemplateView, ListView, DetailView, CreateView
 
 from klubhaus.mails import PostmarkTemplate
-from tournament.models import Team
 
 from .models import User, Modification
 from .forms import (RegistrationForm, CustomAuthenticationForm, CustomPasswordChangeForm,
@@ -274,14 +273,14 @@ class ProfileTeamsView(LoginRequiredMixin, ListView):
     template_name = 'accounts/profile_teams.html'
 
     def get_queryset(self):
-        return Team.objects.filter(captain=self.request.user).order_by('-tournament__date')
+        return self.request.user.team_set.order_by('-tournament__date')
 
 
 class ProfileModificationsView(LoginRequiredMixin, ListView):
     template_name = 'accounts/profile_modifications.html'
 
     def get_queryset(self):
-        return Modification.objects.filter(user=self.request.user)
+        return self.request.user.modification_set.all()
 
 
 class ProfileExcursionsView(LoginRequiredMixin, ListView):
