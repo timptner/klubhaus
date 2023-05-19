@@ -2,10 +2,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Sum
 from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, FormView
 
 from .models import Excursion, Participant
-from .forms import ExcursionForm, ParticipantForm, ExtendedParticipantForm, ParticipantStateForm
+from .forms import (
+    ExcursionForm, ParticipantForm, ExtendedParticipantForm, ParticipantStateForm, ParticipantContactForm
+)
 
 
 class ExcursionListView(LoginRequiredMixin, ListView):
@@ -182,3 +184,27 @@ class ParticipantStatisticsView(PermissionRequiredMixin, TemplateView):
         }
 
         return context
+
+
+class ParticipantContactFormView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
+    permission_required = 'excursions.contact_participant'
+    form_class = ParticipantContactForm
+    template_name = 'excursions/participant_contact_form.html'
+    success_message = "Empfänger erfolgreich kontaktiert"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
+        return kwargs
+
+    def form_valid(self, form):
+        form.send_mail()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('excursions:participant_list', kwargs={'pk': self.kwargs['pk']})

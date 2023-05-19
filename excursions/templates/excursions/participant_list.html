@@ -13,6 +13,13 @@
 {% endblock %}
 
 {% block subcontent %}
+    {% if user.is_staff %}
+        <div class="buttons is-justify-content-flex-end">
+            {% url 'excursions:participant_contact' excursion.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.excursions.contact_participant url=url label="Teilnehmer kontaktieren" %}
+        </div>
+    {% endif %}
+
     <h3 class="title">Teilnehmer</h3>
 
     <div class="table-container">

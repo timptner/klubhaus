@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
+from klubhaus.mails import PostmarkTemplate
+
 from .models import Excursion, Participant
 
 
@@ -151,3 +153,90 @@ class ParticipantStateForm(forms.ModelForm):
         self.instance.set_state(state)
 
         return self.instance
+
+
+class ParticipantContactForm(forms.Form):
+    ALL = 'all'
+    APPROVED = 'approved'
+    REJECTED = 'rejected'
+    DRIVERS_APPROVED = 'approved-drivers'
+    DRIVERS_REJECTED = 'rejected-drivers'
+
+    RECIPIENTS_CHOICES = [
+        (ALL, "Alle Teilnehmer"),
+        (APPROVED, "Zugelassene Teilnehmer"),
+        (REJECTED, "Abgelehnte Teilnehmer"),
+        (DRIVERS_APPROVED, "Zugelassene Teilnehmer mit Fahrzeug"),
+        (DRIVERS_REJECTED, "Abgelehnte Teilnehmer mit Fahrzeug"),
+    ]
+
+    recipients = forms.ChoiceField(
+        label="Empfänger",
+        choices=RECIPIENTS_CHOICES,
+    )
+
+    message = forms.CharField(
+        label="Nachricht",
+        widget=forms.Textarea(attrs={'class': 'textarea'}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.excursion = kwargs.pop('excursion')
+        super().__init__(*args, **kwargs)
+
+        if not self.excursion.ask_for_car:
+            self.fields['recipients'].choices = self.RECIPIENTS_CHOICES[:3]
+
+    def clean_recipients(self):
+        data = self.cleaned_data['recipients']
+
+        participants = self._get_queryset()
+
+        if not participants.exists():
+            raise ValidationError("Bitte wähle eine Gruppe von Empfängern, welche mehr als 0 Mitglieder besitzt.")
+
+        return data
+
+    def _get_queryset(self):
+        recipient_list = self.cleaned_data['recipients']
+
+        participants = Participant.objects.filter(excursion=self.excursion)
+
+        if recipient_list == self.ALL:
+            pass
+        elif recipient_list == self.APPROVED:
+            participants = participants.filter(state=Participant.APPROVED)
+        elif recipient_list == self.REJECTED:
+            participants = participants.filter(state=Participant.REJECTED)
+        elif recipient_list == self.DRIVERS_APPROVED:
+            participants = participants.filter(state=Participant.APPROVED).filter(is_driver=True)
+        elif recipient_list == self.DRIVERS_REJECTED:
+            participants = participants.filter(state=Participant.REJECTED).filter(is_driver=True)
+        else:
+            raise Exception("Unknown recipient list")
+
+        return participants
+
+    def send_mail(self):
+        message = self.cleaned_data['message']
+
+        participants = self._get_queryset()
+
+        template = PostmarkTemplate()
+
+        payloads = []
+        recipients = []
+        for participant in participants:
+            user = participant.user
+            excursion = participant.excursion
+
+            recipients.append(user.email)
+
+            context = {
+                'first_name': user.first_name,
+                'excursion': excursion.title,
+                'body': message,
+            }
+            payloads.append(context)
+
+        template.send_message_batch(recipients, payloads, template_alias='contact-participants')

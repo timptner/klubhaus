@@ -83,6 +83,9 @@ class Participant(models.Model):
                 name='driver_has_seats_or_null',
             )
         ]
+        permissions = [
+            ('contact_participant', "Can contact participant"),
+        ]
 
     def __str__(self):
         return self.user.get_full_name()
