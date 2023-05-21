@@ -217,7 +217,7 @@ def team_drawing(request, pk):
 
 
 class TeamContactView(PermissionRequiredMixin, FormView):
-    permission_required = 'tournaments.contact_team'
+    permission_required = 'tournament.contact_team'
     form_class = TeamContactForm
     template_name = 'tournament/team_contact.html'
 
