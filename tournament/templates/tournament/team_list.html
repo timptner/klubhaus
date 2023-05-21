@@ -55,7 +55,15 @@
                         <ul>
                             <li>
                                 <span class="icon-text">
-                                    <span>{{ team.captain.get_full_name }}</span>
+                                    <span>
+                                        {% if perms.accounts.view_user %}
+                                            <a href="{% url 'accounts:user_detail' team.captain.pk %}">
+                                            {{ team.captain.get_full_name }}
+                                            </a>
+                                        {% else %}
+                                            {{ team.captain.get_full_name }}
+                                        {% endif %}
+                                    </span>
 
                                     <span class="icon">
                                         <i class="fa-solid fa-chess-king"></i>
