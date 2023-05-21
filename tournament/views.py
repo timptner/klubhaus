@@ -174,7 +174,7 @@ def team_update(request, pk):
     return render(request, 'tournament/team_form.html', context=context)
 
 
-@permission_required('tournaments.change_team')
+@permission_required('tournament.change_team')
 def team_drawing(request, pk):
     tournament = Tournament.objects.get(pk=pk)
     if request.method == 'POST':
