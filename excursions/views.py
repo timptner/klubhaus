@@ -6,7 +6,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, T
 
 from .models import Excursion, Participant
 from .forms import (
-    ExcursionForm, ParticipantForm, ExtendedParticipantForm, ParticipantStateForm, ParticipantContactForm
+    ExcursionForm, ParticipantForm, ExtendedParticipantForm, ParticipantStateForm, ParticipantContactForm,
+    ParticipantDrawForm
 )
 
 
@@ -204,6 +205,30 @@ class ParticipantContactFormView(PermissionRequiredMixin, SuccessMessageMixin, F
 
     def form_valid(self, form):
         form.send_mail()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('excursions:participant_list', kwargs={'pk': self.kwargs['pk']})
+
+
+class ParticipantDrawFormView(PermissionRequiredMixin, SuccessMessageMixin, FormView):
+    permission_required = 'excursions.change_participant'
+    form_class = ParticipantDrawForm
+    template_name = 'excursions/participant_draw_form.html'
+    success_message = "Erfolgreich %(amount)s Teilnehmer per Los zugelassen"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['excursion'] = Excursion.objects.get(pk=self.kwargs['pk'])
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
         return super().form_valid(form)
 
     def get_success_url(self):

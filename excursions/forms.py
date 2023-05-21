@@ -240,3 +240,47 @@ class ParticipantContactForm(forms.Form):
             payloads.append(context)
 
         template.send_message_batch(recipients, payloads, template_alias='contact-participants')
+
+
+class ParticipantDrawForm(forms.Form):
+    amount = forms.IntegerField(
+        label="Anzahl",
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'input'}),
+        help_text="Anzahl der Teilnehmer, welche per Los zugelassen werden."
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.excursion: Excursion = kwargs.pop('excursion')
+        super().__init__(*args, **kwargs)
+
+    def clean_amount(self):
+        data = self.cleaned_data['amount']
+
+        participant_count = self.excursion.participant_set.filter(state=Participant.ENROLLED).count()
+
+        if data > participant_count:
+            raise ValidationError(
+                "Es können maximal %(amount)s Teilnehmer ausgelost werden, da nur entsprechend viele Teilnehmer den "
+                "Status \"%(state)s\" besitzen.",
+                params={
+                    'amount': participant_count,
+                    'state': dict(Participant.STATE_CHOICES).get(Participant.ENROLLED),
+                },
+                code='number to big',
+            )
+
+        return data
+
+    def save(self) -> None:
+        """
+        Set state of participants to approved or rejected by selecting chosen amount in random order.
+        """
+        amount = self.cleaned_data['amount']
+        participants = self.excursion.participant_set.filter(state=Participant.ENROLLED).order_by('?')
+
+        for index, participant in enumerate(participants):
+            if index < amount:
+                participant.set_state(Participant.APPROVED)
+            else:
+                participant.set_state(Participant.REJECTED)
