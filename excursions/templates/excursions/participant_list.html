@@ -15,6 +15,9 @@
 {% block subcontent %}
     {% if user.is_staff %}
         <div class="buttons is-justify-content-flex-end">
+            {% url 'excursions:participant_list_export' excursion.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.excursions.view_participant url=url label="Teilnehmerliste exportieren" %}
+
             {% url 'excursions:participant_draw' excursion.pk as url %}
             {% include 'button_snippet.html' with permission=perms.excursions.change_participant url=url label="Teilnehmer losen" %}
 

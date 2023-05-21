@@ -13,6 +13,7 @@ urlpatterns = [
     path('<int:pk>/statistics/', views.ParticipantStatisticsView.as_view(), name='participant_statistics'),
     path('<int:pk>/contact/', views.ParticipantContactFormView.as_view(), name='participant_contact'),
     path('<int:pk>/draw/', views.ParticipantDrawFormView.as_view(), name='participant_draw'),
+    path('<int:pk>/report/', views.participant_list_report, name='participant_list_export'),
     path('participants/<int:pk>/change_state/',
          views.ParticipantStateUpdateView.as_view(),
          name='participant_state_update'),

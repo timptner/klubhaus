@@ -1,6 +1,10 @@
+from io import BytesIO
+
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import permission_required
 from django.db.models import Sum
+from django.http import FileResponse
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, FormView
 
@@ -9,6 +13,7 @@ from .forms import (
     ExcursionForm, ParticipantForm, ExtendedParticipantForm, ParticipantStateForm, ParticipantContactForm,
     ParticipantDrawForm
 )
+from .reports import ParticipantList
 
 
 class ExcursionListView(LoginRequiredMixin, ListView):
@@ -233,3 +238,13 @@ class ParticipantDrawFormView(PermissionRequiredMixin, SuccessMessageMixin, Form
 
     def get_success_url(self):
         return reverse_lazy('excursions:participant_list', kwargs={'pk': self.kwargs['pk']})
+
+
+@permission_required('excursions.view_participant')
+def participant_list_report(request, pk):
+    excursion = Excursion.objects.get(pk=pk)
+    buffer = BytesIO()
+    report = ParticipantList(excursion=excursion)
+    report.generate_pdf(buffer)
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename="Teilnehmerliste.pdf")
