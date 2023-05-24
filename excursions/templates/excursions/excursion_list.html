@@ -10,7 +10,7 @@
 
         {% if user.is_staff %}
             <div class="buttons is-justify-content-flex-end">
-                {% url 'excursions:add_excursion' as url %}
+                {% url 'excursions:excursion_create' as url %}
                 {% include 'button_snippet.html' with permission=perms.excursions.add_excursion url=url label="Exkursion erstellen" %}
             </div>
         {% endif %}
