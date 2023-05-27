@@ -15,6 +15,9 @@
         <div class="buttons">
             {% url 'merchandise:product_update' product.pk as url %}
             {% include 'button_snippet.html' with permission=perms.merchandise.change_product url=url label="Produkt bearbeiten" %}
+
+            {% url 'merchandise:image_create' product.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.merchandise.add_image url=url label="Bild hinzufügen" %}
         </div>
     {% endif %}
 
@@ -40,6 +43,18 @@
         {% endif %}
         </tbody>
     </table>
+
+    {% if product.image_set.exists %}
+        <div class="columns">
+            {% for image in product.image_set.all %}
+                <div class="column">
+                    <figure class="image">
+                        <img src="{{ image.file.url }}" alt="{{ image.title }}">
+                    </figure>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 
     <div class="content">
         <p>{{ product.desc|linebreaks }}</p>
