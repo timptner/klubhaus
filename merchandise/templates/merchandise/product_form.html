@@ -1,11 +1,13 @@
 {% extends 'base_form.html' %}
 
 {% block title %}
-    {{ block.super }} | Produkt erstellen
+    {{ block.super }} | Produkt {% if form.initial %}bearbeiten{% else %}hinzufügen{% endif %}
 {% endblock %}
 
 {% block content %}
-    <h3 class="title">Produkt erstellen</h3>
+    <h3 class="title">
+        Produkt {% if form.initial %}bearbeiten{% else %}hinzufügen{% endif %}
+    </h3>
 
     <form method="post">
         {% csrf_token %}
@@ -14,13 +16,21 @@
 
         <div class="field is-grouped">
             <div class="control">
-                <button class="button is-primary" type="submit">Hinzufügen</button>
+                <button class="button is-primary" type="submit">
+                    {% if form.initial %}Aktualisieren{% else %}Erstellen{% endif %}
+                </button>
             </div>
 
             <div class="control">
-                <a class="button is-light" href="{% url 'merchandise:product_list' %}">
-                    Abbrechen
-                </a>
+                {% if form.initial %}
+                    <a class="button is-light" href="{% url 'merchandise:product_detail' product.pk %}">
+                        Abbrechen
+                    </a>
+                {% else %}
+                    <a class="button is-light" href="{% url 'merchandise:product_list' %}">
+                        Abbrechen
+                    </a>
+                {% endif %}
             </div>
         </div>
     </form>

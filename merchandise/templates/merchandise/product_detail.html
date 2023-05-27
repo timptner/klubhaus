@@ -9,7 +9,15 @@
         {{ block.super }}
     </div>
 {% endblock %}
+
 {% block subcontent %}
+    {% if user.is_staff %}
+        <div class="buttons">
+            {% url 'merchandise:product_update' product.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.merchandise.change_product url=url label="Produkt bearbeiten" %}
+        </div>
+    {% endif %}
+
     <h3 class="title">{{ product.name }}</h3>
 
     <table class="table is-fullwidth">
