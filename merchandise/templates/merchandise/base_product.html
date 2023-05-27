@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+            <li><a href="{% url 'merchandise:product_list' %}">Produkte</a></li>
+
+            <li class="is-active">
+                <a href="{% url 'merchandise:product_detail' product.pk %}" aria-current="page">
+                    {{ product.name }}
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    {% if user.is_staff %}
+        <div class="tabs">
+            <ul>
+                {% url 'merchandise:product_detail' product.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.merchandise.view_product url=url label="Details" icon="fa-circle-info" %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {{ block.super }}
+
+    {% block subcontent %}{% endblock %}
+{% endblock %}

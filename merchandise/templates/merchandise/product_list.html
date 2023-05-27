@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ block.super }} | Merchandise
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+
+        {% if user.is_staff %}
+            <div class="buttons">
+                {% url 'merchandise:product_create' as url %}
+                {% include 'button_snippet.html' with permission=perms.merchandise.add_product url=url label="Produkt erstellen" %}
+            </div>
+        {% endif %}
+
+        <h3 class="title">Unsere Produkte</h3>
+
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Preis</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in product_list %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'merchandise:product_detail' product.pk %}">
+                                {{ product.name }}
+                            </a>
+                        </td>
+
+                        <td>{{ product.price }} &euro;</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="2" class="has-text-centered is-italic">Keine Produkte verfügbar</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

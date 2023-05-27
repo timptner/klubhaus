@@ -1,0 +1,39 @@
+{% extends 'merchandise/base_product.html' %}
+
+{% block title %}
+    {{ block.super }} | {{ product.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+{% block subcontent %}
+    <h3 class="title">{{ product.name }}</h3>
+
+    <table class="table is-fullwidth">
+        <tbody>
+        <tr>
+            <td>Preis</td>
+            <td>{{ product.price }} &euro;</td>
+        </tr>
+
+        <tr>
+            <td>Verfügbar seit</td>
+            <td>{{ product.created_at|date }}</td>
+        </tr>
+
+        {% if product.has_changed %}
+            <tr>
+                <td>Aktualisiert am</td>
+                <td>{{ product.updated_at|date }}</td>
+            </tr>
+        {% endif %}
+        </tbody>
+    </table>
+
+    <div class="content">
+        <p>{{ product.desc|linebreaks }}</p>
+    </div>
+{% endblock %}
