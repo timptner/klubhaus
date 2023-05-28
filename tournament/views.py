@@ -255,7 +255,7 @@ class TeamContactView(PermissionRequiredMixin, FormView):
 
 
 class TeamStateChangeView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
-    permission_required = 'tournaments.change_team'
+    permission_required = 'tournament.change_team'
     model = Team
     form_class = TeamStatusForm
     template_name = 'tournament/team_status_form.html'
