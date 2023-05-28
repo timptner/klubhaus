@@ -111,17 +111,11 @@ class OrderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         context['product'] = Product.objects.get(pk=self.kwargs['pk'])
         return context
 
-    def form_valid(self, form):
-        product = Product.objects.get(pk=self.kwargs['pk'])
-        user = self.request.user
-
-        if form.is_valid():
-            order = form.save(commit=False)
-            order.product = product
-            order.user = user
-            order.save()
-
-        return super().form_valid(form)
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get_success_url(self):
         return reverse_lazy('accounts:profile_orders')

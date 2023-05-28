@@ -51,6 +51,21 @@ class OrderCreateForm(forms.ModelForm):
             'size': "Größe",
         }
 
+    def __init__(self, *args, **kwargs):
+        self.product = kwargs.pop('product')
+        self.user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        choices = self.product.size_set.values_list('pk', 'label')
+        self.fields['size'].widget = forms.Select(choices=choices)
+
+    def save(self, commit=True):
+        order = super().save(commit=False)
+        order.product = self.product
+        order.user = self.user
+        if commit:
+            order.save()
+        return order
+
 
 class OrderForm(forms.ModelForm):
     class Meta:
