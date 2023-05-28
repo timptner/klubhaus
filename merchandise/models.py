@@ -59,12 +59,14 @@ class Order(models.Model):
     PAID = 2
     READY = 3
     COMPLETED = 4
+    CANCELED = 5
     STATE_CHOICES = [
         (PENDING, "Ausstehend"),
         (CONFIRMED, "Bestätigt"),
         (PAID, "Bezahlt"),
         (READY, "Abholbereit"),
         (COMPLETED, "Abgeschlossen"),
+        (CANCELED, "Storniert"),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     size = models.ForeignKey(Size, on_delete=models.PROTECT)
@@ -78,10 +80,11 @@ class Order(models.Model):
 
     def get_state_color(self) -> str:
         colors = {
-            self.PENDING: 'is-light is-info',
-            self.CONFIRMED: 'is-light is-warning',
+            self.PENDING: 'is-light is-warning',
+            self.CONFIRMED: 'is-light is-info',
             self.PAID: 'is-light is-success',
             self.READY: 'is-light is-link',
-            self.COMPLETED: 'is-light ',
+            self.COMPLETED: 'is-light',
+            self.CANCELED: 'is-light is-danger',
         }
         return colors[self.state]
