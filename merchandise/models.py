@@ -63,7 +63,7 @@ class Order(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    size = models.CharField("Größe", max_length=2, choices=SIZE_CHOICES)
+    size = models.CharField("Größe", max_length=2, choices=SIZE_CHOICES, default=MEDIUM)
     state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=PENDING)
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 
@@ -71,3 +71,13 @@ class Order(models.Model):
         verbose_name = "Bestellung"
         verbose_name_plural = "Bestellungen"
         ordering = ['created_at']
+
+    def get_state_color(self) -> str:
+        colors = {
+            self.PENDING: 'is-light is-info',
+            self.CONFIRMED: 'is-light is-warning',
+            self.PAID: 'is-light is-success',
+            self.READY: 'is-light is-link',
+            self.COMPLETED: 'is-light ',
+        }
+        return colors[self.state]
