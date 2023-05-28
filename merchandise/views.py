@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 
 from .forms import ProductForm, ImageForm, OrderCreateForm, OrderForm
@@ -132,3 +132,7 @@ class OrderUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Order
     form_class = OrderForm
     success_message = "Bestellung erfolgreich aktualisiert"
+
+
+class OrderStatesView(LoginRequiredMixin, TemplateView):
+    template_name = 'merchandise/order_states.html'

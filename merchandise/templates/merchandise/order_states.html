@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {{ block.super }} | Status einer Bestellung
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+
+        <h3 class="title">Status einer Bestellung</h3>
+
+        <article class="message is-info">
+            <div class="message-body">
+                Sobald sich der Status einer Bestellung ändert, wird der Benutzer per E-Mail darüber benachrichtigt.
+            </div>
+        </article>
+
+        <div class="content">
+            <h3>Ausstehend</h3>
+            <p>
+                Jede Bestellung besitzt nach Abschicken des Formulars diesen Status. Damit wird angezeigt, dass die
+                Bestellung im System erfasst wurde.
+            </p>
+
+            <h3>Bestätigt</h3>
+            <p>
+                Bestellungen mit diesen Status wurden von einem Mitglied des Fachschaftsrates gesichtet und akzeptiert.
+                Jener Benutzer, welcher die Bestellung aufgegeben hat, kann nun den entsprechenden Beitrag für das
+                Produkt an das Konto des Fachschaftsrates überweisen.
+            </p>
+            <p>
+                Für Produkte, welche nicht auf Lager sind, bedeutet dies zusätzlich, dass die Bestellung bei der
+                nächsten Sammelbestellung berücksichtigt wird.
+            </p>
+
+            <h3>Bezahlt</h3>
+            <p>
+                Dieser Status bestätigt, dass das Geld auf dem Konto des Fachschaftsrates angekommen ist und dieser
+                Bestellung zugeordnet werden konnte.
+            </p>
+            <p>
+                Da die Mitglieder des Fachschaftsrates ehrenamtlich aktiv sind kann es ein paar Tage dauern zwischen
+                Ankunft des Geldes auf dem Konto und Aktualisierung des Status der Bestellung.
+            </p>
+
+            <h3>Abholbereit</h3>
+            <p>
+                Sobald das Produkt im Büro verfügbar ist und die Bestellung erfolgreich bezahlt wurde signalisiert
+                dieser Status, dass das Produkt während der Sprechzeiten im Büro abgeholt werden kann.
+            </p>
+
+            <h3>Abgeschlossen</h3>
+            <p>Das Produkt wurde erfolgreich abgeholt und die Bestellung ist abgeschlossen.</p>
+        </div>
+    </div>
+{% endblock %}
