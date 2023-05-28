@@ -35,6 +35,20 @@ class SizeForm(forms.ModelForm):
         widgets = {
             'label': forms.TextInput(attrs={'class': 'input'}),
         }
+        help_texts = {
+            'label': "Bezeichnung kann nur geändert werden solange alle zugehörigen Bestellungen abgeschlossen sind.",
+        }
+
+    def clean_label(self):
+        data = self.cleaned_data['label']
+
+        if self.initial:
+            size: Size = self.instance
+            uncompleted_orders = Order.objects.filter(size__product=size.product).exclude(state=Order.COMPLETED)
+            if self.instance.label != data and uncompleted_orders:
+                raise ValidationError("Es existieren zugehörige Bestellungen, welche noch nicht abgeschlossen sind.")
+
+        return data
 
 
 class ImageForm(forms.ModelForm):
