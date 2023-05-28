@@ -20,6 +20,15 @@
 
     <h3 class="title">{{ product.name }}</h3>
 
+    {% if not product.size_set.exists %}
+        <article class="message is-danger">
+            <div class="message-body">
+                Es sind noch keine Größen für dieses Produkt hinterlegt! Solange dieses Problem besteht, ist diese
+                Seite nur von Mitglieder des Fachschaftsrates einsehbar.
+            </div>
+        </article>
+    {% endif %}
+
     <table class="table is-fullwidth">
         <tbody>
         <tr>
@@ -63,8 +72,14 @@
     </div>
 
     <div class="buttons">
-        <a class="button is-primary" href="{% url 'merchandise:order_create' product.pk %}">
-            Produkt bestellen
-        </a>
+        {% if product.size_set.exists %}
+            <a class="button is-primary" href="{% url 'merchandise:order_create' product.pk %}">
+                Produkt bestellen
+            </a>
+        {% else %}
+            <a class="button is-primary" disabled>
+                Produkt bestellen
+            </a>
+        {% endif %}
     </div>
 {% endblock %}

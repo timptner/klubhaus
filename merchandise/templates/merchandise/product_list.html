@@ -36,6 +36,16 @@
             </div>
         </article>
 
+        {% if user.is_staff and has_products_missing_sizes %}
+            <article class="message is-danger">
+                <div class="message-body">
+                    Es existieren Produkte, welche keine Größen zugewiesen haben. Die betroffenen Produkte sind
+                    entsprechend markiert. Ausschließlich Mitgliedern des Fachschaftsrates werden die fehlerhaften
+                    Produkte in der Liste angezeigt.
+                </div>
+            </article>
+        {% endif %}
+
         <div class="table-container">
             <table class="table is-fullwidth is-hoverable">
                 <thead>
@@ -47,10 +57,22 @@
                 </thead>
                 <tbody>
                 {% for product in product_list %}
-                    <tr>
+                    <tr{% if not product.size_set.exists %} class="has-background-light"{% endif %}>
                         <td>
                             <a href="{% url 'merchandise:product_detail' product.pk %}">
-                                {{ product.name }}
+                                {% if user.is_staff %}
+                                    <span class="icon-text">
+                                        <span>{{ product.name }}</span>
+
+                                        {% if not product.size_set.exists %}
+                                            <span class="icon has-text-danger">
+                                                <i class="fa-solid fa-exclamation-circle"></i>
+                                            </span>
+                                        {% endif %}
+                                    </span>
+                                {% else %}
+                                    {{ product.name }}
+                                {% endif %}
                             </a>
                         </td>
 

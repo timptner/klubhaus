@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
@@ -10,6 +10,18 @@ from .models import Product, Image, Order, Size
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            queryset = Product.objects.all()
+        else:
+            queryset = Product.objects.exclude(size=None)
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['has_products_missing_sizes'] = Product.objects.filter(size=None).exists()
+        return context
+
 
 class ProductCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'merchandise.add_product'
@@ -19,8 +31,19 @@ class ProductCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView
     success_message = "%(name)s erfolgreich erstellt"
 
 
-class ProductDetailView(LoginRequiredMixin, DetailView):
+class ProductDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Product
+
+    def test_func(self):
+        product = Product.objects.get(pk=self.kwargs['pk'])
+
+        if self.request.user.is_staff:
+            return True
+
+        if product.size_set.exists():
+            return True
+
+        return False
 
 
 class ProductUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
@@ -148,10 +171,18 @@ class OrderListView(LoginRequiredMixin, ListView):
         return context
 
 
-class OrderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class OrderCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = Order
     form_class = OrderCreateForm
     success_message = "Bestellung erfolgreich abgeschickt"
+
+    def test_func(self):
+        product = Product.objects.get(pk=self.kwargs['pk'])
+
+        if not product.size_set.exists():
+            return False
+
+        return True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
