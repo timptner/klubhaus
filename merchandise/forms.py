@@ -7,7 +7,7 @@ from .models import Product, Image, Order
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'desc', 'price']
+        fields = ['name', 'desc', 'price', 'is_stocked']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input'}),
             'desc': forms.Textarea(attrs={'class': 'textarea'}),

@@ -7,6 +7,7 @@ class Product(models.Model):
     name = models.CharField("Name", max_length=50, unique=True)
     desc = models.TextField("Beschreibung")
     price = models.DecimalField("Preis", max_digits=5, decimal_places=2)
+    is_stocked = models.BooleanField("Auf Lager", default=False)
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
     updated_at = models.DateTimeField("Bearbeitet am", auto_now=True)
 

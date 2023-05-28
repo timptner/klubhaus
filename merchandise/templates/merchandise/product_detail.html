@@ -28,6 +28,11 @@
         </tr>
 
         <tr>
+            <td>Auf Lager</td>
+            <td>{{ product.is_stocked|yesno }}</td>
+        </tr>
+
+        <tr>
             <td>Verfügbar seit</td>
             <td>{{ product.created_at|date }}</td>
         </tr>

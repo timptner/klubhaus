@@ -21,15 +21,16 @@
             <div class="message-body">
                 <div class="content">
                     <p>
-                        Die meisten Produkte haben wir auf Lager. Diese können nach euer Bestellung zeitnah bei uns im
-                        Büro abgeholt werden. Produkte, welche wir nicht auf Lager haben, bestellen wir einmal pro Semester
-                        beim Lieferanten. Hierzu erhalten ihr von uns eine Benachrichtigung per E-Mail, sobald diese
-                        abgeholt werden können.
+                        Produkte, welche wir auf Lager haben, können nach deiner Bestellung zeitnah bei uns im
+                        Büro abgeholt werden. Für nicht lagernde Produkte geben wir einmal pro
+                        Semester eine Sammelbestellung beim Lieferanten auf. Um in der Sammelbestellung berücksichtigt
+                        zu werden, musst du ebenfalls eine Bestellung bei uns tätigen. Sobald die Sammelbestellung
+                        bei uns eintrifft, wirst du per E-Mail von uns benachrichtigt.
                     </p>
                     <p>
-                        Bitte lest euch auch unsere
+                        Bitte lies dir auch unsere
                         <a href="{% url 'merchandise:order_states' %}">Erklärung zu den verschiedenen Status</a>
-                        aufmerksam durch.
+                        aufmerksam durch, um Verwirrung zu vermeiden.
                     </p>
                 </div>
             </div>
@@ -41,6 +42,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Preis</th>
+                    <th>Auf Lager</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -53,10 +55,22 @@
                         </td>
 
                         <td>{{ product.price }} &euro;</td>
+
+                        <td>
+                            {% if product.is_stocked %}
+                                <span class="icon has-text-success">
+                                    <i class="fa-solid fa-check-circle"></i>
+                                </span>
+                            {% else %}
+                                <span class="icon has-text-danger">
+                                    <i class="fa-solid fa-times-circle"></i>
+                                </span>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>
-                        <td colspan="2" class="has-text-centered is-italic">Keine Produkte verfügbar</td>
+                        <td colspan="3" class="has-text-centered is-italic">Keine Produkte verfügbar</td>
                     </tr>
                 {% endfor %}
                 </tbody>
