@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Product, Image
+from .models import Product, Image, Order
 
 
 class ProductForm(forms.ModelForm):
@@ -21,4 +21,18 @@ class ImageForm(forms.ModelForm):
         widgets = {
             'title': forms.TextInput(attrs={'class': 'input'}),
             'file': forms.FileInput(attrs={'class': 'file-input'}),
+        }
+
+
+class OrderForm(forms.ModelForm):
+    is_committed = forms.BooleanField(
+        label="Hiermit bestätige ich, dass meine Bestellung verbindlich ist.",
+        required=True,
+    )
+
+    class Meta:
+        model = Order
+        fields = ['size']
+        widgets = {
+            'size': forms.RadioSelect,
         }

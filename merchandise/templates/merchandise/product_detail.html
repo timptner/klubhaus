@@ -56,4 +56,10 @@
     <div class="content">
         <p>{{ product.desc|linebreaks }}</p>
     </div>
+
+    <div class="buttons">
+        <a class="button is-primary" href="{% url 'merchandise:order_create' product.pk %}">
+            Bestellen
+        </a>
+    </div>
 {% endblock %}

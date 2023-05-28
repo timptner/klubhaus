@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 
-from .forms import ProductForm, ImageForm
+from .forms import ProductForm, ImageForm, OrderForm
 from .models import Product, Image, Order
 
 
@@ -99,3 +99,29 @@ class OrderListView(LoginRequiredMixin, ListView):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context['product'] = Product.objects.get(pk=self.kwargs['pk'])
         return context
+
+
+class OrderCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+    model = Order
+    form_class = OrderForm
+    success_message = "Bestellung erfolgreich abgeschickt"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        product = Product.objects.get(pk=self.kwargs['pk'])
+        user = self.request.user
+
+        if form.is_valid():
+            order = form.save(commit=False)
+            order.product = product
+            order.user = user
+            order.save()
+
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('accounts:profile_orders')
