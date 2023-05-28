@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Product, Image, Order
+from .models import Product, Image, Order, Size
 
 
 class ProductForm(forms.ModelForm):
@@ -26,6 +26,15 @@ class ProductForm(forms.ModelForm):
                 raise ValidationError("Es existieren zugehörige Bestellungen, welche noch nicht abgeschlossen sind.")
 
         return data
+
+
+class SizeForm(forms.ModelForm):
+    class Meta:
+        model = Size
+        fields = ['label']
+        widgets = {
+            'label': forms.TextInput(attrs={'class': 'input'}),
+        }
 
 
 class ImageForm(forms.ModelForm):

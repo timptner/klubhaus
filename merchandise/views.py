@@ -3,8 +3,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 
-from .forms import ProductForm, ImageForm, OrderCreateForm, OrderForm
-from .models import Product, Image, Order
+from .forms import ProductForm, ImageForm, OrderCreateForm, OrderForm, SizeForm
+from .models import Product, Image, Order, Size
 
 
 class ProductListView(LoginRequiredMixin, ListView):
@@ -31,6 +31,53 @@ class ProductUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView
 
     def get_success_url(self):
         return reverse_lazy('merchandise:product_detail', kwargs={'pk': self.kwargs['pk']})
+
+
+class SizeListView(PermissionRequiredMixin, ListView):
+    permission_required = 'merchandise.view_size'
+    model = Size
+
+    def get_queryset(self):
+        product = Product.objects.get(pk=self.kwargs['pk'])
+        return Size.objects.filter(product=product)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        return context
+
+
+class SizeCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
+    permission_required = 'merchandise.add_size'
+    model = Size
+    form_class = SizeForm
+    success_message = "Größe %(label)s erfolgreich erstellt"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        product = Product.objects.get(pk=self.kwargs['pk'])
+        size = form.save(commit=False)
+        if form.is_valid():
+            size.product = product
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('merchandise:size_list', kwargs={'pk': self.kwargs['pk']})
+
+
+class SizeUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+    permission_required = 'merchandise.change_size'
+    model = Size
+    form_class = SizeForm
+    success_message = "Größe %(label)s erfolgreich aktualisiert"
+
+    def get_success_url(self):
+        size: Size = self.object
+        return reverse_lazy('merchandise:size_list', kwargs={'pk': size.product.pk})
 
 
 class ImageListView(PermissionRequiredMixin, ListView):

@@ -19,6 +19,9 @@
                 {% url 'merchandise:product_detail' product.pk as url %}
                 {% include 'tab_snippet.html' with permission=perms.merchandise.view_product url=url label="Details" icon="fa-circle-info" %}
 
+                {% url 'merchandise:size_list' product.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.merchandise.view_size url=url label="Größen" icon="fa-ruler" %}
+
                 {% url 'merchandise:image_list' product.pk as url %}
                 {% include 'tab_snippet.html' with permission=perms.merchandise.view_image url=url label="Bilder" icon="fa-images" %}
 

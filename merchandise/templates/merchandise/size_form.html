@@ -1,0 +1,48 @@
+{% extends 'base_form.html' %}
+
+{% block title %}
+    {{ block.super }} | Größe {% if form.initial %}bearbeiten{% else %}hinzufügen{% endif %}
+{% endblock %}
+
+{% block content %}
+    <h3 class="title">
+        Größe {% if form.initial %}bearbeiten{% else %}erstellen{% endif %}
+    </h3>
+    <h5 class="subtitle">
+        {% if form.initial %}
+            {{ size.product.name }}<br>
+        {% else %}
+            {{ product.name }}
+        {% endif %}
+    </h5>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">
+                    {% if form.initial %}
+                        Aktualisieren
+                    {% else %}
+                        Erstellen
+                    {% endif %}
+                </button>
+            </div>
+
+            <div class="control">
+                {% if form.initial %}
+                    <a class="button is-light" href="{% url 'merchandise:size_list' size.product.pk %}">
+                        Abbrechen
+                    </a>
+                {% else %}
+                    <a class="button is-light" href="{% url 'merchandise:size_list' product.pk %}">
+                        Abbrechen
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </form>
+{% endblock %}

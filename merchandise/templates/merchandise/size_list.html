@@ -1,0 +1,49 @@
+{% extends 'merchandise/base_product.html' %}
+
+{% block title %}
+    {{ block.super }} | Größen
+{% endblock %}
+
+{% block content %}
+    <div class="container is-max-desktop">
+        {{ block.super }}
+    </div>
+{% endblock %}
+
+{% block subcontent %}
+    {% if user.is_staff %}
+        <div class="buttons">
+            {% url 'merchandise:size_create' product.pk as url %}
+            {% include 'button_snippet.html' with permission=perms.merchandise.add_size url=url label="Größe hinzufügen" %}
+        </div>
+    {% endif %}
+
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+            <tr>
+                <th>Bezeichnung</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for size in size_list %}
+                <tr>
+                    <td>{{ size.label }}</td>
+                    <td>
+                        <a href="{% url 'merchandise:size_update' size.pk %}">
+                            <span class="icon">
+                                <i class="fa-solid fa-pen"></i>
+                            </span>
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="2" class="is-italic has-text-centered">Keine Größen verfügbar</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
