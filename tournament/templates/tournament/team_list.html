@@ -48,7 +48,13 @@
             {% for team in team_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'tournament:team_update' team.pk %}">{{ team.name }}</a>
+                        {% if perms.tournament.change_team %}
+                            <a href="{% url 'tournament:team_update' team.pk %}">
+                                {{ team.name }}
+                            </a>
+                        {% else %}
+                            {{ team.name }}
+                        {% endif %}
                     </td>
 
                     <td>
@@ -57,7 +63,7 @@
                                 <span class="icon-text">
                                     <span>
                                         {% if perms.accounts.view_user %}
-                                            <a href="{% url 'accounts:user_detail' team.captain.pk %}">
+                                            <a href="{% url 'accounts:user_teams' team.captain.pk %}">
                                             {{ team.captain.get_full_name }}
                                             </a>
                                         {% else %}
@@ -83,13 +89,15 @@
                         <span class="tags has-addons">
                             <span class="tag {{ team.get_state_color }}">{{ team.get_state_display }}</span>
 
-                            <a class="tag"
-                               href="{% url 'tournament:change_team_status' team.pk %}"
-                               style="text-decoration: none">
-                                <span class="icon">
-                                    <i class="fa-solid fa-pen"></i>
-                                </span>
+                            {% if perms.tournament.change_team %}
+                                <a class="tag"
+                                   href="{% url 'tournament:change_team_status' team.pk %}"
+                                   style="text-decoration: none">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </span>
                             </a>
+                            {% endif %}
                         </span>
                     </td>
                 </tr>
