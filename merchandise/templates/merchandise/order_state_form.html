@@ -1,0 +1,46 @@
+{% extends 'base_form.html' %}
+
+{% block title %}
+    {{ block.super }} | Status bearbeiten
+{% endblock %}
+
+{% block content %}
+    <h3 class="title">Status bearbeiten</h3>
+
+    <table class="table is-fullwidth">
+        <tbody>
+        <tr>
+            <td>Produkt</td>
+            <td>{{ order.size.product.name }}</td>
+        </tr>
+
+        <tr>
+            <td>Größe</td>
+            <td>{{ order.size.label }}</td>
+        </tr>
+
+        <tr>
+            <td>Benutzer</td>
+            <td>{{ order.user.get_full_name }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form }}
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-primary" type="submit">Aktualisieren</button>
+            </div>
+
+            <div class="control">
+                <a class="button is-light" href="{% url 'merchandise:order_list' order.size.product.pk %}">
+                    Abbrechen
+                </a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

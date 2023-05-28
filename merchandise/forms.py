@@ -90,10 +90,10 @@ class OrderCreateForm(forms.ModelForm):
         return order
 
 
-class OrderForm(forms.ModelForm):
+class OrderStateForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ['size', 'state']
+        fields = ['state']
         widgets = {
             'state': forms.RadioSelect,
         }

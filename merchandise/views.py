@@ -3,7 +3,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, TemplateView
 from django.urls import reverse_lazy
 
-from .forms import ProductForm, ImageForm, OrderCreateForm, OrderForm, SizeForm
+from .forms import ProductForm, ImageForm, OrderCreateForm, OrderStateForm, SizeForm
 from .models import Product, Image, Order, Size
 
 
@@ -199,11 +199,15 @@ class OrderCreateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageMix
         return reverse_lazy('accounts:profile_orders')
 
 
-class OrderUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
+class OrderStateUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     permission_required = 'merchandise.change_order'
     model = Order
-    form_class = OrderForm
-    success_message = "Bestellung erfolgreich aktualisiert"
+    form_class = OrderStateForm
+    template_name = 'merchandise/order_state_form.html'
+    success_message = "Status erfolgreich aktualisiert"
+
+    def get_success_url(self):
+        return reverse_lazy('merchandise:order_list', kwargs={'pk': self.object.size.product.pk})
 
 
 class OrderStatesView(LoginRequiredMixin, TemplateView):

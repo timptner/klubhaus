@@ -15,7 +15,6 @@
         <table class="table is-fullwidth is-hoverable">
             <thead>
             <tr>
-                <th>ID</th>
                 <th>Benutzer</th>
                 <th>Größe</th>
                 <th>Zeitpunkt</th>
@@ -25,14 +24,6 @@
             <tbody>
             {% for order in order_list %}
                 <tr>
-                    <td>
-                        {% if perms.merchandise.change_order %}
-                            <a href="{% url 'merchandise:order_update' order.pk %}">{{ order.pk }}</a>
-                        {% else %}
-                            {{ order.pk }}
-                        {% endif %}
-                    </td>
-
                     <td>
                         <a href="{% url 'accounts:user_orders' order.user.pk %}">
                             {{ order.user.get_full_name }}
@@ -44,15 +35,26 @@
                     <td>{{ order.created_at }}</td>
 
                     <td>
-                        <span class="tag {{ order.get_state_color }}">
-                            {{ order.get_state_display }}
+                        <span class="tags has-addons">
+                            <span class="tag {{ order.get_state_color }}">
+                                {{ order.get_state_display }}
+                            </span>
+
+                            {% if perms.merchandise.change_order %}
+                                <a class="tag"
+                                   href="{% url 'merchandise:order_state_update' order.pk %}"
+                                   style="text-decoration: none">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </span>
+                                </a>
+                            {% endif %}
                         </span>
                     </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5"
-                        class="is-italic has-text-centered">
+                    <td colspan="4" class="is-italic has-text-centered">
                         Keine Bestellungen verfügbar
                     </td>
                 </tr>
