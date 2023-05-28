@@ -27,6 +27,7 @@ urlpatterns = [
     path('profile/teams/', views.ProfileTeamsView.as_view(), name='profile_teams'),
     path('profile/modifications/', views.ProfileModificationsView.as_view(), name='profile_modifications'),
     path('profile/excursions/', views.ProfileExcursionsView.as_view(), name='profile_excursions'),
+    path('profile/orders/', views.ProfileOrdersView.as_view(), name='profile_orders'),
     path('register/', views.RegistrationFormView.as_view(), name='register'),
     path('register/success/', views.RegistrationSuccessView.as_view(), name='register_success'),
     path('reset/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),

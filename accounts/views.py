@@ -304,6 +304,13 @@ class ProfileExcursionsView(LoginRequiredMixin, ListView):
         return self.request.user.participant_set.order_by('-excursion__date')
 
 
+class ProfileOrdersView(LoginRequiredMixin, ListView):
+    template_name = 'accounts/profile_orders.html'
+
+    def get_queryset(self):
+        return self.request.user.order_set.order_by('-created_at')
+
+
 class GroupListView(PermissionRequiredMixin, ListView):
     permission_required = 'auth.view_group'
     model = Group
