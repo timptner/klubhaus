@@ -4,7 +4,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from django.urls import reverse_lazy
 
 from .forms import ProductForm, ImageForm
-from .models import Product, Image
+from .models import Product, Image, Order
 
 
 class ProductListView(LoginRequiredMixin, ListView):
@@ -86,3 +86,16 @@ class ImageDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
     def get_success_url(self):
         image: Image = self.object
         return reverse_lazy('merchandise:image_list', kwargs={'pk': image.product.pk})
+
+
+class OrderListView(LoginRequiredMixin, ListView):
+    model = Order
+
+    def get_queryset(self):
+        product = Product.objects.get(pk=self.kwargs['pk'])
+        return Order.objects.filter(product=product)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        return context
