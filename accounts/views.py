@@ -222,6 +222,20 @@ class UserEventsView(PermissionRequiredMixin, ListView):
         return user.volunteer_set.all()
 
 
+class UserOrdersView(PermissionRequiredMixin, ListView):
+    permission_required = 'accounts.view_user'
+    template_name = 'accounts/user_orders.html'
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context['account'] = User.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def get_queryset(self):
+        user = User.objects.get(pk=self.kwargs['pk'])
+        return user.order_set.all()
+
+
 class UserUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     permission_required = 'accounts.change_user'
     model = User

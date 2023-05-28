@@ -10,6 +10,7 @@ urlpatterns = [
     path('user/<int:pk>/excursions/', views.UserExcursionsView.as_view(), name='user_excursions'),
     path('user/<int:pk>/teams/', views.UserTeamsView.as_view(), name='user_teams'),
     path('user/<int:pk>/events/', views.UserEventsView.as_view(), name='user_events'),
+    path('user/<int:pk>/orders/', views.UserOrdersView.as_view(), name='user_orders'),
     path('groups/', views.GroupListView.as_view(), name='group_list'),
     path('groups/add/', views.GroupCreateView.as_view(), name='group_create'),
     path('groups/<int:pk>/', views.GroupDetailView.as_view(), name='group_detail'),

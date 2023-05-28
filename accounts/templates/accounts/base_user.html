@@ -18,44 +18,23 @@
     </nav>
 
     <div class="tabs">
-        <ul>
-            <li>
-                <a href="{% url 'accounts:user_detail' account.pk %}">
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-circle-info"></i>
-                    </span>
-                    <span>Informationen</span>
-                </a>
-            </li>
+            <ul>
+                {% url 'accounts:user_detail' account.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.accounts.view_user url=url label="Details" icon="fa-circle-info" %}
 
-            <li>
-                <a href="{% url 'accounts:user_excursions' account.pk %}">
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-car"></i>
-                    </span>
-                    <span>Exkursionen</span>
-                </a>
-            </li>
+                {% url 'accounts:user_excursions' account.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.accounts.view_user url=url label="Exkursionen" icon="fa-car" %}
 
-            <li>
-                <a href="{% url 'accounts:user_teams' account.pk %}">
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-people-group"></i>
-                    </span>
-                    <span>Teams</span>
-                </a>
-            </li>
+                {% url 'accounts:user_teams' account.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.accounts.view_user url=url label="Teams" icon="fa-people-group" %}
 
-            <li>
-                <a href="{% url 'accounts:user_events' account.pk %}">
-                    <span class="icon is-small">
-                        <i class="fa-solid fa-hand-holding-heart"></i>
-                    </span>
-                    <span>Veranstaltungen</span>
-                </a>
-            </li>
-        </ul>
-    </div>
+                {% url 'accounts:user_events' account.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.accounts.view_user url=url label="Veranstaltungen" icon="fa-hand-holding-heart" %}
+
+                {% url 'accounts:user_orders' account.pk as url %}
+                {% include 'tab_snippet.html' with permission=perms.accounts.view_user url=url label="Bestellungen" icon="fa-shopping-cart" %}
+            </ul>
+        </div>
 
     {{ block.super }}
 
