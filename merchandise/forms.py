@@ -47,8 +47,8 @@ class OrderCreateForm(forms.ModelForm):
     class Meta:
         model = Order
         fields = ['size']
-        widgets = {
-            'size': forms.RadioSelect,
+        labels = {
+            'size': "Größe",
         }
 
 
@@ -57,6 +57,5 @@ class OrderForm(forms.ModelForm):
         model = Order
         fields = ['size', 'state']
         widgets = {
-            'size': forms.RadioSelect,
             'state': forms.RadioSelect,
         }

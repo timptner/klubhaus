@@ -21,12 +21,12 @@
             {% for order in order_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'merchandise:product_detail' order.product.pk %}">
-                            {{ order.product }}
+                        <a href="{% url 'merchandise:product_detail' order.size.product.pk %}">
+                            {{ order.size.product }}
                         </a>
                     </td>
 
-                    <td>{{ order.get_size_display }}</td>
+                    <td>{{ order.size.label }}</td>
 
                     <td>
                         <span class="tag {{ order.get_state_color }}">

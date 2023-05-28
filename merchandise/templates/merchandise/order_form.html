@@ -14,7 +14,7 @@
     </h3>
     <h5 class="subtitle">
         {% if form.initial %}
-            {{ order.product.name }}<br>
+            {{ order.size.product.name }}<br>
             {{ order.user.get_full_name }}<br>
             {{ order.created_at }}
         {% else %}
@@ -40,7 +40,7 @@
 
             <div class="control">
                 {% if form.initial %}
-                    <a class="button is-light" href="{% url 'merchandise:order_list' order.product.pk %}">
+                    <a class="button is-light" href="{% url 'merchandise:order_list' order.size.product.pk %}">
                         Abbrechen
                     </a>
                 {% else %}

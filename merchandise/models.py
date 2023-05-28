@@ -37,19 +37,23 @@ class Image(models.Model):
         return self.title
 
 
+class Size(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    label = models.CharField("Bezeichnung", max_length=15)
+
+    class Meta:
+        verbose_name = "Größe"
+        verbose_name_plural = "Größen"
+        ordering = ['label']
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'label'], name='unique_size'),
+        ]
+
+    def __str__(self):
+        return self.label
+
+
 class Order(models.Model):
-    EXTRA_SMALL = 'XS'
-    SMALL = 'S'
-    MEDIUM = 'M'
-    LARGE = 'L'
-    EXTRA_LARGE = 'XL'
-    SIZE_CHOICES = [
-        (EXTRA_SMALL, "XS"),
-        (SMALL, "S"),
-        (MEDIUM, "M"),
-        (LARGE, "L"),
-        (EXTRA_LARGE, "XL"),
-    ]
     PENDING = 0
     CONFIRMED = 1
     PAID = 2
@@ -63,8 +67,7 @@ class Order(models.Model):
         (COMPLETED, "Abgeschlossen"),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    size = models.CharField("Größe", max_length=2, choices=SIZE_CHOICES, default=MEDIUM)
+    size = models.ForeignKey(Size, on_delete=models.PROTECT)
     state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=PENDING)
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 

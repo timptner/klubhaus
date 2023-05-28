@@ -30,7 +30,7 @@
                             <tbody>
                             <tr>
                                 <td>Größe</td>
-                                <td>{{ order.get_size_display }}</td>
+                                <td>{{ order.size.label }}</td>
                             </tr>
                             <tr>
                                 <td>Bestellt am</td>
@@ -41,7 +41,7 @@
 
                         <div class="buttons">
                             <a class="button is-light"
-                               href="{% url 'merchandise:product_detail' order.product.pk %}">
+                               href="{% url 'merchandise:product_detail' order.size.product.pk %}">
                                 Produkt anzeigen
                             </a>
                         </div>

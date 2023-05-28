@@ -93,7 +93,7 @@ class OrderListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         product = Product.objects.get(pk=self.kwargs['pk'])
-        return Order.objects.filter(product=product)
+        return Order.objects.filter(size__product=product)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
