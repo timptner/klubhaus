@@ -22,8 +22,10 @@
         <table class="table is-fullwidth is-hoverable">
             <thead>
             <tr>
-                <td>Titel</td>
-                <td>Aktion</td>
+                <th>Titel</th>
+                {% if perms.merchandise.delete_image %}
+                    <th>Aktion</th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -31,17 +33,22 @@
                 <tr>
                     <td>{{ image.title }}</td>
 
-                    <td>
-                        <a href="{% url 'merchandise:image_delete' image.pk %}">
-                            <span class="icon has-text-danger">
-                                <i class="fa-solid fa-dumpster-fire"></i>
-                            </span>
-                        </a>
-                    </td>
+                    {% if perms.merchandise.delete_image %}
+                        <td>
+                            <a href="{% url 'merchandise:image_delete' image.pk %}">
+                                <span class="icon has-text-danger">
+                                    <i class="fa-solid fa-dumpster-fire"></i>
+                                </span>
+                            </a>
+                        </td>
+                    {% endif %}
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="2" class="is-italic has-text-centered">Keine Bilder verfügbar</td>
+                    <td colspan="{% if perms.merchandise.delete_image %}2{% else %}1{% endif %}"
+                        class="is-italic has-text-centered">
+                        Keine Bilder verfügbar
+                    </td>
                 </tr>
             {% endfor %}
             </tbody>
