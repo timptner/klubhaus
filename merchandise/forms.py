@@ -38,7 +38,7 @@ class ImageForm(forms.ModelForm):
         }
 
 
-class OrderForm(forms.ModelForm):
+class OrderCreateForm(forms.ModelForm):
     is_committed = forms.BooleanField(
         label="Hiermit bestätige ich, dass meine Bestellung verbindlich ist.",
         required=True,
@@ -49,4 +49,14 @@ class OrderForm(forms.ModelForm):
         fields = ['size']
         widgets = {
             'size': forms.RadioSelect,
+        }
+
+
+class OrderForm(forms.ModelForm):
+    class Meta:
+        model = Order
+        fields = ['size', 'state']
+        widgets = {
+            'size': forms.RadioSelect,
+            'state': forms.RadioSelect,
         }

@@ -15,22 +15,34 @@
         <table class="table is-fullwidth is-hoverable">
             <thead>
             <tr>
-                <td>Benutzer</td>
-                <td>Größe</td>
-                <td>Zeitpunkt</td>
-                <td>Status</td>
+                <th>ID</th>
+                <th>Benutzer</th>
+                <th>Größe</th>
+                <th>Zeitpunkt</th>
+                <th>Status</th>
             </tr>
             </thead>
             <tbody>
             {% for order in order_list %}
                 <tr>
                     <td>
-                        <a href="{% url 'accounts:user_detail' order.user.pk %}">
+                        {% if perms.merchandise.change_order %}
+                            <a href="{% url 'merchandise:order_update' order.pk %}">{{ order.pk }}</a>
+                        {% else %}
+                            {{ order.pk }}
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'accounts:user_orders' order.user.pk %}">
                             {{ order.user.get_full_name }}
                         </a>
                     </td>
+
                     <td>{{ order.get_size_display }}</td>
+
                     <td>{{ order.created_at }}</td>
+
                     <td>
                         <span class="tag {{ order.get_state_color }}">
                             {{ order.get_state_display }}
@@ -39,7 +51,8 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="4" class="is-italic has-text-centered">
+                    <td colspan="5"
+                        class="is-italic has-text-centered">
                         Keine Bestellungen verfügbar
                     </td>
                 </tr>
