@@ -18,6 +18,7 @@
                 <td>Benutzer</td>
                 <td>Größe</td>
                 <td>Zeitpunkt</td>
+                <td>Status</td>
             </tr>
             </thead>
             <tbody>
@@ -25,15 +26,20 @@
                 <tr>
                     <td>
                         <a href="{% url 'accounts:user_detail' order.user.pk %}">
-                            {{ order.user }}
+                            {{ order.user.get_full_name }}
                         </a>
                     </td>
                     <td>{{ order.get_size_display }}</td>
                     <td>{{ order.created_at }}</td>
+                    <td>
+                        <span class="tag {{ order.get_state_color }}">
+                            {{ order.get_state_display }}
+                        </span>
+                    </td>
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="3" class="is-italic has-text-centered">
+                    <td colspan="4" class="is-italic has-text-centered">
                         Keine Bestellungen verfügbar
                     </td>
                 </tr>
