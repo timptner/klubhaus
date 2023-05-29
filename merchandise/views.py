@@ -206,6 +206,12 @@ class OrderStateUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateV
     template_name = 'merchandise/order_state_form.html'
     success_message = "Status erfolgreich aktualisiert"
 
+    def form_valid(self, form):
+        if form.is_valid():
+            order = form.save()
+            form.send_mail(order, self.request)
+        return super().form_valid(form)
+
     def get_success_url(self):
         return reverse_lazy('merchandise:order_list', kwargs={'pk': self.object.size.product.pk})
 
