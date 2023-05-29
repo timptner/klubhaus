@@ -11,6 +11,18 @@
 {% endblock %}
 
 {% block subcontent %}
+    <div class="columns has-text-centered">
+        <div class="column">
+            <p>Bestellungen</p>
+            <p class="is-size-3">{{ statistics.amount_orders }}</p>
+        </div>
+
+        <div class="column">
+            <p>Kunden</p>
+            <p class="is-size-3">{{ statistics.amount_customers }}</p>
+        </div>
+    </div>
+
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable">
             <thead>

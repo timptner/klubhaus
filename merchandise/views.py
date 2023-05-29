@@ -168,6 +168,10 @@ class OrderListView(LoginRequiredMixin, ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
         context['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        context['statistics'] = {
+            'amount_orders': self.object_list.count(),
+            'amount_customers': self.object_list.order_by().values('user').distinct().count(),
+        }
         return context
 
 
