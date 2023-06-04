@@ -1,5 +1,7 @@
 {% extends 'volunteers/base.html' %}
 
+{% load markdown %}
+
 {% block title %}
     {{ block.super }} | {{ event.title }}
 {% endblock %}
@@ -39,7 +41,7 @@
     {% endif %}
 
     <div class="content">
-        {{ event.desc|linebreaks }}
+        {{ event.desc|render }}
     </div>
 
     <div class="buttons">

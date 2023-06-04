@@ -1,5 +1,7 @@
 {% extends 'tournament/base.html' %}
 
+{% load markdown %}
+
 {% block title %}
     {{ block.super }} | {{ tournament.title }}
 {% endblock %}
@@ -63,7 +65,7 @@
 
     {% if tournament.desc %}
         <div class="content">
-            {{ tournament.desc|linebreaks }}
+            {{ tournament.desc|render }}
         </div>
     {% endif %}
 

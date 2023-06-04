@@ -19,6 +19,8 @@ class TournamentForm(forms.ModelForm):
         }
         help_texts = {
             'players': "Die Anzahl der Spieler, welches jedes Team besitzen soll.",
+            'desc': "Du kannst <a href=\"https://www.markdownguide.org/cheat-sheet/\" target=\"_blank\">MarkDown</a> "
+                    "zur Formatierung nutzen.",
         }
 
     def __init__(self, *args, **kwargs):

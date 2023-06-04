@@ -14,6 +14,10 @@ class EventForm(forms.ModelForm):
             'desc': forms.Textarea(attrs={'class': 'textarea'}),
             'state': forms.RadioSelect,
         }
+        help_texts = {
+            'desc': "Du kannst <a href=\"https://www.markdownguide.org/cheat-sheet/\" target=\"_blank\">MarkDown</a> "
+                    "zur Formatierung nutzen.",
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
