@@ -18,6 +18,8 @@ class ProductForm(forms.ModelForm):
             'price': forms.NumberInput(attrs={'class': 'input'}),
         }
         help_texts = {
+            'desc': "Du kannst <a href=\"https://www.markdownguide.org/cheat-sheet/\" target=\"_blank\">MarkDown</a> "
+                    "zur Formatierung nutzen.",
             'price': "Preis kann nur geändert werden solange alle zugehörigen Bestellungen abgeschlossen sind.",
         }
 
