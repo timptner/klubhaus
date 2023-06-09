@@ -11,7 +11,7 @@ from .models import Product, Image, Order, Size
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'desc', 'price', 'is_stocked']
+        fields = ['name', 'desc', 'price']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'input'}),
             'desc': forms.Textarea(attrs={'class': 'textarea'}),
@@ -37,7 +37,7 @@ class ProductForm(forms.ModelForm):
 class SizeForm(forms.ModelForm):
     class Meta:
         model = Size
-        fields = ['label']
+        fields = ['label', 'is_stocked']
         widgets = {
             'label': forms.TextInput(attrs={'class': 'input'}),
         }

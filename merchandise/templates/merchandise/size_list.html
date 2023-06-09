@@ -23,6 +23,7 @@
             <thead>
             <tr>
                 <th>Bezeichnung</th>
+                <th>Auf Lager</th>
                 <th></th>
             </tr>
             </thead>
@@ -30,6 +31,7 @@
             {% for size in size_list %}
                 <tr>
                     <td>{{ size.label }}</td>
+                    <td>{{ size.is_stocked|yesno }}</td>
                     <td>
                         <a href="{% url 'merchandise:size_update' size.pk %}">
                             <span class="icon">
@@ -40,7 +42,7 @@
                 </tr>
             {% empty %}
                 <tr>
-                    <td colspan="2" class="is-italic has-text-centered">Keine Größen verfügbar</td>
+                    <td colspan="3" class="is-italic has-text-centered">Keine Größen verfügbar</td>
                 </tr>
             {% endfor %}
             </tbody>
