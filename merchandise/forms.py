@@ -25,7 +25,7 @@ class ProductForm(forms.ModelForm):
         data = self.cleaned_data['price']
 
         if self.initial:
-            uncompleted_orders = Order.objects.filter(product=self.instance).exclude(state=Order.COMPLETED)
+            uncompleted_orders = Order.objects.filter(size__product=self.instance).exclude(state=Order.COMPLETED)
             if self.instance.price != data and uncompleted_orders.exists():
                 raise ValidationError("Es existieren zugehörige Bestellungen, welche noch nicht abgeschlossen sind.")
 
