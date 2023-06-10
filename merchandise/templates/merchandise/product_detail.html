@@ -41,24 +41,7 @@
         <tr>
             <td>Auf Lager</td>
             <td>
-                <div class="field is-grouped">
-                    {% for size in product.size_set.all %}
-                        <div class="control">
-                            <div class="tags has-addons">
-                                <span class="tag is-dark">{{ size.label }}</span>
-                                {% if size.is_stocked %}
-                                    <span class="tag is-success">
-                                        <i class="fa-solid fa-check"></i>
-                                    </span>
-                                {% else %}
-                                    <span class="tag is-danger">
-                                        <i class="fa-solid fa-times"></i>
-                                    </span>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
+                {% include 'merchandise/size_tags_snippet.html' %}
             </td>
         </tr>
 

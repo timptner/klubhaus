@@ -79,15 +79,7 @@
                         <td>{{ product.price }} &euro;</td>
 
                         <td>
-                            {% if product.is_stocked %}
-                                <span class="icon has-text-success">
-                                    <i class="fa-solid fa-check-circle"></i>
-                                </span>
-                            {% else %}
-                                <span class="icon has-text-danger">
-                                    <i class="fa-solid fa-times-circle"></i>
-                                </span>
-                            {% endif %}
+                            {% include 'merchandise/size_tags_snippet.html' %}
                         </td>
                     </tr>
                 {% empty %}
