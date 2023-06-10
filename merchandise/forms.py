@@ -37,22 +37,37 @@ class ProductForm(forms.ModelForm):
 class SizeForm(forms.ModelForm):
     class Meta:
         model = Size
-        fields = ['label', 'is_stocked']
+        fields = ['label', 'position', 'is_stocked']
         widgets = {
             'label': forms.TextInput(attrs={'class': 'input'}),
+            'position': forms.NumberInput(attrs={'class': 'input'}),
         }
         help_texts = {
             'label': "Bezeichnung kann nur geändert werden solange alle zugehörigen Bestellungen abgeschlossen sind.",
+            'position': "Tipp: Benutze ein Vielfaches von 10, um später Positionsänderungen noch einfach umsetzen zu "
+                        "können.",
         }
+
+    def __init__(self, *args, **kwargs):
+        self.product = kwargs.pop('product')
+        super().__init__(*args, **kwargs)
 
     def clean_label(self):
         data = self.cleaned_data['label']
 
         if self.initial:
-            size: Size = self.instance
-            uncompleted_orders = Order.objects.filter(size__product=size.product).exclude(state=Order.COMPLETED)
+            uncompleted_orders = Order.objects.filter(size__product=self.product).exclude(state=Order.COMPLETED)
             if self.instance.label != data and uncompleted_orders:
                 raise ValidationError("Es existieren zugehörige Bestellungen, welche noch nicht abgeschlossen sind.")
+
+        return data
+
+    def clean_position(self):
+        data = self.cleaned_data['position']
+
+        used_positions = Size.objects.filter(product=self.product).values_list('position', flat=True)
+        if data in used_positions:
+            raise ValidationError("Diese Position ist bereits belegt.")
 
         return data
 

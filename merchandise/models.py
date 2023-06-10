@@ -40,13 +40,15 @@ class Size(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     label = models.CharField("Bezeichnung", max_length=15)
     is_stocked = models.BooleanField("Auf Lager", default=False)
+    position = models.PositiveSmallIntegerField("Position", null=True)
 
     class Meta:
         verbose_name = "Größe"
         verbose_name_plural = "Größen"
-        ordering = ['label']
+        ordering = ['product', 'position']
         constraints = [
             models.UniqueConstraint(fields=['product', 'label'], name='unique_size'),
+            models.UniqueConstraint(fields=['product', 'position'], name='unique_position'),
         ]
 
     def __str__(self):

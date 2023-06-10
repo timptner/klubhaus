@@ -81,6 +81,11 @@ class SizeCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
         context['product'] = Product.objects.get(pk=self.kwargs['pk'])
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['product'] = Product.objects.get(pk=self.kwargs['pk'])
+        return kwargs
+
     def form_valid(self, form):
         product = Product.objects.get(pk=self.kwargs['pk'])
         size = form.save(commit=False)
@@ -97,6 +102,12 @@ class SizeUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Size
     form_class = SizeForm
     success_message = "Größe %(label)s erfolgreich aktualisiert"
+
+    def get_form_kwargs(self):
+        size = Size.objects.get(pk=self.kwargs['pk'])
+        kwargs = super().get_form_kwargs()
+        kwargs['product'] = size.product
+        return kwargs
 
     def get_success_url(self):
         size: Size = self.object
