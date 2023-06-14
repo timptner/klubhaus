@@ -214,8 +214,6 @@ class ProfileForm(forms.ModelForm):
                 'new': new_value,
             }
 
-        print(diff)
-
         return diff
 
     def clean(self):
