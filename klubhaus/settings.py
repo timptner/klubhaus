@@ -163,3 +163,55 @@ DEFAULT_FROM_EMAIL = config('MAIL_SENDER', default='"Klubhaus" <klubhaus@farafmb
 SERVER_EMAIL = config('MAIL_ADMIN', default='server@farafmb.de')
 
 POSTMARK_API_TOKEN = config('POSTMARK_API_TOKEN', default=None)
+
+
+# Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'basic': {
+            'format': '[%(asctime)s] %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S',
+        },
+        'simple': {
+            'format': '%(levelname)s %(name)s %(message)s',
+        },
+        'verbose': {
+            'format': '%(asctime)s %(levelname)s %(name)s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'console2': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'basic',
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': config('LOG_FILE', default=BASE_DIR / 'klubhaus.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'root': {
+        'handlers': config('LOG_HANDLERS', default='console', cast=Csv()),
+        'level': config('LOG_LEVEL', default='WARNING', cast=lambda x: x.upper()),
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+        },
+        'django.server': {
+            'handlers': ['console2'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'PIL': {
+            'level': 'WARNING',
+        },
+    },
+}

@@ -3,6 +3,7 @@
 db.sqlite3
 /media/
 /static/
+*.log
 
 # PyCharm
 .idea/
