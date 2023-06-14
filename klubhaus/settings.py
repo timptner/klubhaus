@@ -122,14 +122,14 @@ STATICFILES_DIRS = [
     BASE_DIR / 'klubhaus' / 'static',
 ]
 
-STATIC_ROOT = config('STATIC_ROOT', default=BASE_DIR / 'static')
+STATIC_ROOT = config('STATIC_ROOT', default=str(BASE_DIR / 'static'))
 
 
 # Media files
 
 MEDIA_URL = 'media/'
 
-MEDIA_ROOT = config('MEDIA_ROOT', default=BASE_DIR / 'media')
+MEDIA_ROOT = config('MEDIA_ROOT', default=str(BASE_DIR / 'media'))
 
 
 # Default primary key field type

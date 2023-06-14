@@ -1,3 +1,4 @@
+from pathlib import Path
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet
@@ -66,7 +67,7 @@ class ParticipantList:
 
         contents.append(NextPageTemplate('first_page'))
 
-        logo_path = settings.STATIC_ROOT / 'img' / 'logo-512.png'
+        logo_path = Path(settings.STATIC_ROOT) / 'img' / 'logo-512.png'
         logo = Image(
             filename=logo_path,
             width=logo_width - logo_border,
