@@ -3,7 +3,7 @@ import django
 from dj_database_url import parse as db_url
 from django.contrib.messages import constants as message_constants
 # noinspection PyPackageRequirements
-from decouple import config, Csv
+from decouple import config, Csv, Choices
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -199,7 +199,8 @@ LOGGING = {
     },
     'root': {
         'handlers': config('LOG_HANDLERS', default='console', cast=Csv()),
-        'level': config('LOG_LEVEL', default='WARNING', cast=lambda x: x.upper()),
+        'level': config('LOG_LEVEL', default='WARNING',
+                        cast=Choices(['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'])),
     },
     'loggers': {
         'django': {
