@@ -12,9 +12,35 @@
 
 {% block subcontent %}
     <div class="buttons is-justify-content-flex-end">
+        {% url 'volunteers:volunteer_export' event.pk as url %}
+        {% include 'button_snippet.html' with permission=perms.volunteers.view_volunteer url=url label="Freiwillige exportieren" %}
+
         {% url 'volunteers:volunteer_contact' event.pk as url %}
         {% include 'button_snippet.html' with permission=perms.volunteers.contact_volunteer url=url label="Freiwillige kontaktieren" %}
     </div>
+
+    <article class="message is-info">
+        <div class="message-body">
+            <div class="content">
+                <p>
+                    Der Export von Freiwilligen generiert eine CSV-Datei. Diese kann in Excel importiert werden. (Zur
+                    besseren Verwendung sollte die CSV-Datei nicht einfach mit Excel geöffnet werden, sondern
+                    stattdessen die CSV-Datei als Datenquelle in Excel eingelesen werden!)
+                </p>
+                <ol>
+                    <li>Neue Excel-Mappe erstellen</li>
+                    <li>Reiter <strong>Daten</strong> öffnen</li>
+                    <li><strong>Daten abrufen (Power Query)</strong> auswählen</li>
+                    <li><strong>Text/CSV</strong> als Quelle nutzen</li>
+                    <li>Exportierte Datei selektieren</li>
+                    <li>
+                        Dateiursprung auf <strong>UTF-8</strong> stellen und <strong>Komma</strong> als Trennzeichen
+                        wählen
+                    </li>
+                </ol>
+            </div>
+        </div>
+    </article>
 
     <div class="columns has-text-centered">
         <div class="column">

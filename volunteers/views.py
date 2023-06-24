@@ -1,10 +1,16 @@
+import csv
+
 from django.contrib import messages
+from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponse
+from django.template.defaultfilters import slugify
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, FormView
-from volunteers.forms import EventForm, VolunteerForm, VolunteerContactForm
-from volunteers.models import Event, Volunteer
+
+from .forms import EventForm, VolunteerForm, VolunteerContactForm
+from .models import Event, Volunteer
 
 
 class EventListView(LoginRequiredMixin, ListView):
@@ -156,3 +162,27 @@ class VolunteerContactView(PermissionRequiredMixin, FormView):
 
     def get_success_url(self):
         return reverse_lazy('volunteers:volunteer_list', kwargs={'pk': self.kwargs['pk']})
+
+
+@permission_required('volunteers.view_volunteer')
+def volunteer_export(request, pk):
+    event = Event.objects.get(pk=pk)
+
+    file_name = f'Freiwillige_{slugify(event.title)}.csv'
+    response = HttpResponse(
+        content_type='text/csv',
+        headers={'Content-Disposition': f'attachment; filename="{file_name}"'},
+    )
+
+    writer = csv.writer(response)
+    writer.writerow(['Name', 'Mobilnummer', 'Fakultät', 'Bemerkung', 'Registrierung'])
+    for volunteer in event.volunteer_set.order_by('user__first_name', 'user__last_name'):
+        writer.writerow([
+            volunteer.user.get_full_name(),
+            f'tel:{volunteer.user.phone}',
+            volunteer.user.get_faculty_display(),
+            volunteer.comment,
+            volunteer.created_at.isoformat(),
+        ])
+
+    return response
