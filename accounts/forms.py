@@ -227,13 +227,23 @@ class ProfileForm(forms.ModelForm):
 
     def save(self, commit=True):
         diff = self._get_diff()
+        user = self.instance
 
-        Modification.objects.create(
-            user=self.instance,
+        modification = Modification.objects.create(
+            user=user,
             content=diff,
         )
 
-        return self.instance
+        if all([item['old'] is None or item['old'] == '' for item in diff.values()]):
+            modification.state = Modification.ACCEPTED
+            modification.save()
+
+            for field, values in modification.content.items():
+                setattr(user, field, values['new'])
+
+            user.save()
+
+        return user
 
 
 class GroupForm(forms.ModelForm):

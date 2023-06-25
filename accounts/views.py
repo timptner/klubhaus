@@ -266,7 +266,6 @@ class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageM
     template_name = 'accounts/profile_form.html'
     form_class = ProfileForm
     success_url = reverse_lazy('accounts:profile_modifications')
-    success_message = "Änderung wurde erfolgreich beantragt"
 
     def test_func(self):
         has_pending_modifications = Modification.objects.filter(
@@ -281,6 +280,18 @@ class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, SuccessMessageM
 
     def get_object(self, queryset=None):
         return self.request.user
+
+    def get_success_message(self, cleaned_data):
+        has_pending_modifications = Modification.objects.filter(
+            user=self.request.user,
+            state=Modification.REQUESTED,
+        ).exists()
+
+        if has_pending_modifications:
+            message = "Änderung wurde erfolgreich beantragt"
+        else:
+            message = "Änderung wurde erfolgreich bewilligt"
+        return message
 
 
 class ProfileTeamsView(LoginRequiredMixin, ListView):
