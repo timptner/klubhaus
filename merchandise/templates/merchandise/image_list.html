@@ -13,14 +13,20 @@
             </div>
         {% endif %}
 
+        <article class="message is-info">
+            <div class="message-body">
+                Je geringer die Position, desto weiter vorne wird das Bild angeordnet. Das Bild mit der geringsten
+                Position wird auf der Übersichtsseite aller Produkt angezeigt.
+            </div>
+        </article>
+
         <div class="table-container">
             <table class="table is-fullwidth is-hoverable">
                 <thead>
                 <tr>
                     <th>Titel</th>
-                    {% if perms.merchandise.delete_image %}
-                        <th>Aktion</th>
-                    {% endif %}
+                    <th>Position</th>
+                    <th>Aktion</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -28,15 +34,32 @@
                     <tr>
                         <td>{{ image.title }}</td>
 
-                        {% if perms.merchandise.delete_image %}
-                            <td>
+                        <td>{{ image.position|default_if_none:'?' }}</td>
+
+
+                        <td>
+                            {% if perms.merchandise.change_image %}
+                                <a href="{% url 'merchandise:image_update' image.pk %}">
+                                    <span class="icon has-text-info">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </span>
+                                </a>
+                            {% endif %}
+
+                            {% if perms.merchandise.delete_image %}
                                 <a href="{% url 'merchandise:image_delete' image.pk %}">
                                     <span class="icon has-text-danger">
                                         <i class="fa-solid fa-dumpster-fire"></i>
                                     </span>
                                 </a>
-                            </td>
-                        {% endif %}
+                            {% endif %}
+
+                            {% if not perms.merchandise.change_image and not perms.merchandise.delete_image %}
+                                <span class="icon has-text-dark">
+                                    <i class="fa-solid fa-lock"></i>
+                                </span>
+                            {% endif %}
+                        </td>
                     </tr>
                 {% empty %}
                     <tr>

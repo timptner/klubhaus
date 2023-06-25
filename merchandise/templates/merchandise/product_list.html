@@ -54,7 +54,8 @@
                     {% if product.image_set.exists %}
                         <div class="card-image">
                             <figure class="image">
-                                <img src="{{ product.image_set.first.file.url }}" alt="Bild von {{ product.name }}">
+                                <img src="{{ product.image_set.first.file.url }}"
+                                     alt="Bild von {{ product.image_set.first.title }}">
                             </figure>
                         </div>
                     {% endif %}

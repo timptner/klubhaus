@@ -26,11 +26,16 @@ class Image(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     title = models.CharField("Titel", max_length=50)
     file = models.ImageField("Datei")
+    position = models.PositiveSmallIntegerField("Position", null=True)
 
     class Meta:
         verbose_name = "Bild"
         verbose_name_plural = "Bilder"
-        ordering = ['title']
+        ordering = ['product', 'position']
+        constraints = [
+            models.UniqueConstraint(fields=['product', 'title'], name='unique_image_title'),
+            models.UniqueConstraint(fields=['product', 'position'], name='unique_image_position'),
+        ]
 
     def __str__(self) -> str:
         return self.title

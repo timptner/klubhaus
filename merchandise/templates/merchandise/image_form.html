@@ -8,11 +8,21 @@
 {% endblock %}
 
 {% block title %}
-    {{ block.super }} | Bild hinzufügen
+    {% if form.initial %}
+        {{ block.super }} | Bild bearbeiten
+    {% else %}
+        {{ block.super }} | Bild hinzufügen
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-    <h3 class="title">Bild hinzufügen</h3>
+    <h3 class="title">
+        {% if form.initial %}
+            Bild bearbeiten
+        {% else %}
+            Bild hinzufügen
+        {% endif %}
+    </h3>
     <h5 class="subtitle">{{ product.name }}</h5>
 
     <form method="post" enctype="multipart/form-data">
@@ -28,7 +38,7 @@
             </div>
 
             <div class="control">
-                <a class="button is-light" href="{% url 'merchandise:product_detail' product.pk %}">
+                <a class="button is-light" href="{% url 'merchandise:image_list' product.pk %}">
                     Abbrechen
                 </a>
             </div>

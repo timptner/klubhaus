@@ -75,11 +75,25 @@ class SizeForm(forms.ModelForm):
 class ImageForm(forms.ModelForm):
     class Meta:
         model = Image
-        fields = ['title', 'file']
+        fields = ['title', 'file', 'position']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'input'}),
             'file': forms.FileInput(attrs={'class': 'file-input'}),
+            'position': forms.NumberInput(attrs={'class': 'input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        self.product = kwargs.pop('product')
+        super().__init__(*args, **kwargs)
+
+    def clean_position(self):
+        data = self.cleaned_data['position']
+
+        used_positions = Image.objects.filter(product=self.product).values_list('position', flat=True)
+        if data in used_positions:
+            raise ValidationError("Diese Position ist bereits belegt.")
+
+        return data
 
 
 class OrderCreateForm(forms.ModelForm):
