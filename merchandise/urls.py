@@ -13,10 +13,10 @@ urlpatterns = [
     path('products/<int:pk>/sizes/add/', views.SizeCreateView.as_view(), name='size_create'),
     path('products/<int:pk>/images/', views.ImageListView.as_view(), name='image_list'),
     path('products/<int:pk>/images/add/', views.ImageCreateView.as_view(), name='image_create'),
-    path('products/<int:pk>/orders/', views.OrderListView.as_view(), name='order_list'),
     path('products/<int:pk>/orders/add/', views.OrderCreateView.as_view(), name='order_create'),
     path('sizes/<int:pk>/edit/', views.SizeUpdateView.as_view(), name='size_update'),
     path('images/<int:pk>/delete/', views.ImageDeleteView.as_view(), name='image_delete'),
+    path('orders/', views.OrderListView.as_view(), name='order_list'),
     path('orders/<int:pk>/edit/', views.OrderStateUpdateView.as_view(), name='order_state_update'),
     path('orders/states/', views.OrderStatesView.as_view(), name='order_states'),
 ]

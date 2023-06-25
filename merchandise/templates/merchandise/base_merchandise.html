@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if user.is_staff %}
+        <div class="tabs">
+            <ul>
+                {% url 'merchandise:product_list' as url %}
+                {% include 'tab_snippet.html' with permission=perms.merchandise.view_product url=url label="Produkte" icon="fa-shirt" %}
+
+                {% url 'merchandise:order_list' as url %}
+                {% include 'tab_snippet.html' with permission=perms.merchandise.view_order url=url label="Bestellungen" icon="fa-cart-shopping" %}
+            </ul>
+        </div>
+    {% endif %}
+
+    {{ block.super }}
+
+    {% block subcontent %}{% endblock %}
+{% endblock %}

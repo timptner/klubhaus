@@ -1,4 +1,4 @@
-{% extends 'merchandise/base_product.html' %}
+{% extends 'merchandise/base_merchandise.html' %}
 
 {% block title %}
     {{ block.super }} | Bestellungen
@@ -27,24 +27,31 @@
         <table class="table is-fullwidth is-hoverable">
             <thead>
             <tr>
+                <th>ID</th>
                 <th>Benutzer</th>
+                <th>Product</th>
                 <th>Größe</th>
-                <th>Zeitpunkt</th>
                 <th>Status</th>
+                <th>Zeitpunkt</th>
             </tr>
             </thead>
             <tbody>
             {% for order in order_list %}
                 <tr>
+                    <td>{{ order.pk|stringformat:'04d' }}</td>
                     <td>
                         <a href="{% url 'accounts:user_orders' order.user.pk %}">
                             {{ order.user.get_full_name }}
                         </a>
                     </td>
 
-                    <td>{{ order.size.label }}</td>
+                    <td>
+                        <a href="{% url 'merchandise:product_detail' order.size.product.pk %}">
+                            {{ order.size.product.name }}
+                        </a>
+                    </td>
 
-                    <td>{{ order.created_at }}</td>
+                    <td>{{ order.size.label }}</td>
 
                     <td>
                         <span class="tags has-addons">
@@ -63,6 +70,8 @@
                             {% endif %}
                         </span>
                     </td>
+
+                    <td>{{ order.created_at }}</td>
                 </tr>
             {% empty %}
                 <tr>

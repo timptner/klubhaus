@@ -1,94 +1,98 @@
-{% extends 'base.html' %}
+{% extends 'merchandise/base_merchandise.html' %}
 
 {% block title %}
-    {{ block.super }} | Merchandise
+    {{ block.super }} | Produkte
 {% endblock %}
 
 {% block content %}
     <div class="container is-max-desktop">
         {{ block.super }}
+    </div>
+{% endblock %}
 
-        {% if user.is_staff %}
-            <div class="buttons">
-                {% url 'merchandise:product_create' as url %}
-                {% include 'button_snippet.html' with permission=perms.merchandise.add_product url=url label="Produkt hinzufügen" %}
+{% block subcontent %}
+    {{ block.super }}
+
+    {% if user.is_staff %}
+        <div class="buttons">
+            {% url 'merchandise:product_create' as url %}
+            {% include 'button_snippet.html' with permission=perms.merchandise.add_product url=url label="Produkt hinzufügen" %}
+        </div>
+    {% endif %}
+
+    <h3 class="title">Unsere Produkte</h3>
+
+    <article class="message is-info">
+        <div class="message-body">
+            <div class="content">
+                <p>
+                    Produkte, welche wir auf Lager haben, können nach deiner Bestellung zeitnah bei uns im
+                    Büro abgeholt werden. Für nicht lagernde Produkte geben wir einmal pro
+                    Semester eine Sammelbestellung beim Lieferanten auf. Um in der Sammelbestellung berücksichtigt
+                    zu werden, musst du ebenfalls eine Bestellung bei uns tätigen. Sobald die Sammelbestellung
+                    bei uns eintrifft, wirst du per E-Mail von uns benachrichtigt.
+                </p>
+                <p>
+                    Bitte lies dir auch unsere
+                    <a href="{% url 'merchandise:order_states' %}">Erklärung zu den verschiedenen Status</a>
+                    aufmerksam durch, um Verwirrung zu vermeiden.
+                </p>
             </div>
-        {% endif %}
+        </div>
+    </article>
 
-        <h3 class="title">Unsere Produkte</h3>
-
-        <article class="message is-info">
+    {% if user.is_staff and has_products_missing_sizes %}
+        <article class="message is-danger">
             <div class="message-body">
-                <div class="content">
-                    <p>
-                        Produkte, welche wir auf Lager haben, können nach deiner Bestellung zeitnah bei uns im
-                        Büro abgeholt werden. Für nicht lagernde Produkte geben wir einmal pro
-                        Semester eine Sammelbestellung beim Lieferanten auf. Um in der Sammelbestellung berücksichtigt
-                        zu werden, musst du ebenfalls eine Bestellung bei uns tätigen. Sobald die Sammelbestellung
-                        bei uns eintrifft, wirst du per E-Mail von uns benachrichtigt.
-                    </p>
-                    <p>
-                        Bitte lies dir auch unsere
-                        <a href="{% url 'merchandise:order_states' %}">Erklärung zu den verschiedenen Status</a>
-                        aufmerksam durch, um Verwirrung zu vermeiden.
-                    </p>
-                </div>
+                Es existieren Produkte, welche keine Größen zugewiesen haben. Die betroffenen Produkte sind
+                entsprechend markiert. Ausschließlich Mitgliedern des Fachschaftsrates werden die fehlerhaften
+                Produkte in der Liste angezeigt.
             </div>
         </article>
+    {% endif %}
 
-        {% if user.is_staff and has_products_missing_sizes %}
-            <article class="message is-danger">
-                <div class="message-body">
-                    Es existieren Produkte, welche keine Größen zugewiesen haben. Die betroffenen Produkte sind
-                    entsprechend markiert. Ausschließlich Mitgliedern des Fachschaftsrates werden die fehlerhaften
-                    Produkte in der Liste angezeigt.
-                </div>
-            </article>
-        {% endif %}
-
-        <div class="table-container">
-            <table class="table is-fullwidth is-hoverable">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Preis</th>
-                    <th>Auf Lager</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for product in product_list %}
-                    <tr{% if not product.size_set.exists %} class="has-background-light"{% endif %}>
-                        <td>
-                            <a href="{% url 'merchandise:product_detail' product.pk %}">
-                                {% if user.is_staff %}
-                                    <span class="icon-text">
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Preis</th>
+                <th>Auf Lager</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for product in product_list %}
+                <tr{% if not product.size_set.exists %} class="has-background-light"{% endif %}>
+                    <td>
+                        <a href="{% url 'merchandise:product_detail' product.pk %}">
+                            {% if user.is_staff %}
+                                <span class="icon-text">
                                         <span>{{ product.name }}</span>
 
-                                        {% if not product.size_set.exists %}
-                                            <span class="icon has-text-danger">
+                                    {% if not product.size_set.exists %}
+                                        <span class="icon has-text-danger">
                                                 <i class="fa-solid fa-exclamation-circle"></i>
                                             </span>
-                                        {% endif %}
+                                    {% endif %}
                                     </span>
-                                {% else %}
-                                    {{ product.name }}
-                                {% endif %}
-                            </a>
-                        </td>
+                            {% else %}
+                                {{ product.name }}
+                            {% endif %}
+                        </a>
+                    </td>
 
-                        <td>{{ product.price }} &euro;</td>
+                    <td>{{ product.price }} &euro;</td>
 
-                        <td>
-                            {% include 'merchandise/size_tags_snippet.html' %}
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="3" class="has-text-centered is-italic">Keine Produkte verfügbar</td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    <td>
+                        {% include 'merchandise/size_tags_snippet.html' %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" class="has-text-centered is-italic">Keine Produkte verfügbar</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 {% endblock %}

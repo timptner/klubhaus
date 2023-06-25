@@ -169,16 +169,12 @@ class ImageDeleteView(PermissionRequiredMixin, SuccessMessageMixin, DeleteView):
         return reverse_lazy('merchandise:image_list', kwargs={'pk': image.product.pk})
 
 
-class OrderListView(LoginRequiredMixin, ListView):
+class OrderListView(PermissionRequiredMixin, ListView):
+    permission_required = 'merchandise.view_order'
     model = Order
-
-    def get_queryset(self):
-        product = Product.objects.get(pk=self.kwargs['pk'])
-        return Order.objects.filter(size__product=product)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-        context['product'] = Product.objects.get(pk=self.kwargs['pk'])
         context['statistics'] = {
             'amount_orders': self.object_list.count(),
             'amount_customers': self.object_list.order_by().values('user').distinct().count(),

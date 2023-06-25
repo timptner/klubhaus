@@ -24,9 +24,6 @@
 
                 {% url 'merchandise:image_list' product.pk as url %}
                 {% include 'tab_snippet.html' with permission=perms.merchandise.view_image url=url label="Bilder" icon="fa-images" %}
-
-                {% url 'merchandise:order_list' product.pk as url %}
-                {% include 'tab_snippet.html' with permission=perms.merchandise.view_order url=url label="Bestellungen" icon="fa-cart-shopping" %}
             </ul>
         </div>
     {% endif %}
