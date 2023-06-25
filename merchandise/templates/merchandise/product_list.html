@@ -1,13 +1,9 @@
 {% extends 'merchandise/base_merchandise.html' %}
 
+{% load markdown %}
+
 {% block title %}
     {{ block.super }} | Produkte
-{% endblock %}
-
-{% block content %}
-    <div class="container is-max-desktop">
-        {{ block.super }}
-    </div>
 {% endblock %}
 
 {% block subcontent %}
@@ -35,7 +31,7 @@
                 <p>
                     Bitte lies dir auch unsere
                     <a href="{% url 'merchandise:order_states' %}">Erklärung zu den verschiedenen Status</a>
-                    aufmerksam durch, um Verwirrung zu vermeiden.
+                    einer Bestellung aufmerksam durch, um Verwirrung zu vermeiden.
                 </p>
             </div>
         </div>
@@ -51,48 +47,50 @@
         </article>
     {% endif %}
 
-    <div class="table-container">
-        <table class="table is-fullwidth is-hoverable">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Preis</th>
-                <th>Auf Lager</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for product in product_list %}
-                <tr{% if not product.size_set.exists %} class="has-background-light"{% endif %}>
-                    <td>
-                        <a href="{% url 'merchandise:product_detail' product.pk %}">
-                            {% if user.is_staff %}
-                                <span class="icon-text">
-                                        <span>{{ product.name }}</span>
+    <div class="columns is-multiline">
+        {% for product in product_list %}
+            <div class="column is-one-third">
+                <div class="card">
+                    {% if product.image_set.exists %}
+                        <div class="card-image">
+                            <figure class="image">
+                                <img src="{{ product.image_set.first.file.url }}" alt="Bild von {{ product.name }}">
+                            </figure>
+                        </div>
+                    {% endif %}
 
-                                    {% if not product.size_set.exists %}
-                                        <span class="icon has-text-danger">
-                                                <i class="fa-solid fa-exclamation-circle"></i>
-                                            </span>
-                                    {% endif %}
-                                    </span>
-                            {% else %}
+                    <div class="card-content">
+                        <div class="content">
+                            <h3>
                                 {{ product.name }}
-                            {% endif %}
+                                {% if not product.size_set.exists %}
+                                    <span class="icon has-text-danger">
+                                    <i class="fa-solid fa-exclamation-triangle"></i>
+                                </span>
+                                {% endif %}
+                            </h3>
+
+                            <h5>{{ product.price }} &euro;</h5>
+
+                            {{ product.desc|render }}
+                        </div>
+                    </div>
+
+                    <footer class="card-footer">
+                        <a href="{% url 'merchandise:product_detail' product.pk %}" class="card-footer-item">
+                            Will ich haben!
                         </a>
-                    </td>
-
-                    <td>{{ product.price }} &euro;</td>
-
-                    <td>
-                        {% include 'merchandise/size_tags_snippet.html' %}
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="3" class="has-text-centered is-italic">Keine Produkte verfügbar</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                    </footer>
+                </div>
+            </div>
+        {% empty %}
+            <div class="column">
+                <div class="notification">
+                    Zurzeit sind keine Produkte verfügbar. Schaue in ein paar Tagen noch einmal vorbei oder folge uns
+                    auf unseren <a href="https://www.farafmb.de/de/contact/" target="_blank">Social Media Kanälen</a>,
+                    um keine Updates zu verpassen.
+                </div>
+            </div>
+        {% endfor %}
     </div>
 {% endblock %}

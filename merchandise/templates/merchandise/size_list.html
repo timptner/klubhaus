@@ -4,50 +4,46 @@
     {{ block.super }} | Größen
 {% endblock %}
 
-{% block content %}
-    <div class="container is-max-desktop">
-        {{ block.super }}
-    </div>
-{% endblock %}
-
 {% block subcontent %}
-    {% if user.is_staff %}
-        <div class="buttons">
-            {% url 'merchandise:size_create' product.pk as url %}
-            {% include 'button_snippet.html' with permission=perms.merchandise.add_size url=url label="Größe hinzufügen" %}
-        </div>
-    {% endif %}
+    <div class="container is-max-desktop">
+        {% if user.is_staff %}
+            <div class="buttons">
+                {% url 'merchandise:size_create' product.pk as url %}
+                {% include 'button_snippet.html' with permission=perms.merchandise.add_size url=url label="Größe hinzufügen" %}
+            </div>
+        {% endif %}
 
-    <div class="table-container">
-        <table class="table is-fullwidth is-hoverable">
-            <thead>
-            <tr>
-                <th>Bezeichnung</th>
-                <th>Auf Lager</th>
-                <th>Position</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for size in size_list %}
+        <div class="table-container">
+            <table class="table is-fullwidth is-hoverable">
+                <thead>
                 <tr>
-                    <td>{{ size.label }}</td>
-                    <td>{{ size.is_stocked|yesno }}</td>
-                    <td>{{ size.position|default_if_none:'?' }}</td>
-                    <td>
-                        <a href="{% url 'merchandise:size_update' size.pk %}">
-                            <span class="icon">
-                                <i class="fa-solid fa-pen"></i>
-                            </span>
-                        </a>
-                    </td>
+                    <th>Bezeichnung</th>
+                    <th>Auf Lager</th>
+                    <th>Position</th>
+                    <th></th>
                 </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4" class="is-italic has-text-centered">Keine Größen verfügbar</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {% for size in size_list %}
+                    <tr>
+                        <td>{{ size.label }}</td>
+                        <td>{{ size.is_stocked|yesno }}</td>
+                        <td>{{ size.position|default_if_none:'?' }}</td>
+                        <td>
+                            <a href="{% url 'merchandise:size_update' size.pk %}">
+                                <span class="icon">
+                                    <i class="fa-solid fa-pen"></i>
+                                </span>
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="is-italic has-text-centered">Keine Größen verfügbar</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 {% endblock %}

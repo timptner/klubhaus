@@ -6,12 +6,6 @@
     {{ block.super }} | {{ product.name }}
 {% endblock %}
 
-{% block content %}
-    <div class="container is-max-desktop">
-        {{ block.super }}
-    </div>
-{% endblock %}
-
 {% block subcontent %}
     {% if user.is_staff %}
         <div class="buttons">
@@ -31,59 +25,83 @@
         </article>
     {% endif %}
 
-    <table class="table is-fullwidth">
-        <tbody>
-        <tr>
-            <td>Preis</td>
-            <td>{{ product.price }} &euro;</td>
-        </tr>
-
-        <tr>
-            <td>Auf Lager</td>
-            <td>
-                {% include 'merchandise/size_tags_snippet.html' %}
-            </td>
-        </tr>
-
-        <tr>
-            <td>Verfügbar seit</td>
-            <td>{{ product.created_at|date }}</td>
-        </tr>
-
-        {% if product.has_changed %}
-            <tr>
-                <td>Aktualisiert am</td>
-                <td>{{ product.updated_at|date }}</td>
-            </tr>
-        {% endif %}
-        </tbody>
-    </table>
-
-    {% if product.image_set.exists %}
-        <div class="columns">
-            {% for image in product.image_set.all %}
-                <div class="column">
-                    <figure class="image">
-                        <img src="{{ image.file.url }}" alt="{{ image.title }}">
-                    </figure>
+    <div class="columns">
+        {% if product.image_set.exists %}
+            <div class="column is-half">
+                <div class="columns is-multiline is-centered">
+                    {% for image in product.image_set.all %}
+                        <div class="column is-half">
+                            <figure class="image">
+                                <img src="{{ image.file.url }}" alt="{{ image.title }}">
+                            </figure>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-
-    <div class="content">
-        <p>{{ product.desc|render }}</p>
-    </div>
-
-    <div class="buttons">
-        {% if product.size_set.exists %}
-            <a class="button is-primary" href="{% url 'merchandise:order_create' product.pk %}">
-                Produkt bestellen
-            </a>
-        {% else %}
-            <a class="button is-primary" disabled>
-                Produkt bestellen
-            </a>
+            </div>
         {% endif %}
+
+        <div class="column is-half">
+            <table class="table is-fullwidth">
+                <tbody>
+                <tr>
+                    <td>Preis</td>
+                    <td>{{ product.price }} &euro;</td>
+                </tr>
+
+                <tr>
+                    <td>Auf Lager</td>
+                    <td>
+                        <div class="field is-grouped is-grouped-multiline">
+                            {% for size in product.size_set.all %}
+                                <div class="control">
+                                    <div class="tags has-addons">
+                                        <span class="tag is-dark">{{ size.label }}</span>
+                                        {% if size.is_stocked %}
+                                            <span class="tag is-success">
+                                                <i class="fa-solid fa-check"></i>
+                                            </span>
+                                        {% else %}
+                                            <span class="tag is-danger">
+                                                <i class="fa-solid fa-times"></i>
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Verfügbar seit</td>
+                    <td>{{ product.created_at|date }}</td>
+                </tr>
+
+                {% if product.has_changed %}
+                    <tr>
+                        <td>Aktualisiert am</td>
+                        <td>{{ product.updated_at|date }}</td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+
+
+            <div class="content">
+                <p>{{ product.desc|render }}</p>
+            </div>
+
+            <div class="buttons">
+                {% if product.size_set.exists %}
+                    <a class="button is-primary" href="{% url 'merchandise:order_create' product.pk %}">
+                        Produkt bestellen
+                    </a>
+                {% else %}
+                    <a class="button is-primary" disabled>
+                        Produkt bestellen
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
 {% endblock %}
