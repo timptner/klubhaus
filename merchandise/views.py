@@ -252,7 +252,7 @@ class OrderStateUpdateView(PermissionRequiredMixin, SuccessMessageMixin, UpdateV
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse_lazy('merchandise:order_list', kwargs={'pk': self.object.size.product.pk})
+        return reverse_lazy('merchandise:order_list')
 
 
 class OrderStatesView(LoginRequiredMixin, TemplateView):
