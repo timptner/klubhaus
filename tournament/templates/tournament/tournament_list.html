@@ -17,6 +17,15 @@
 
         <h3 class="title">Turniere</h3>
 
+        {% if user.is_staff %}
+            <article class="message is-info">
+                <div class="message-body">
+                    Turniere können für normale Benutzer ausgeblendet werden, in dem sie unsichtbar gesetzt werden.
+                    Unsichtbare Turniere sind an ihrem grauen Hintergrund zu erkennen.
+                </div>
+            </article>
+        {% endif %}
+
         <div class="table-container">
             <table class="table is-fullwidth is-hoverable">
                 <thead>
@@ -29,7 +38,7 @@
 
                 <tbody>
                 {% for tournament in tournament_list %}
-                    <tr>
+                    <tr{% if not tournament.is_visible %} class="has-background-light"{% endif %}>
                         <td>
                             <a href="{% url 'tournament:tournament_detail' tournament.pk %}">
                                 {{ tournament.title }}

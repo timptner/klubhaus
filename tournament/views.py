@@ -15,6 +15,12 @@ from .models import Tournament, Team, Player
 class TournamentListView(LoginRequiredMixin, ListView):
     model = Tournament
 
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Tournament.objects.all()
+        else:
+            return Tournament.objects.filter(is_visible=True)
+
 
 class TournamentCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'tournament.add_tournament'
@@ -26,8 +32,17 @@ class TournamentCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateV
         return reverse_lazy('tournament:tournament_detail', kwargs={'pk': self.object.pk})
 
 
-class TournamentDetailView(LoginRequiredMixin, DetailView):
+class TournamentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
     model = Tournament
+
+    def has_permission(self):
+        if self.request.user.is_staff:
+            return True
+
+        if self.object.is_visible:
+            return True
+
+        return False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

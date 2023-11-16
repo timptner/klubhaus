@@ -30,6 +30,14 @@
         </span>
     </div>
 
+    {% if not tournament.is_visible %}
+        <article class="message is-warning">
+            <div class="message-body">
+                Dieses Turnier ist unsichtbar für normale Benutzer.
+            </div>
+        </article>
+    {% endif %}
+
     {% if feedback %}
         <article class="message {{ feedback.color }}">
             <div class="message-body">

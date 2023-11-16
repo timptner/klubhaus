@@ -8,7 +8,7 @@ from tournament.models import Tournament, Team, Player
 class TournamentForm(forms.ModelForm):
     class Meta:
         model = Tournament
-        fields = ['title', 'date', 'players', 'desc', 'registration_start', 'registration_end']
+        fields = ['title', 'date', 'players', 'desc', 'registration_start', 'registration_end', 'is_visible']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'input'}),
             'date': forms.DateInput(attrs={'class': 'input', 'type': 'date'}),
@@ -16,6 +16,7 @@ class TournamentForm(forms.ModelForm):
             'desc': forms.Textarea(attrs={'class': 'textarea'}),
             'registration_start': forms.DateTimeInput(attrs={'class': 'input', 'type': 'datetime-local'}),
             'registration_end': forms.DateTimeInput(attrs={'class': 'input', 'type': 'datetime-local'}),
+            'is_visible': forms.CheckboxInput(),
         }
         help_texts = {
             'players': "Die Anzahl der Spieler, welches jedes Team besitzen soll.",

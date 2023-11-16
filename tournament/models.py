@@ -15,6 +15,7 @@ class Tournament(models.Model):
     desc = models.TextField("Beschreibung", blank=True)
     registration_start = models.DateTimeField("Beginn der Einschreibung")
     registration_end = models.DateTimeField("Ende der Einschreibung")
+    is_visible = models.BooleanField("Ist sichtbar?", default=True)
 
     class Meta:
         verbose_name = "Turnier"
