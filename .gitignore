@@ -1,3 +1,7 @@
+# Coverage
+htmlcov/
+.coverage
+
 # Django
 .env
 db.sqlite3

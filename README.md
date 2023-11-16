@@ -5,7 +5,7 @@ University Magdeburg to participate on a variety of offers organized by the stud
 
 This repository contains the source code for [https://klubhaus.farafmb.de](klubhaus.farafmb.de).
 
-# Development
+## Development
 
 Create a virtual environment and install all dependencies.
 
@@ -39,3 +39,22 @@ Start a development webserver.
 ```shell
 python manage.py runserver
 ```
+
+## Testing
+
+Install coverage.
+
+```shell
+python -m pip install coverage
+```
+
+Run test coverage and generate report.
+
+```shell
+coverage run --source="." --omit="manage.py,*/*sgi.py,*/migrations/*" manage.py test
+coverage html
+```
+
+## Author
+
+Aiven Timptner
