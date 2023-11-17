@@ -78,36 +78,42 @@ class TournamentDetailViewTest(TestCase):
             is_staff=True,
         )
 
-    def test_public_access(self):
+    def test_public_access_invisible_tournament(self):
         request = self.client.request()
         request.user = AnonymousUser()
 
         view = TournamentDetailView()
-        view.object = self.tournament1
-        view.setup(request)
+        view.setup(request, pk=self.tournament1.pk)
 
-        has_permission = view.has_permission()
-        self.assertFalse(has_permission)
+        has_access = view.test_func()
+        self.assertFalse(has_access)
 
-        view.object = self.tournament2
-        view.setup(request)
+    def test_public_access_visible_tournament(self):
+        request = self.client.request()
+        request.user = AnonymousUser()
 
-        has_permission = view.has_permission()
-        self.assertTrue(has_permission)
+        view = TournamentDetailView()
+        view.setup(request, pk=self.tournament2.pk)
 
-    def test_private_access(self):
+        has_access = view.test_func()
+        self.assertTrue(has_access)
+
+    def test_private_access_invisible_tournament(self):
         request = self.client.request()
         request.user = self.user
 
         view = TournamentDetailView()
-        view.object = self.tournament1
-        view.setup(request)
+        view.setup(request, pk=self.tournament1)
 
-        has_permission = view.has_permission()
+        has_permission = view.test_func()
         self.assertTrue(has_permission)
 
-        view.object = self.tournament2
-        view.setup(request)
+    def test_private_access_visible_tournament(self):
+        request = self.client.request()
+        request.user = self.user
 
-        has_permission = view.has_permission()
+        view = TournamentDetailView()
+        view.setup(request, pk=self.tournament2)
+
+        has_permission = view.test_func()
         self.assertTrue(has_permission)
