@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -32,14 +32,15 @@ class TournamentCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateV
         return reverse_lazy('tournament:tournament_detail', kwargs={'pk': self.object.pk})
 
 
-class TournamentDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+class TournamentDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Tournament
 
-    def has_permission(self):
+    def test_func(self):
         if self.request.user.is_staff:
             return True
 
-        if self.object.is_visible:
+        tournament = self.get_object()
+        if tournament.is_visible:
             return True
 
         return False
