@@ -52,3 +52,24 @@ class TournamentListTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, self.tournament1.title)
         self.assertContains(response, self.tournament2.title)
+
+
+class TournamentDetailTest(TestCase):
+    def setUp(self) -> None:
+        self.user = User.objects.create_user(
+            email='john.doe@example.org',
+            password='secret',
+        )
+        self.tournament = Tournament.objects.create(
+            title='Turnier 1',
+            date=date.today() + timedelta(days=5),
+            players=5,
+            registration_start=timezone.now(),
+            registration_end=timezone.now() + timedelta(hours=8),
+        )
+        self.path = reverse('tournament:tournament_detail', kwargs={'pk': self.tournament.pk})
+
+    def test_access(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.path)
+        self.assertContains(response, self.tournament.title)
