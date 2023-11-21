@@ -1,9 +1,9 @@
-Django~=4.2.1
+Django~=4.2.7
 python-decouple==3.8
-psycopg2~=2.9.6
-dj_database_url~=1.2.0
-fontawesomefree~=6.4.0
-markdown~=3.4.1
-Pillow~=9.5.0
+psycopg2~=2.9.9
+dj_database_url~=2.1.0
+fontawesomefree~=6.4.2
+markdown~=3.5.1
+Pillow~=10.1.0
 requests~=2.31.0
-reportlab~=4.0.0
+reportlab~=4.0.7
