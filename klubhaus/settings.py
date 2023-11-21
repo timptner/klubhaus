@@ -1,6 +1,6 @@
+import dj_database_url
 import django
 
-from dj_database_url import parse as db_url
 from django.contrib.messages import constants as message_constants
 # noinspection PyPackageRequirements
 from decouple import config, Csv, Choices
@@ -72,7 +72,11 @@ WSGI_APPLICATION = 'klubhaus.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'), cast=db_url)
+    'default': dj_database_url.parse(
+        config('DATABASE_URL', default='sqlite:///' + str(BASE_DIR / 'db.sqlite3')),
+        conn_max_age=600,
+        conn_health_checks=True,
+    ),
 }
 
 
