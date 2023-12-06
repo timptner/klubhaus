@@ -32,9 +32,9 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     email_validator = RegexValidator(
-        regex=r'^[\w\-\.]+@st\.ovgu\.de$',
+        regex=r'^[^\s]+@(st\.ovgu\.de|stud\.h2\.de)$',
         message=("Die E-Mail-Adresse darf nur aus Buchstaben, Ziffern, Bindestrichen oder Punkten bestehen und muss "
-                 "mit \"@st.ovgu.de\" enden."),
+                 "mit \"@st.ovgu.de\" oder \"@stud.h2.de\" enden."),
         flags=re.ASCII,
     )
     phone_validator = RegexValidator(
