@@ -1,4 +1,5 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib import messages
@@ -171,6 +172,8 @@ class UserListView(PermissionRequiredMixin, ListView):
             'inactive': User.objects.filter(is_active=False).count(),
             'staff': User.objects.filter(is_staff=True).count(),
         }
+        today = datetime.utcnow().date().isoformat()
+        context['img_url'] = urljoin(settings.MEDIA_URL, f'statistics/accounts/{today}_history.svg')
         return context
 
 
