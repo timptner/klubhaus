@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import date, datetime, timedelta
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -172,8 +172,10 @@ class UserListView(PermissionRequiredMixin, ListView):
             'inactive': User.objects.filter(is_active=False).count(),
             'staff': User.objects.filter(is_staff=True).count(),
         }
-        today = datetime.utcnow().date().isoformat()
-        context['img_url'] = urljoin(settings.MEDIA_URL, f'statistics/accounts/{today}_history.svg')
+        end = date.today()
+        start = end - timedelta(days=30)
+        filename = f'{start.isoformat()}_{end.isoformat()}.svg'
+        context['img_url'] = urljoin(settings.MEDIA_URL, f'statistics/accounts/{filename}')
         return context
 
 
