@@ -6,7 +6,7 @@ new Chart(ctx, {
     data: {
         labels: dataset.labels,
         datasets: [{
-            label: 'Downloads',
+            label: 'Neue Benutzer',
             data: dataset.data,
             borderWidth: 1
         }]
