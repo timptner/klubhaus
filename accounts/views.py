@@ -1,5 +1,4 @@
 from datetime import date, datetime, timedelta
-from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,6 +9,7 @@ from django.contrib.auth.models import Group
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.exceptions import ImproperlyConfigured, ValidationError, PermissionDenied, BadRequest
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -172,10 +172,23 @@ class UserListView(PermissionRequiredMixin, ListView):
             'inactive': User.objects.filter(is_active=False).count(),
             'staff': User.objects.filter(is_staff=True).count(),
         }
-        end = date.today()
-        start = end - timedelta(days=30)
-        filename = f'{start.isoformat()}_{end.isoformat()}.svg'
-        context['img_url'] = urljoin(settings.MEDIA_URL, f'statistics/accounts/{filename}')
+        first_date = datetime.utcnow().date() - timedelta(days=30)
+        queryset = (User.objects.filter(date_joined__date__gte=first_date)
+                                .values('date_joined__date')
+                                .annotate(count=Count('id')))
+
+        data = {item['date_joined__date']: item['count'] for item in queryset}
+
+        for i in range(30):
+            current_date = first_date + timedelta(days=i)
+            if current_date not in data.keys():
+                data[current_date] = 0
+
+        keys, values = zip(*sorted(data.items()))
+        context['registrations'] = {
+            'labels': keys,
+            'data': values,
+        }
         return context
 
 

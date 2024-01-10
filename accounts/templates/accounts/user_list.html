@@ -1,73 +1,83 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}
-    {{ block.super }} | Benutzer
+{{ block.super }} | Benutzer
 {% endblock %}
 
 {% block content %}
-    <div class="container is-max-desktop">
+<div class="container is-max-desktop">
 
-        {{ block.super }}
+    {{ block.super }}
 
-        <h3 class="title">Benutzer</h3>
+    <h3 class="title">Benutzer</h3>
 
-        <div class="columns has-text-centered">
-            <div class="column">
-                <p>Gesamt</p>
-                <p class="is-size-3">{{ statistics.total }}</p>
-            </div>
-
-            <div class="column">
-                <p>Aktiv</p>
-                <p class="is-size-3">{{ statistics.active }}</p>
-            </div>
-
-            <div class="column">
-                <p>Inaktiv</p>
-                <p class="is-size-3">{{ statistics.inactive }}</p>
-            </div>
-
-            <div class="column">
-                <p>Mitarbeiter</p>
-                <p class="is-size-3">{{ statistics.staff }}</p>
-            </div>
+    <div class="columns has-text-centered">
+        <div class="column">
+            <p>Gesamt</p>
+            <p class="is-size-3">{{ statistics.total }}</p>
         </div>
 
-        <figure class="image is-3by1">
-            <img src="{{ img_url }}" alt="Graph for history of new accounts">
-        </figure>
-        <p class="help">
-            Die Grafik wird jeden Tag um 00:00 Uhr aktualisiert.
-        </p>
+        <div class="column">
+            <p>Aktiv</p>
+            <p class="is-size-3">{{ statistics.active }}</p>
+        </div>
 
-        <div class="table-container">
-            <table class="table is-fullwidth is-hoverable">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Registriert am</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
+        <div class="column">
+            <p>Inaktiv</p>
+            <p class="is-size-3">{{ statistics.inactive }}</p>
+        </div>
 
-                <tbody>
-                {% for account in account_list %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'accounts:user_detail' account.pk %}">
-                                {{ account.get_full_name }}
-                            </a>
-                        </td>
-
-                        <td>{{ account.date_joined }}</td>
-
-                        <td>
-                            {% include 'accounts/state_tags_snippet.html' %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="column">
+            <p>Mitarbeiter</p>
+            <p class="is-size-3">{{ statistics.staff }}</p>
         </div>
     </div>
+
+    <div>
+        <canvas id="registration-chart"></canvas>
+    </div>
+    <p class="help">
+        Es werden die letzten 30 Tage angezeigt.
+    </p>
+
+
+    <div class="table-container">
+        <table class="table is-fullwidth is-hoverable">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Registriert am</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for account in account_list %}
+            <tr>
+                <td>
+                    <a href="{% url 'accounts:user_detail' account.pk %}">
+                        {{ account.get_full_name }}
+                    </a>
+                </td>
+
+                <td>{{ account.date_joined }}</td>
+
+                <td>
+                    {% include 'accounts/state_tags_snippet.html' %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+{{ registrations|json_script:'registration-data' }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/registration_chart.js' %}"></script>
 {% endblock %}
