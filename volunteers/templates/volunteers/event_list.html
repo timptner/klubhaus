@@ -38,67 +38,36 @@
 
         {{ block.super }}
 
-        {% if personal_events %}
-            <article class="message is-info">
-                <div class="message-body">
-                    Veranstaltungen, bei welchen du bereits als freiwilliger Helfer registriert bist zeigen ein
-                    <span class="icon-text">
-                        <span>Herz-Symbol</span>
-
-                        <span class="icon has-text-danger">
-                            <i class="fa-solid fa-heart"></i>
-                        </span>
-                    </span>
-                    hinter dem Titel an.
-                </div>
-            </article>
-        {% endif %}
-
-        <div class="table-container">
-            <table class="table is-hoverable is-fullwidth">
-                <thead>
-                <tr>
-                    <th>Titel</th>
-                    <th>Datum</th>
-                    <th>Status</th>
-                </tr>
-                </thead>
-
-                <tbody>
-                {% for event in event_list %}
-                    <tr>
-                        <td>
-                            <span class="icon-text">
-                                <span>
-                                    <a href="{% url 'volunteers:event_detail' event.pk %}">
-                                        {{ event.title }}
-                                    </a>
-                                </span>
-                                {% if event.pk in personal_events %}
-                                    <span class="icon has-text-danger">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </span>
-                                {% endif %}
-                            </span>
-                        </td>
-
-                        <td>{{ event.date }}</td>
-
-                        <td>
+        {% for event in event_list %}
+            <div class="block">
+                <div class="columns">
+                    <div class="column">
+                        <h4 class="title is-4">
+                            <a href="{% url 'volunteers:event_detail' event.pk %}">
+                                {{ event.title }}
+                            </a>
                             <span class="tag {{ event.get_state_color }}">
                                 {{ event.get_state_display }}
                             </span>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="3" class="is-italic has-text-centered">
-                            Keine Veranstaltungen verfügbar
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                        </h4>
+                    </div>
+                    <div class="column is-narrow">
+                        {% if event.pk in my_events %}
+                            {% include "volunteers/event_tags.html" with event=event is_volunteer=True %}
+                        {% else %}
+                            {% include "volunteers/event_tags.html" with event=event is_volunteer=False %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <p>{{ event.teaser }}</p>
+            </div>
+        {% empty %}
+            <article class="message is-info">
+                <div class="message-body">
+                    Es wurden noch keine Veranstaltungen erstellt.
+                </div>
+            </article>
+        {% endfor %}
     </div>
 {% endblock %}

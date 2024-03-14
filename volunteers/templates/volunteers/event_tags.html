@@ -1,0 +1,40 @@
+<div class="field is-grouped is-grouped-multiline">
+    {% if is_volunteer %}
+        <div class="control">
+            <div class="tags has-addons">
+                <span class="tag is-dark">
+                    <span class="icon has-text-danger">
+                        <i class="fa-solid fa-heart"></i>
+                    </span>
+                </span>
+                <span class="tag">Danke</span>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if event.has_visible_counter %}
+        <div class="control">
+            <div class="tags has-addons">
+                <span class="tag is-dark">
+                    <span class="icon has-text-info">
+                        <i class="fa-solid fa-people-group"></i>
+                    </span>
+                </span>
+                <span class="tag">
+                    {{ event.volunteer_set.count }} Freiwillige
+                </span>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="control">
+        <div class="tags has-addons">
+            <span class="tag is-dark">
+                <span class="icon has-text-primary">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </span>
+            </span>
+            <span class="tag">{{ event.date }}</span>
+        </div>
+    </div>
+</div>

@@ -19,16 +19,7 @@ class EventListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(object_list=object_list, **kwargs)
-
-        personal_events = Volunteer.objects.exclude(
-            event__state=Event.ARCHIVED
-        ).filter(
-            user=self.request.user
-        ).values_list('event__pk', flat=True)
-
-        if personal_events:
-            context['personal_events'] = personal_events
-
+        context['my_events'] = self.request.user.volunteer_set.values_list('event__pk', flat=True)
         return context
 
 
@@ -79,6 +70,8 @@ class EventDetailView(LoginRequiredMixin, DetailView):
                 'color': color,
                 'message': msg,
             }
+
+        context["is_volunteer"] = event.volunteer_set.filter(user=self.request.user).exists()
 
         return context
 

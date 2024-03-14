@@ -20,17 +20,19 @@
         </div>
     {% endif %}
 
-    <div class="is-flex is-align-items-center">
-        <h3 class="title mb-0 mr-3">
-            {{ event.title }}
-        </h3>
-
-        <span class="tag {{ event.get_state_color }}">
-            {{ event.get_state_display }}
-        </span>
+    <div class="columns">
+        <div class="column">
+            <h3 class="title">
+                {{ event.title }}
+                <span class="tag {{ event.get_state_color }} is-medium">
+                    {{ event.get_state_display }}
+                </span>
+            </h3>
+        </div>
+        <div class="column is-narrow">
+            {% include "volunteers/event_tags.html" with event=event is_volunteer=is_volunteer %}
+        </div>
     </div>
-
-    <h5 class="subtitle">{{ event.date }}</h5>
 
     {% if feedback %}
         <article class="message {{ feedback.color }}">

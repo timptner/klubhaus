@@ -7,14 +7,16 @@ from klubhaus.mails import PostmarkTemplate
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ['title', 'date', 'desc', 'state']
+        fields = ['title', 'date', 'teaser', 'desc', 'state', 'has_visible_counter']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'input'}),
             'date': forms.DateInput(attrs={'class': 'input', 'type': 'date'}),
+            'teaser': forms.Textarea(attrs={'class': 'textarea', 'rows': 2}),
             'desc': forms.Textarea(attrs={'class': 'textarea'}),
             'state': forms.RadioSelect,
         }
         help_texts = {
+            'teaser': "Maximal 500 Zeichen.",
             'desc': "Du kannst <a href=\"https://www.markdownguide.org/cheat-sheet/\" target=\"_blank\">MarkDown</a> "
                     "zur Formatierung nutzen.",
         }

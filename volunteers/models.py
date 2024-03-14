@@ -17,6 +17,12 @@ class Event(models.Model):
     date = models.DateField("Datum")
     desc = models.TextField("Beschreibung")
     state = models.SmallIntegerField("Status", choices=STATE_CHOICES, default=PREPARED)
+    teaser = models.CharField("Teaser", max_length=500)
+    has_visible_counter = models.BooleanField(
+        verbose_name="Sichtbarer Zähler",
+        help_text="Zeigt die aktuelle Zahl angemeldeter Freiwilliger an.",
+        default=False,
+    )
 
     class Meta:
         verbose_name = "Veranstaltung"
