@@ -3,6 +3,26 @@
 {% block content %}
     <h3 class="title">Zur Exkursion anmelden</h3>
     <h5 class="subtitle">{{ excursion.title }}</h5>
+    <article class="message is-small is-info">
+        <div class="message-header">
+            <p>Datenschutz</p>
+        </div>
+        <div class="message-body content">
+            <p>
+                In einigen Fällen geben wir eine Liste der Teilnehmer (Vor- und Nachname)
+                an das besuchte Unternehmen. Dies ist jedoch eher die Ausnahmen von
+                der Regel und wird aus Gründen der Sicherheit oder für die
+                Bereitstellung von Schutzausrüstung benötigt. Falls wir weitere
+                Informationen (z. Bsp. die Schuhgröße) benötigen schreiben wir dies
+                separat in die Beschreibung. Jene gesonderte Informationen werden
+                mit dem besuchten Unternehmen geteilt.
+            </p>
+            <p>
+                Deinen Abschluss benutzen wir als Entscheidungshilfe für
+                eine Zulassung bei Exkursionen mit begrenzter Anzahl von Plätzen.
+            </p>
+        </div>
+    </article>
     {% if excursion.ask_for_car %}
         <article class="message is-info">
             <div class="message-body">
