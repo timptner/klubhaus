@@ -6,7 +6,6 @@ from django.db.models import Q
 from accounts.models import User
 from klubhaus.mails import PostmarkTemplate
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,25 +30,29 @@ class Excursion(models.Model):
     date = models.DateField("Datum")
     image = models.ImageField("Bild", blank=True, null=True)
     website = models.URLField("Webseite", blank=True)
-    ask_for_car = models.BooleanField("Auto-Besitz abfragen", default=False)
-    state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=PLANNED)
+    ask_for_car = models.BooleanField("Auto-Besitz abfragen", default=False)  # pyright: ignore [reportArgumentType]
+    state = models.PositiveSmallIntegerField(
+        "Status",
+        choices=STATE_CHOICES,
+        default=PLANNED,  # pyright: ignore [reportArgumentType]
+    )
 
     class Meta:
         verbose_name = "Exkursion"
         verbose_name_plural = "Exkursionen"
-        ordering = ['-date']
+        ordering = ["-date"]
 
     def __str__(self) -> str:
-        return self.title
+        return self.title  # pyright: ignore [reportReturnType]
 
     def get_state_color(self):
         colors = {
-            self.PLANNED: 'is-light is-info',
-            self.OPENED: 'is-light is-success',
-            self.CLOSED: 'is-light is-danger',
-            self.ARCHIVED: 'is-light',
+            self.PLANNED: "is-light is-info",
+            self.OPENED: "is-light is-success",
+            self.CLOSED: "is-light is-danger",
+            self.ARCHIVED: "is-light",
         }
-        return colors[self.state]
+        return colors[self.state]  # pyright: ignore [reportArgumentType]
 
 
 class Participant(models.Model):
@@ -66,65 +69,84 @@ class Participant(models.Model):
     comment = models.TextField("Bemerkung", blank=True)
     is_driver = models.BooleanField("Fahrer", null=True)
     seats = models.PositiveSmallIntegerField("Sitzplätze", null=True)
-    state = models.PositiveSmallIntegerField("Status", choices=STATE_CHOICES, default=ENROLLED)
+    state = models.PositiveSmallIntegerField(
+        "Status",
+        choices=STATE_CHOICES,
+        default=ENROLLED,  # pyright: ignore [reportArgumentType]
+    )
     created_at = models.DateTimeField("Erstellt am", auto_now_add=True)
 
     class Meta:
         verbose_name = "Teilnehmer"
         verbose_name_plural = "Teilnehmer"
-        ordering = ['created_at']
+        ordering = ["created_at"]
         constraints = [
-            models.UniqueConstraint('user', 'excursion', name='unique_participant'),
+            models.UniqueConstraint("user", "excursion", name="unique_participant"),
             models.CheckConstraint(
-                check=(
-                    (Q(is_driver__isnull=True) & Q(seats__isnull=True)) |
-                    (Q(is_driver__isnull=False) & Q(seats__isnull=False))
+                check=(  # pyright: ignore [reportOperatorIssue]
+                    (Q(is_driver__isnull=True) & Q(seats__isnull=True))
+                    | (Q(is_driver__isnull=False) & Q(seats__isnull=False))
                 ),
-                name='driver_has_seats_or_null',
-            )
+                name="driver_has_seats_or_null",
+            ),
         ]
         permissions = [
-            ('contact_participant', "Can contact participant"),
+            ("contact_participant", "Can contact participant"),
         ]
 
     def __str__(self):
-        return self.user.get_full_name()
+        return self.user.get_full_name()  # pyright: ignore [reportAttributeAccessIssue]
 
     def get_state_color(self):
         colors = {
-            self.ENROLLED: 'is-light is-info',
-            self.APPROVED: 'is-light is-success',
-            self.REJECTED: 'is-light is-danger',
+            self.ENROLLED: "is-light is-info",
+            self.APPROVED: "is-light is-success",
+            self.REJECTED: "is-light is-danger",
         }
-        return colors[self.state]
+        return colors[self.state]  # pyright: ignore [reportArgumentType]
 
     def set_state(self, state) -> bool:
         states = [choice for choice, label in self.STATE_CHOICES]
         if state not in states:
-            choices = ', '.join(states)
-            raise ValueError(f"You can only set a state to one of the available choices. ({choices})")
+            choices = ", ".join(states)  # pyright: ignore [reportCallIssue, reportArgumentType]
+            raise ValueError(
+                f"You can only set a state to one of the available choices. ({choices})"
+            )
 
         self.state = state
         self.save()
 
         template = PostmarkTemplate()
         payload = {
-            'user_name': self.user.first_name,
-            'excursion_name': self.excursion.title,
+            "user_name": self.user.first_name,  # pyright: ignore [reportAttributeAccessIssue]
+            "excursion_name": self.excursion.title,  # pyright: ignore [reportAttributeAccessIssue]
         }
 
         if state == self.APPROVED:
-            error = template.send_message(self.user.email, 'participant-approved', payload)
+            error = template.send_message(
+                self.user.email,  # pyright: ignore [reportAttributeAccessIssue]
+                "participant-approved",
+                payload,
+            )
         elif state == self.REJECTED:
-            error = template.send_message(self.user.email, 'participant-rejected', payload)
+            error = template.send_message(
+                self.user.email,  # pyright: ignore [reportAttributeAccessIssue]
+                "participant-rejected",
+                payload,
+            )
         elif state == self.ENROLLED:
-            raise NotImplementedError(f"Can not reset state to '{self.ENROLLED}'. Please request an administrator to "
-                                      "use the available django-admin command.")
+            raise NotImplementedError(
+                f"Can not reset state to '{self.ENROLLED}'. Please request an administrator to "
+                "use the available django-admin command."
+            )
         else:
             error = None
 
         if error:
-            logger.error("Failed to send email about changed state for participant '%s'", self.__str__())
+            logger.error(
+                "Failed to send email about changed state for participant '%s'",
+                self.__str__(),
+            )
             return False
 
         return True
