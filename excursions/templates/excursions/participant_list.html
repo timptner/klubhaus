@@ -1,103 +1,77 @@
 {% extends 'excursions/base_excursion.html' %}
-
 {% load static %}
-
-{% block title %}
-    {{ block.super }} | Teilnehmer
-{% endblock %}
-
-{% block content %}
-    <div class="container is-max-desktop">
-        {{ block.super }}
-    </div>
-{% endblock %}
-
+{% block title %}{{ block.super }} | Teilnehmer{% endblock %}
+{% block content %}<div class="container">{{ block.super }}</div>{% endblock %}
 {% block subcontent %}
     {% if user.is_staff %}
         <div class="buttons is-justify-content-flex-end">
             {% url 'excursions:participant_list_export' excursion.pk as url %}
             {% include 'button_snippet.html' with permission=perms.excursions.view_participant url=url label="Teilnehmerliste exportieren" %}
-
             {% url 'excursions:participant_draw' excursion.pk as url %}
             {% include 'button_snippet.html' with permission=perms.excursions.change_participant url=url label="Teilnehmer losen" %}
-
             {% url 'excursions:participant_contact' excursion.pk as url %}
             {% include 'button_snippet.html' with permission=perms.excursions.contact_participant url=url label="Teilnehmer kontaktieren" %}
         </div>
     {% endif %}
-
     <h3 class="title">Teilnehmer</h3>
-
     <div class="table-container">
         <table class="table is-fullwidth is-hoverable">
             <thead>
-            <tr>
-                <th>Name</th>
-                {% if excursion.ask_for_car %}
-                    <th>Fahrer</th>
-                {% endif %}
-                <th>Bemerkung</th>
-                <th>Angemeldet am</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            {% for participant in participant_list %}
                 <tr>
-                    <td>
-                        <a href="{% url 'accounts:user_detail' participant.user.pk %}">
-                            {{ participant.user.get_full_name }}
-                        </a>
-                    </td>
-
-                    {% if excursion.ask_for_car %}
+                    <th>Name</th>
+                    <th>Abschluss</th>
+                    {% if excursion.ask_for_car %}<th>Fahrer</th>{% endif %}
+                    <th>Bemerkung</th>
+                    <th>Angemeldet am</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for participant in participant_list %}
+                    <tr>
                         <td>
-                            <span class="icon-text">
-                                {% if participant.is_driver %}
-                                    <span class="icon has-text-success">
-                                           <i class="fa-solid fa-check-circle fa-fw"></i>
-                                    </span>
-                                    <span>({{ participant.seats }})</span>
-                                {% else %}
-                                    <span class="icon has-text-danger">
-                                        <i class="fa-solid fa-times-circle fa-fw"></i>
-                                    </span>
+                            <a href="{% url 'accounts:user_detail' participant.user.pk %}">{{ participant.user.get_full_name }}</a>
+                        </td>
+                        <td>{{ participant.get_anticipated_degree_display|default_if_none:"" }}</td>
+                        {% if excursion.ask_for_car %}
+                            <td>
+                                <span class="icon-text">
+                                    {% if participant.is_driver %}
+                                        <span class="icon has-text-success">
+                                            <i class="fa-solid fa-check-circle fa-fw"></i>
+                                        </span>
+                                        <span>({{ participant.seats }})</span>
+                                    {% else %}
+                                        <span class="icon has-text-danger">
+                                            <i class="fa-solid fa-times-circle fa-fw"></i>
+                                        </span>
+                                    {% endif %}
+                                </span>
+                            </td>
+                        {% endif %}
+                        <td>{{ participant.comment }}</td>
+                        <td>{{ participant.created_at }}</td>
+                        <td>
+                            <span class="tags has-addons">
+                                <span class="tag {{ participant.get_state_color }}">{{ participant.get_state_display }}</span>
+                                {% if perms.excursions.change_participant %}
+                                    <a class="tag"
+                                       href="{% url 'excursions:participant_state_update' participant.pk %}"
+                                       style="text-decoration: none">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </span>
+                                    </a>
                                 {% endif %}
                             </span>
                         </td>
-                    {% endif %}
-
-                    <td>{{ participant.comment }}</td>
-
-                    <td>{{ participant.created_at }}</td>
-
-                    <td>
-                        <span class="tags has-addons">
-                            <span class="tag {{ participant.get_state_color }}">
-                                {{ participant.get_state_display }}
-                            </span>
-                            {% if perms.excursions.change_participant %}
-                                <a class="tag"
-                                   href="{% url 'excursions:participant_state_update' participant.pk %}"
-                                   style="text-decoration: none">
-                                    <span class="icon">
-                                        <i class="fa-solid fa-pen"></i>
-                                    </span>
-                                </a>
-                            {% endif %}
-                        </span>
-                    </td>
-                </tr>
-            {% empty %}
-                <tr>
-                    <td colspan="4" class="is-italic has-text-centered">
-                        Bisher haben sich keine Teilnehmer angemeldet
-                    </td>
-                </tr>
-            {% endfor %}
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" class="is-italic has-text-centered">Bisher haben sich keine Teilnehmer angemeldet</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 {% endblock %}
-

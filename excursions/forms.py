@@ -9,42 +9,55 @@ from .models import Excursion, Participant
 class ExcursionForm(forms.ModelForm):
     class Meta:
         model = Excursion
-        fields = ['title', 'location', 'date', 'desc', 'ask_for_car', 'website', 'image', 'state']
+        fields = [
+            "title",
+            "location",
+            "date",
+            "desc",
+            "ask_for_car",
+            "website",
+            "image",
+            "state",
+        ]
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'input'}),
-            'location': forms.TextInput(attrs={'class': 'input'}),
-            'date': forms.DateInput(attrs={'class': 'input', 'type': 'date'}),
-            'desc': forms.Textarea(attrs={'class': 'textarea'}),
-            'website': forms.URLInput(attrs={'class': 'input'}),
-            'image': forms.FileInput(attrs={'class': 'file-input'}),
-            'state': forms.RadioSelect,
+            "title": forms.TextInput(attrs={"class": "input"}),
+            "location": forms.TextInput(attrs={"class": "input"}),
+            "date": forms.DateInput(attrs={"class": "input", "type": "date"}),
+            "desc": forms.Textarea(attrs={"class": "textarea"}),
+            "website": forms.URLInput(attrs={"class": "input"}),
+            "image": forms.FileInput(attrs={"class": "file-input"}),
+            "state": forms.RadioSelect,
         }
         help_texts = {
-            'desc': "Du kannst dieses Feld in der rechten unteren Ecke größer ziehen.",
-            'ask_for_car': "Teilnehmer müssen eine Angabe darüber machen, ob sie ein Auto besitzen und wie viele "
-                           "Plätze das Auto hat.",
-            'image': "Ideal ist ein Bild vom Werksgelände oder aus deren Produktion. Bitte vorher die Genehmigung des "
-                     "Unternehmens einholen!",
+            "desc": "Du kannst dieses Feld in der rechten unteren Ecke größer ziehen.",
+            "ask_for_car": "Teilnehmer müssen eine Angabe darüber machen, ob sie ein Auto besitzen und wie viele "
+            "Plätze das Auto hat.",
+            "image": "Ideal ist ein Bild vom Werksgelände oder aus deren Produktion. Bitte vorher die Genehmigung des "
+            "Unternehmens einholen!",
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if 'date' in self.initial:
+        if "date" in self.initial:
             # Convert date into iso format string to avoid localization
-            self.initial['date'] = self.initial['date'].isoformat()
+            self.initial["date"] = self.initial["date"].isoformat()
 
 
 class ParticipantForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['comment']
+        fields = ["anticipated_degree", "comment"]
         widgets = {
-            'comment': forms.Textarea(attrs={'class': 'textarea'}),
+            "anticipated_degree": forms.Select(attrs={"class": "input"}),
+            "comment": forms.Textarea(attrs={"class": "textarea"}),
+        }
+        help_texts = {
+            "anticipated_degree": "Der vorgesehene akademische Abschluss in deinem derzeitigen Studiengang.",
         }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')
-        self.excursion = kwargs.pop('excursion')
+        self.user = kwargs.pop("user")
+        self.excursion = kwargs.pop("excursion")
 
         super().__init__(*args, **kwargs)
 
@@ -60,66 +73,79 @@ class ParticipantForm(forms.ModelForm):
 
 
 class ExtendedParticipantForm(ParticipantForm):
-    class Meta:
+    class Meta:  # pyright: ignore [reportIncompatibleVariableOverride]
         model = Participant
-        fields = ['is_driver', 'seats', 'comment']
+        fields = ["anticipated_degree", "is_driver", "seats", "comment"]
         labels = {
-            'is_driver': "Auto-Besitzer",
+            "is_driver": "Auto-Besitzer",
         }
         widgets = {
-            'is_driver': forms.RadioSelect(choices=[(True, "Ja"), (False, "Nein")]),
-            'seats': forms.NumberInput(attrs={'class': 'input'}),
-            'comment': forms.Textarea(attrs={'class': 'textarea'}),
+            "anticipated_degree": forms.Select(attrs={"class": "input"}),
+            "is_driver": forms.RadioSelect(choices=[(True, "Ja"), (False, "Nein")]),
+            "seats": forms.NumberInput(attrs={"class": "input"}),
+            "comment": forms.Textarea(attrs={"class": "textarea"}),
         }
         help_texts = {
-            'is_driver': "Du besitzt ein Auto und wärst bereit, eine Fahrgemeinschaft zu bilden.<br>"
-                         "Bitte gib deine IBAN im Bemerkungsfeld ein, falls du dieses Feld mit \"Ja\" beantwortest.",
-            'seats': "Die Anzahl der verfügbaren Sitzplätze im Auto <strong>inklusive</strong> Fahrer."
+            "anticipated_degree": "Der vorgesehene akademische Abschluss in deinem derzeitigen Studiengang.",
+            "is_driver": "Du besitzt ein Auto und wärst bereit, eine Fahrgemeinschaft zu bilden.<br>"
+            'Bitte gib deine IBAN im Bemerkungsfeld ein, falls du dieses Feld mit "Ja" beantwortest.',
+            "seats": "Die Anzahl der verfügbaren Sitzplätze im Auto <strong>inklusive</strong> Fahrer.",
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['is_driver'].required = True
-        self.fields['seats'].required = False
+        self.fields["is_driver"].required = True
+        self.fields["seats"].required = False
 
-        self.initial.update({
-            'is_driver': False,
-            'seats': 0,
-        })
+        self.initial.update(
+            {
+                "is_driver": False,
+                "seats": 0,
+            }
+        )
 
     def clean_seats(self):
-        data = self.cleaned_data['seats']
+        data = self.cleaned_data["seats"]
 
         if data is None:
             data = 0
 
         return data
 
-    def clean(self):
+    def clean(self):  # pyright: ignore [reportIncompatibleMethodOverride]
         cleaned_data = super().clean()
 
-        is_driver = cleaned_data.get('is_driver')
-        seats = cleaned_data.get('seats')
+        is_driver = cleaned_data.get("is_driver")
+        seats = cleaned_data.get("seats")
 
         if is_driver is not None and seats is not None:
             if is_driver and seats < 1:
-                self.add_error('seats', ValidationError(
-                    "Da du ein Auto besitzt muss diese Zahl größer 0 sein.",
-                    code='number_to_small',
-                ))
+                self.add_error(
+                    "seats",
+                    ValidationError(
+                        "Da du ein Auto besitzt muss diese Zahl größer 0 sein.",
+                        code="number_to_small",
+                    ),
+                )
 
             if is_driver and seats > 9:
-                self.add_error('seats', ValidationError(
-                    "Du darfst als Fahrer maximal 8 weitere Personen befördern. "
-                    "Diese Zahl muss somit kleiner als 9 sein.",
-                    code='number_to_big',
-                ))
+                self.add_error(
+                    "seats",
+                    ValidationError(
+                        "Du darfst als Fahrer maximal 8 weitere Personen befördern. "
+                        "Diese Zahl muss somit kleiner als 9 sein.",
+                        code="number_to_big",
+                    ),
+                )
 
             if not is_driver and seats != 0:
-                self.add_error('seats', ValidationError(
-                    "Da du kein Auto besitzt muss dieses Feld den Wert 0 haben oder leer gelassen werden.",
-                    code='seats_must_be_zero',
-                ))
+                self.add_error(
+                    "seats",
+                    ValidationError(
+                        "Da du kein Auto besitzt muss dieses Feld den Wert 0 haben oder leer gelassen werden.",
+                        code="seats_must_be_zero",
+                    ),
+                )
 
 
 ENROLLED_DISPLAY = dict(Participant.STATE_CHOICES).get(Participant.ENROLLED)
@@ -128,39 +154,41 @@ ENROLLED_DISPLAY = dict(Participant.STATE_CHOICES).get(Participant.ENROLLED)
 class ParticipantStateForm(forms.ModelForm):
     class Meta:
         model = Participant
-        fields = ['state']
+        fields = ["state"]
         widgets = {
-            'state': forms.RadioSelect,
+            "state": forms.RadioSelect,
         }
 
     def clean_state(self):
-        data = self.cleaned_data['state']
+        data = self.cleaned_data["state"]
 
         if data == Participant.ENROLLED:
             raise ValidationError(
-                "Der Status \"%(state)s\" kann nur durch einen Administrator gesetzt werden.",
-                params={'state': ENROLLED_DISPLAY},
-                code='forbidden state',
+                'Der Status "%(state)s" kann nur durch einen Administrator gesetzt werden.',
+                params={"state": ENROLLED_DISPLAY},
+                code="forbidden state",
             )
 
         return data
 
     def save(self, commit=True):
         if commit is False:
-            raise NotImplementedError("A changed team status will be committed immediately")
+            raise NotImplementedError(
+                "A changed team status will be committed immediately"
+            )
 
-        state = self.cleaned_data['state']
+        state = self.cleaned_data["state"]
         self.instance.set_state(state)
 
         return self.instance
 
 
 class ParticipantContactForm(forms.Form):
-    ALL = 'all'
-    APPROVED = 'approved'
-    REJECTED = 'rejected'
-    DRIVERS_APPROVED = 'approved-drivers'
-    DRIVERS_REJECTED = 'rejected-drivers'
+    ALL = "all"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    DRIVERS_APPROVED = "approved-drivers"
+    DRIVERS_REJECTED = "rejected-drivers"
 
     RECIPIENTS_CHOICES = [
         (ALL, "Alle Teilnehmer"),
@@ -177,30 +205,32 @@ class ParticipantContactForm(forms.Form):
 
     message = forms.CharField(
         label="Nachricht",
-        widget=forms.Textarea(attrs={'class': 'textarea'}),
+        widget=forms.Textarea(attrs={"class": "textarea"}),
     )
 
     def __init__(self, *args, **kwargs):
-        self.excursion = kwargs.pop('excursion')
+        self.excursion = kwargs.pop("excursion")
         super().__init__(*args, **kwargs)
 
         if not self.excursion.ask_for_car:
-            self.fields['recipients'].choices = self.RECIPIENTS_CHOICES[:3]
+            self.fields["recipients"].choices = self.RECIPIENTS_CHOICES[:3]
 
     def clean_recipients(self):
-        data = self.cleaned_data['recipients']
+        data = self.cleaned_data["recipients"]
 
         participants = self._get_queryset()
 
         if not participants.exists():
-            raise ValidationError("Bitte wähle eine Gruppe von Empfängern, welche mehr als 0 Mitglieder besitzt.")
+            raise ValidationError(
+                "Bitte wähle eine Gruppe von Empfängern, welche mehr als 0 Mitglieder besitzt."
+            )
 
         return data
 
     def _get_queryset(self):
-        recipient_list = self.cleaned_data['recipients']
+        recipient_list = self.cleaned_data["recipients"]
 
-        participants = Participant.objects.filter(excursion=self.excursion)
+        participants = Participant.objects.filter(excursion=self.excursion)  # pyright: ignore [reportAttributeAccessIssue]
 
         if recipient_list == self.ALL:
             pass
@@ -209,16 +239,20 @@ class ParticipantContactForm(forms.Form):
         elif recipient_list == self.REJECTED:
             participants = participants.filter(state=Participant.REJECTED)
         elif recipient_list == self.DRIVERS_APPROVED:
-            participants = participants.filter(state=Participant.APPROVED).filter(is_driver=True)
+            participants = participants.filter(state=Participant.APPROVED).filter(
+                is_driver=True
+            )
         elif recipient_list == self.DRIVERS_REJECTED:
-            participants = participants.filter(state=Participant.REJECTED).filter(is_driver=True)
+            participants = participants.filter(state=Participant.REJECTED).filter(
+                is_driver=True
+            )
         else:
             raise Exception("Unknown recipient list")
 
         return participants
 
     def send_mail(self):
-        message = self.cleaned_data['message']
+        message = self.cleaned_data["message"]
 
         participants = self._get_queryset()
 
@@ -233,41 +267,45 @@ class ParticipantContactForm(forms.Form):
             recipients.append(user.email)
 
             context = {
-                'first_name': user.first_name,
-                'excursion': excursion.title,
-                'body': message,
+                "first_name": user.first_name,
+                "excursion": excursion.title,
+                "body": message,
             }
             payloads.append(context)
 
-        template.send_message_batch(recipients, payloads, template_alias='contact-participants')
+        template.send_message_batch(
+            recipients, payloads, template_alias="contact-participants"
+        )
 
 
 class ParticipantDrawForm(forms.Form):
     amount = forms.IntegerField(
         label="Anzahl",
         min_value=1,
-        widget=forms.NumberInput(attrs={'class': 'input'}),
-        help_text="Anzahl der Teilnehmer, welche per Los zugelassen werden."
+        widget=forms.NumberInput(attrs={"class": "input"}),
+        help_text="Anzahl der Teilnehmer, welche per Los zugelassen werden.",
     )
 
     def __init__(self, *args, **kwargs):
-        self.excursion: Excursion = kwargs.pop('excursion')
+        self.excursion: Excursion = kwargs.pop("excursion")
         super().__init__(*args, **kwargs)
 
     def clean_amount(self):
-        data = self.cleaned_data['amount']
+        data = self.cleaned_data["amount"]
 
-        participant_count = self.excursion.participant_set.filter(state=Participant.ENROLLED).count()
+        participant_count = self.excursion.participant_set.filter(  # pyright: ignore [reportAttributeAccessIssue]
+            state=Participant.ENROLLED
+        ).count()
 
         if data > participant_count:
             raise ValidationError(
                 "Es können maximal %(amount)s Teilnehmer ausgelost werden, da nur entsprechend viele Teilnehmer den "
-                "Status \"%(state)s\" besitzen.",
+                'Status "%(state)s" besitzen.',
                 params={
-                    'amount': participant_count,
-                    'state': dict(Participant.STATE_CHOICES).get(Participant.ENROLLED),
+                    "amount": participant_count,
+                    "state": dict(Participant.STATE_CHOICES).get(Participant.ENROLLED),
                 },
-                code='number to big',
+                code="number to big",
             )
 
         return data
@@ -276,8 +314,10 @@ class ParticipantDrawForm(forms.Form):
         """
         Set state of participants to approved or rejected by selecting chosen amount in random order.
         """
-        amount = self.cleaned_data['amount']
-        participants = self.excursion.participant_set.filter(state=Participant.ENROLLED).order_by('?')
+        amount = self.cleaned_data["amount"]
+        participants = self.excursion.participant_set.filter(  # pyright: ignore [reportAttributeAccessIssue]
+            state=Participant.ENROLLED
+        ).order_by("?")
 
         for index, participant in enumerate(participants):
             if index < amount:

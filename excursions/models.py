@@ -56,6 +56,12 @@ class Excursion(models.Model):
 
 
 class Participant(models.Model):
+    BACHELOR = "Bachelor"
+    MASTER = "Master"
+    DEGREE_CHOICES = [
+        (BACHELOR, "Bachelor"),
+        (MASTER, "Master"),
+    ]
     ENROLLED = 0
     APPROVED = 1
     REJECTED = 2
@@ -69,6 +75,9 @@ class Participant(models.Model):
     comment = models.TextField("Bemerkung", blank=True)
     is_driver = models.BooleanField("Fahrer", null=True)
     seats = models.PositiveSmallIntegerField("Sitzplätze", null=True)
+    anticipated_degree = models.TextField(
+        "Voraussichtlicher Abschluss", choices=DEGREE_CHOICES, null=True
+    )
     state = models.PositiveSmallIntegerField(
         "Status",
         choices=STATE_CHOICES,
