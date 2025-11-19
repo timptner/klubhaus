@@ -1,0 +1,12 @@
+{
+  "languages": {
+    "HTML": {
+      "formatter": {
+        "external": {
+          "command": "djlint",
+          "arguments": ["-", "--reformat", "--profile", "django"]
+        }
+      }
+    }
+  }
+}
